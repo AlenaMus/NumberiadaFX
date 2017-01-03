@@ -39,27 +39,24 @@ public class GameController implements Initializable {
         int i,j;
         for(i=0;i<size;i++)
         {
-           // Label num = new Label(Integer.toString(i+1));
-           // GridPane.setConstraints(num, i, 0);
-            //board.getChildren().add(num);
             board.add(new Label(Integer.toString(i+1)),i,0);
         }
 
-//       for (j =1;j <=size; j++) {
-//           for ( i=0 ; i <=size; i++) {
-//                if (i==0) {
-//                    board.add(new Label(Integer.toString(i+1)),i,j);
-//               }
-//                else
-//                {
-//                    Button butt = new Button("A");
-//                    GridPane.setConstraints(butt, i, j);
-//                    board.getChildren().add(butt);
-//                }
-//            }
-//
-//
-//        }
+       for (j =1;j <size; j++) {
+           for ( i=0 ; i <=size; i++) {
+                if (i==0) {
+                    board.add(new Label(Integer.toString(j)),i,j);
+               }
+                else
+                {
+                    Button butt = new Button("A");
+                    GridPane.setConstraints(butt, i, j);
+                    board.getChildren().add(butt);
+                }
+            }
+
+
+        }
     }
 
     @FXML
