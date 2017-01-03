@@ -1,7 +1,11 @@
 package user_interface;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 
 import java.net.URL;
@@ -15,39 +19,78 @@ public class GameController implements Initializable {
         System.out.println("View is now loaded!");
     }
 
-    public void CreateGameBoardView() ///Board gameBoard,
-     {
-       // GridPane board = new GridPane();
-        //board.setPadding(new Insets(10, 10, 10, 10));
-        //board.setVgap(8);
-       // board.setHgap(10);
-      //   BorderPane.setCenter(board);
-       //borderPane.setAlignment(board, Pos.CENTER);
+    @FXML
+    private ScrollPane scrollPane;
+
+    @FXML
+    private BorderPane borderPane;
+
+        @FXML
+        private Button MakeAMoveButton;
+
+        @FXML
+        private Button RetireGameButton;
+
+        @FXML
+        private Button PrevButton;
+
+        @FXML
+        private Button NextButton;
+
+        @FXML
+        private Button LoadXmlFileButton;
+
+        @FXML
+        private Button StartGameButton;
+
+        @FXML
+        private Label PlayerIDLabel;
+
+        @FXML
+        private Label PlayerNameLabel;
+
+        @FXML
+        private Label PlayerTypeLabel;
+
+        @FXML
+        private Label PlayerColorLabel;
+
+        @FXML
+        private Label MoveNumberLabel;
+
+        @FXML
+        void LoadXmlFileButtonClicked(ActionEvent event) {
+
+        }
+
+        @FXML
+        void MakeAMoveButtonClicked(ActionEvent event) {
+
+        }
+
+        @FXML
+        void NextButtonClicked(ActionEvent event) {
+
+        }
+
+        @FXML
+        void PrevButtonClicked(ActionEvent event) {
+
+        }
+
+        @FXML
+        void RetireGameButtonClicked(ActionEvent event) {
+
+        }
+
+        @FXML
+        void StartGameButtonClicked(ActionEvent event) {
+
+        }
 
 
-    }
 
 
-
-    public void MakeAMoveButtonClicked()
-    {
-
-    }
-
-    public void RetireGameButtonClicked()
-    {
-
-    }
-
-    public void PrevButtonClicked()
-    {
-
-    }
-
-    public void NextButtonClicked()
-    {
-
-    }
 
     public void LoadXmlFileButtonClicked() //throws IOException
     {
@@ -89,10 +132,7 @@ public class GameController implements Initializable {
     }
 
 
-   public void StartGameButtonClicked()
-   {
 
-   }
 
 
 }
