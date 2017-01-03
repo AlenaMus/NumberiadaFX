@@ -1,40 +1,28 @@
 package user_interface;
 
-import game_objects.Board;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
 
-public class GameController {
+import java.net.URL;
+import java.util.ResourceBundle;
 
-    Stage gameStage;
+public class GameController implements Initializable {
 
-    public GameController(Stage primaryStage)throws Exception{
 
-        gameStage = primaryStage;
-        Parent root = FXMLLoader.load(getClass().getResource("NumberidaGUI.fxml"));
-        primaryStage.setTitle("Numberiada");
-        primaryStage.setScene(new Scene(root, 600, 400));
-        primaryStage.show();
-    }
-
-    public void Execute()
-    {
-
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        System.out.println("View is now loaded!");
     }
 
     public void CreateGameBoardView() ///Board gameBoard,
-        {
-        GridPane board = new GridPane();
-        board.setPadding(new Insets(10, 10, 10, 10));
-        board.setVgap(8);
-        board.setHgap(10);
-        BorderPane.setAlignment(board, Pos.CENTER);
+     {
+       // GridPane board = new GridPane();
+        //board.setPadding(new Insets(10, 10, 10, 10));
+        //board.setVgap(8);
+       // board.setHgap(10);
+      //   BorderPane.setCenter(board);
+       //borderPane.setAlignment(board, Pos.CENTER);
 
 
     }
