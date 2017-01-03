@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
 
-
+//UPDATE UPDATE
     private GridPane board = new GridPane();
 
     @Override
