@@ -15,6 +15,7 @@ import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
 
+
     private GridPane board = new GridPane();
 
     @Override
@@ -53,8 +54,6 @@ public class GameController implements Initializable {
                     board.getChildren().add(butt);
                 }
             }
-
-
         }
     }
 
