@@ -11,6 +11,7 @@ public class BoardButton extends Button {
 
     private Square boardButton;
 
+
 public BoardButton(Square buttonSquare)
 {
     this.boardButton = buttonSquare;
