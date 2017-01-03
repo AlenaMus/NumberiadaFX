@@ -1,11 +1,9 @@
 package game_engine;
 
-import game_objects.ePlayerType;
-
 //import javax.xml.bind.Marshaller;
 
 
-public class GameManager {
+public class GameManager  { //implements IGameManager
 
     private static final int LOAD_GAME = 1;
     private static final int START_GAME = 2;
@@ -20,15 +18,15 @@ public class GameManager {
     private static int gameRound = 0;
     private boolean isLoadedGame = false;
    // protected eGameType gameType;
-    private GameLogic gameLogic;
+    private BasicGame basicGame;
 
 
 
 
     public GameManager()
     {
-        gameLogic = new GameLogic();
-        gameLogic.setLoadedGame(null);
+        basicGame = new BasicGame();
+        basicGame.setLoadedGame(null);
        // runGame();
     }
 
@@ -42,11 +40,11 @@ public class GameManager {
 //        {
 //            if(userChoise == LOAD_GAME)
 //            {
-//                isLoadedGame=gameLogic.LoadGameFromXmlAndValidate();
+//                isLoadedGame=basicGame.LoadGameFromXmlAndValidate();
 //                gameRound = 0;
 //                if(isLoadedGame)
 //                {
-//                    UserInterface.PrintBoard(gameLogic.getGameBoard().toString());
+//                    UserInterface.PrintBoard(basicGame.getGameBoard().toString());
 //                }
 //            }
 //            else if(userChoise == START_GAME)
@@ -73,12 +71,12 @@ public class GameManager {
 //    {
 //        if(gameRound >= 1)
 //        {
-//            gameLogic.loadDataFromJaxbToGame(gameLogic.getLoadedGame());
+//            basicGame.loadDataFromJaxbToGame(basicGame.getLoadedGame());
 //        }
-//        gameLogic.setBasicPlayers();
-//        gameLogic.isEndOfGame = false;
-//        gameLogic.setStartTime(System.currentTimeMillis());
-//        UserInterface.PrintBoard(gameLogic.getGameBoard().toString());
+//        basicGame.setBasicPlayers();
+//        basicGame.isEndOfGame = false;
+//        basicGame.setStartTime(System.currentTimeMillis());
+//        UserInterface.PrintBoard(basicGame.getGameBoard().toString());
 //        gameLoop();
 //    }
 //
@@ -87,8 +85,8 @@ public class GameManager {
 //
 //        int option;
 //
-//        gameLogic.setCurrentPlayer(gameLogic.getRowPlayer());
-//        if (!gameLogic.InitMoveCheck())
+//        basicGame.setCurrentPlayer(basicGame.getRowPlayer());
+//        if (!basicGame.InitMoveCheck())
 //        {
 //            return;
 //
@@ -96,29 +94,29 @@ public class GameManager {
 //        else {
 //            UserInterface.PrintUserMessage("Lets Start the Game ...\n Choose an option from the menu below :");
 //
-//            while (!gameLogic.isEndOfGame) {
-//                if (gameLogic.getCurrentPlayer().getPlayerType() == ePlayerType.COMPUTER) {
-//                    gameLogic.makeMove();
-//                    gameLogic.switchPlayer();
+//            while (!basicGame.isEndOfGame) {
+//                if (basicGame.getCurrentPlayer().getPlayerType() == ePlayerType.COMPUTER) {
+//                    basicGame.makeMove();
+//                    basicGame.switchPlayer();
 //                } else { //HUMAN TURN
 //                    UserInterface.PrintSecondMenu();
 //                    option = UserInterface.GetUserInput(SHOW_BOARD_AND_CURRENT_PLAYER, LEAVE_GAME);
 //
 //                    switch (option) {
 //                        case SHOW_BOARD_AND_CURRENT_PLAYER:
-//                            UserInterface.PrintBoard(gameLogic.getGameBoard().toString());
-//                            UserInterface.PrintCurrentPlayer(gameLogic.getCurrentPlayer().getTurn());
+//                            UserInterface.PrintBoard(basicGame.getGameBoard().toString());
+//                            UserInterface.PrintCurrentPlayer(basicGame.getCurrentPlayer().getTurn());
 //                            break;
 //                        case MAKE_A_MOVE:
-//                            gameLogic.makeMove();
-//                            gameLogic.switchPlayer();
+//                            basicGame.makeMove();
+//                            basicGame.switchPlayer();
 //                            break;
 //                        case SHOW_STATISTICS:
-//                            UserInterface.ShowStatistics(gameLogic.getRowPlayer().getNumOfMoves() + gameLogic.getColPlayer().getNumOfMoves(), gameLogic.TotalGameTime(), gameLogic.getRowPlayer().getScore(), gameLogic.getColPlayer().getScore());
+//                            UserInterface.ShowStatistics(basicGame.getRowPlayer().getNumOfMoves() + basicGame.getColPlayer().getNumOfMoves(), basicGame.TotalGameTime(), basicGame.getRowPlayer().getScore(), basicGame.getColPlayer().getScore());
 //                            break;
 //                        case LEAVE_GAME: //go To main Menu
-//                            gameLogic.gameOver();
-//                            gameLogic.isEndOfGame = true;
+//                            basicGame.gameOver();
+//                            basicGame.isEndOfGame = true;
 //                            break;
 //
 //                    }

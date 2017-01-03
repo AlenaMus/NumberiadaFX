@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import static game_engine.GameManager.BAD_SQUARE;
 
-public class GameLogic
+public class BasicGame implements ILogics
 {
     public static final int MIN_PLAYERS = 2;
     public static final int MAX_PLAYERS = 6;
@@ -579,7 +579,7 @@ public class GameLogic
     {
         try {
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            InputStream xmlFileInputStream = GameLogic.class.getResourceAsStream("/xml_resources/Numberiada.xsd");
+            InputStream xmlFileInputStream = BasicGame.class.getResourceAsStream("/xml_resources/Numberiada.xsd");
             Source schemaSource = new StreamSource(xmlFileInputStream);
             Schema schema = schemaFactory.newSchema(schemaSource);
             JAXBContext jaxbContext = JAXBContext.newInstance(GameDescriptor.class);
