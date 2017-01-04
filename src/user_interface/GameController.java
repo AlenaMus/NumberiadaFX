@@ -1,15 +1,20 @@
 package user_interface;
 
+import game_objects.GameColor;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-
+import javafx.scene.layout.RowConstraints;
+import game_objects.GameColor;
+import javafx.scene.text.TextAlignment;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -20,9 +25,9 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        board.setPadding(new Insets(2, 2, 2, 2));
-        board.setVgap(5);
-        board.setHgap(10);
+        board.setPadding(new Insets(20, 0, 10, 0));
+        board.setVgap(2);
+        board.setHgap(2);
        // Label nameLabel = new Label("Username:");
       //  GridPane.setConstraints(nameLabel, 0, 0);
        // Label passLabel = new Label("Password:");
@@ -36,20 +41,46 @@ public class GameController implements Initializable {
     }
 
     private void createBoard(int size) {
-        int i,j;
-        for(i=0;i<size;i++)
-        {
-            board.add(new Label(Integer.toString(i+1)),i,0);
+     //  board.setGridLinesVisible(true);
+
+        for(int i = 0; i < size; i++) {
+            ColumnConstraints column = new ColumnConstraints(20);
+            board.getColumnConstraints().add(column);
         }
 
-       for (j =1;j <size; j++) {
+        for(int i = 0; i < size; i++) {
+            RowConstraints row = new RowConstraints(20);
+            board.getRowConstraints().add(row);
+        }
+
+        int i,j;
+        Label lab = new Label("");
+        lab.setPrefSize(20,20);
+        lab.setAlignment(Pos.CENTER);
+
+        board.add(lab,0,0);
+
+        for(i=1;i<=size;i++)
+        {
+            lab = new Label(Integer.toString(i));
+            lab.setPrefSize(20,20);
+            lab.setAlignment(Pos.CENTER);
+            board.add(lab,i,0);
+        }
+
+       for (j =1;j <=size; j++) {
            for ( i=0 ; i <=size; i++) {
                 if (i==0) {
-                    board.add(new Label(Integer.toString(j)),i,j);
+                    lab = new Label(Integer.toString(j));
+                    lab.setPrefSize(20,20);
+                    lab.setAlignment(Pos.CENTER);
+                    board.add(lab,i,j);
                }
                 else
                 {
                     Button butt = new Button("A");
+                    butt.setPrefSize(20,20);
+                    butt.getStyleClass().add("button-blue");
                     GridPane.setConstraints(butt, i, j);
                     board.getChildren().add(butt);
                 }
