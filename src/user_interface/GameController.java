@@ -1,95 +1,26 @@
 package user_interface;
 
 import game_objects.GameColor;
+import game_objects.Player;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
-import game_objects.GameColor;
-import javafx.scene.text.TextAlignment;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
 
-    private static final int squareSize = 20;
+    GridPane board;
+    NumberiadaBuilder builder;
 
-    private GridPane board = new GridPane();
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-
-        createBoard(5);
-        borderPane.setCenter(board);
-        System.out.println("View is now loaded!");
-    }
-
-    private void createBoard(int size) {
-
-     //  board.setGridLinesVisible(true);
-        board.setPadding(new Insets(10, 0, 10, 0));
-        board.setVgap(1);
-        board.setHgap(1);
-
-        for(int i = 0; i < size; i++) {
-            ColumnConstraints column = new ColumnConstraints(squareSize);
-            board.getColumnConstraints().add(column);
-        }
-
-        for(int i = 0; i < size; i++) {
-            RowConstraints row = new RowConstraints(squareSize);
-            board.getRowConstraints().add(row);
-        }
-
-        int i,j;
-        Label lab = new Label("");
-        lab.setPrefSize(squareSize,squareSize);
-        lab.setAlignment(Pos.CENTER);
-
-        board.add(lab,0,0);
-
-        for(i=1;i<=size;i++)
-        {
-            lab = new Label(Integer.toString(i));
-            lab.setPrefSize(squareSize,squareSize);
-            lab.setAlignment(Pos.CENTER);
-            board.add(lab,i,0);
-        }
-
-       for (j =1;j <=size; j++) {
-           for ( i=0 ; i <=size; i++) {
-                if (i==0) {
-                    lab = new Label(Integer.toString(j));
-                    lab.setPrefSize(squareSize,squareSize);
-                    lab.setAlignment(Pos.CENTER);
-                    board.add(lab,i,j);
-               }
-                else
-                {
-                    Button butt = new Button("A");
-                    butt.setPrefSize(squareSize,squareSize);
-                    butt.getStyleClass().add("button-blue");
-                    butt.setOnAction(e->MakeMove(butt));
-                    GridPane.setConstraints(butt, i, j);
-                    board.getChildren().add(butt);
-                }
-            }
-        }
-    }
-
-    private void MakeMove(Button butt)
-    {
-        butt.getStyleClass().add("button-pup");
-        butt.setText("B");
-    }
     @FXML
     private ScrollPane scrollPane;
 
@@ -159,8 +90,19 @@ public class GameController implements Initializable {
 
         }
 
+       // TableView<Player> gamePlayers;
+        GridPane gamePlayers;
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        builder = new NumberiadaBuilder();
+        board = builder.createBoard(10);
+        borderPane.setCenter(board);
+        builder.createPlayersTable();
+        gamePlayers=builder.getPlayersTable();
+        borderPane.setRight(gamePlayers);
 
+    }
 
 
     public void LoadXmlFileButtonClicked() //throws IOException

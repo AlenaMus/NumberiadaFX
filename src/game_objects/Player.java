@@ -85,6 +85,11 @@ public class Player {
         this.name = name;
     }
 
+    public int getColor()
+    {
+        return color;
+    }
+
     @Override
     public int hashCode() {
         return super.hashCode();

@@ -4,20 +4,19 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane fx:id="scrollPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.111" fx:controller="user_interface.GameController">
+<ScrollPane fx:id="scrollPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="user_interface.GameController">
     <content>
         <BorderPane id="borderPane" fx:id="borderPane" prefHeight="396.0" prefWidth="602.0">
             <right>
-                <Pane prefHeight="367.0" prefWidth="167.0" BorderPane.alignment="CENTER">
+                <Pane prefHeight="367.0" prefWidth="202.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Button fx:id="MakeAMoveButton" layoutX="59.0" layoutY="27.0" mnemonicParsing="false" onAction="#MakeAMoveButtonClicked" text="Make A Move" />
-                        <Button fx:id="RetireGameButton" layoutX="63.0" layoutY="65.0" mnemonicParsing="false" onAction="#RetireGameButtonClicked" text="Retire Game" />
-                        <Button fx:id="PrevButton" disable="true" layoutX="38.0" layoutY="267.0" mnemonicParsing="false" onAction="#PrevButtonClicked" text="PREV" />
-                        <Button fx:id="NextButton" disable="true" layoutX="103.0" layoutY="267.0" mnemonicParsing="false" onAction="#NextButtonClicked" text="NEXT" />
-                        <Label layoutX="60.0" layoutY="204.0" text="Replay Moves" textFill="#e80a0a">
+                        <Button fx:id="PrevButton" disable="true" layoutX="19.0" layoutY="313.0" mnemonicParsing="false" onAction="#PrevButtonClicked" text="PREV" />
+                        <Button fx:id="NextButton" disable="true" layoutX="82.0" layoutY="313.0" mnemonicParsing="false" onAction="#NextButtonClicked" text="NEXT" />
+                        <Label layoutX="19.0" layoutY="284.0" text="Replay Moves" textFill="#e80a0a">
                             <font>
                                 <Font name="System Bold" size="13.0" />
                             </font>
@@ -27,10 +26,17 @@
             </right>
             <top>
                 <Pane prefHeight="29.0" prefWidth="602.0" BorderPane.alignment="CENTER">
-                    <children>
-                        <Button fx:id="LoadXmlFileButton" layoutX="14.0" layoutY="2.0" mnemonicParsing="false" onAction="#LoadXmlFileButtonClicked" text="Load Xml File" />
-                        <Button fx:id="StartGameButton" disable="true" layoutX="128.0" layoutY="3.0" mnemonicParsing="false" onAction="#StartGameButtonClicked" text="Start Game" />
-                    </children>
+               <children>
+                  <HBox layoutX="14.0" layoutY="-4.0" prefHeight="39.0" prefWidth="559.0">
+                     <children>
+                        <Button fx:id="LoadXmlFileButton" mnemonicParsing="false" text="Load Game XML" />
+                        <Button fx:id="StartGameButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="86.0" text="Start Game" />
+                              <Button fx:id="MakeAMoveButton" mnemonicParsing="false" onAction="#MakeAMoveButtonClicked" prefHeight="25.0" prefWidth="106.0" text="Make A Move" />
+                              <Button fx:id="LeaveGameButton" mnemonicParsing="false" onAction="#RetireGameButtonClicked" prefHeight="25.0" prefWidth="90.0" text="Leave Game" />
+                        <Button fx:id="ExitGameButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="81.0" text="Exit" />
+                     </children>
+                  </HBox>
+               </children>
                 </Pane>
             </top>
             <left>

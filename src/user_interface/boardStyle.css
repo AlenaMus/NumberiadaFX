@@ -20,6 +20,8 @@
     -fx-text-fill: #FFFFFF;
 
 }
-/*#bold-label{*/
-    /*-fx-font-weight: bold;*/
-/*}*/
+#bold-label{
+    -fx-font-weight: bold;
+    -fx-text-fill: #AB4642;
+
+}
