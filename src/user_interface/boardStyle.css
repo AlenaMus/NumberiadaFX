@@ -14,6 +14,12 @@
     -fx-text-fill: #FFFFFF;
     -fx-background-radius: 4;
 }
+
+.button-pup{
+    -fx-background-color: #8A2BE2;
+    -fx-text-fill: #FFFFFF;
+
+}
 /*#bold-label{*/
     /*-fx-font-weight: bold;*/
 /*}*/

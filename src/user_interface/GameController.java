@@ -20,42 +20,38 @@ import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
 
+    private static final int squareSize = 20;
 
     private GridPane board = new GridPane();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        board.setPadding(new Insets(20, 0, 10, 0));
-        board.setVgap(2);
-        board.setHgap(2);
-       // Label nameLabel = new Label("Username:");
-      //  GridPane.setConstraints(nameLabel, 0, 0);
-       // Label passLabel = new Label("Password:");
-      //  Button butt = new Button("BBB");
-      //  GridPane.setConstraints(butt,2,2);
-     //   GridPane.setConstraints(passLabel, 1, 0);
-      //  board.getChildren().addAll(nameLabel,passLabel,butt);
+
         createBoard(5);
         borderPane.setCenter(board);
         System.out.println("View is now loaded!");
     }
 
     private void createBoard(int size) {
+
      //  board.setGridLinesVisible(true);
+        board.setPadding(new Insets(10, 0, 10, 0));
+        board.setVgap(1);
+        board.setHgap(1);
 
         for(int i = 0; i < size; i++) {
-            ColumnConstraints column = new ColumnConstraints(20);
+            ColumnConstraints column = new ColumnConstraints(squareSize);
             board.getColumnConstraints().add(column);
         }
 
         for(int i = 0; i < size; i++) {
-            RowConstraints row = new RowConstraints(20);
+            RowConstraints row = new RowConstraints(squareSize);
             board.getRowConstraints().add(row);
         }
 
         int i,j;
         Label lab = new Label("");
-        lab.setPrefSize(20,20);
+        lab.setPrefSize(squareSize,squareSize);
         lab.setAlignment(Pos.CENTER);
 
         board.add(lab,0,0);
@@ -63,7 +59,7 @@ public class GameController implements Initializable {
         for(i=1;i<=size;i++)
         {
             lab = new Label(Integer.toString(i));
-            lab.setPrefSize(20,20);
+            lab.setPrefSize(squareSize,squareSize);
             lab.setAlignment(Pos.CENTER);
             board.add(lab,i,0);
         }
@@ -72,15 +68,16 @@ public class GameController implements Initializable {
            for ( i=0 ; i <=size; i++) {
                 if (i==0) {
                     lab = new Label(Integer.toString(j));
-                    lab.setPrefSize(20,20);
+                    lab.setPrefSize(squareSize,squareSize);
                     lab.setAlignment(Pos.CENTER);
                     board.add(lab,i,j);
                }
                 else
                 {
                     Button butt = new Button("A");
-                    butt.setPrefSize(20,20);
+                    butt.setPrefSize(squareSize,squareSize);
                     butt.getStyleClass().add("button-blue");
+                    butt.setOnAction(e->MakeMove(butt));
                     GridPane.setConstraints(butt, i, j);
                     board.getChildren().add(butt);
                 }
@@ -88,6 +85,11 @@ public class GameController implements Initializable {
         }
     }
 
+    private void MakeMove(Button butt)
+    {
+        butt.getStyleClass().add("button-pup");
+        butt.setText("B");
+    }
     @FXML
     private ScrollPane scrollPane;
 
