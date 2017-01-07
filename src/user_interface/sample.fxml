@@ -37,7 +37,7 @@
                <children>
                   <HBox layoutX="14.0" layoutY="-4.0" prefHeight="39.0" prefWidth="559.0">
                      <children>
-                        <Button fx:id="LoadXmlFileButton" mnemonicParsing="false" text="Load Game XML" />
+                        <Button fx:id="LoadXmlFileButton" mnemonicParsing="false" onAction="#LoadXmlFileButtonClicked" text="Load Game XML" />
                         <Button fx:id="StartGameButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="86.0" text="Start Game" />
                               <Button fx:id="MakeAMoveButton" mnemonicParsing="false" onAction="#MakeAMoveButtonClicked" prefHeight="25.0" prefWidth="106.0" text="Make A Move" />
                               <Button fx:id="LeaveGameButton" mnemonicParsing="false" onAction="#RetireGameButtonClicked" prefHeight="25.0" prefWidth="90.0" text="Leave Game" />

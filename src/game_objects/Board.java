@@ -51,6 +51,7 @@ public class Board {
     public void setMarker(Marker marker) {
         this.marker = marker;
     }
+    public Square[][] getGameBoard(){return gameBoard;}
 
 
 

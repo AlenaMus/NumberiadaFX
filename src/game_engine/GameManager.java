@@ -3,7 +3,23 @@ package game_engine;
 //import javax.xml.bind.Marshaller;
 
 
-public class GameManager  { //implements IGameManager
+import game_validation.ValidationResult;
+import game_validation.XmlNotValidException;
+import jaxb.schema.generated.GameDescriptor;
+import org.xml.sax.SAXException;
+
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import java.io.File;
+import java.io.InputStream;
+
+public class GameManager  {
 
     private static final int LOAD_GAME = 1;
     private static final int START_GAME = 2;
@@ -17,18 +33,107 @@ public class GameManager  { //implements IGameManager
 
     private static int gameRound = 0;
     private boolean isLoadedGame = false;
-   // protected eGameType gameType;
-    private BasicGame basicGame;
+    protected eGameType gameType;
+    private GameLogic gameLogic = null;
+    private GameDescriptor loadedGame =null;
 
 
 
+    public GameDescriptor loadGameFromFile(String fileName) throws XmlNotValidException {
+        try {
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            InputStream xmlFileInputStream = BasicGame.class.getResourceAsStream("/xml_resources/Numberiada.xsd");
+            Source schemaSource = new StreamSource(xmlFileInputStream);
+            Schema schema = schemaFactory.newSchema(schemaSource);
+            JAXBContext jaxbContext = JAXBContext.newInstance(GameDescriptor.class);
 
-    public GameManager()
-    {
-        basicGame = new BasicGame();
-        basicGame.setLoadedGame(null);
-       // runGame();
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            unmarshaller.setSchema(schema);
+            GameDescriptor JaxbGame;
+            JaxbGame = (GameDescriptor) unmarshaller.unmarshal(new File(fileName));
+            return JaxbGame;
+        }
+        catch (JAXBException e) {
+
+            ValidationResult validationResult = new ValidationResult();
+            validationResult.add(String.format("file %1$s xml is not in a valid GameDescriptor schema", fileName));
+            throw new XmlNotValidException(validationResult);
+        }
+
+        catch (SAXException e) {
+            ValidationResult validationResult = new ValidationResult();
+            validationResult.add(String.format("file %1$s xml is not in a valid GameDescriptor schema", fileName));
+            throw new XmlNotValidException(validationResult);
+        }
+
     }
+
+
+    public boolean loadDataFromJaxbToGame(GameDescriptor loadedGame) {
+        boolean loadSuccess = true;
+        String gameType = loadedGame.getGameType();
+
+          if(gameType.equals(String.valueOf(eGameType.Basic))) {
+              gameLogic = new BasicGame();
+          }
+          else if(gameType.equals(String.valueOf(eGameType.Advance))) {
+              gameLogic = new AdvancedGame();
+          }
+          else if(gameType.equals(String.valueOf(eGameType.AdvanceDynamic))) {
+              gameLogic = new DynamicAdvancedGame();
+          }
+          else {
+              loadSuccess = false;
+          }
+          if(loadSuccess) {
+
+              gameLogic.setGameType(eGameType.valueOf(gameType));
+              jaxb.schema.generated.Board loadedBoard = loadedGame.getBoard();
+              gameLogic.setBoard(loadedBoard);
+              if(!gameType.equals(String.valueOf(eGameType.Basic)))
+              {
+                  jaxb.schema.generated.Players players = loadedGame.getPlayers();
+                  gameLogic.setPlayers(players);
+              }
+          }
+
+          return loadSuccess;
+    }
+
+    public boolean LoadGameFromXmlAndValidate(String filePath) throws XmlNotValidException
+    {
+        boolean  isValidXML = false;
+        //String inValidXML = "Invalid XML File, please load valid xml file !\n ";
+        // explicitSquares.clear();
+        try{
+            loadedGame = loadGameFromFile(filePath);
+        }
+        catch (XmlNotValidException ex)
+        {
+            throw new XmlNotValidException(ex.getValidationResult());
+        }
+
+        if(loadedGame!= null) {
+            isValidXML = gameLogic.checkXMLData(loadedGame);
+        }
+        if (!isValidXML) {
+            throw new XmlNotValidException(new ValidationResult());
+        }
+        else {
+            loadDataFromJaxbToGame(loadedGame); //setBoard in Basic
+        }
+
+        return isValidXML;
+    }
+
+
+
+    }
+
+
+
+
+
 
 
 //    private void runGame()
@@ -141,4 +246,4 @@ public class GameManager  { //implements IGameManager
 
 
 
-}
+

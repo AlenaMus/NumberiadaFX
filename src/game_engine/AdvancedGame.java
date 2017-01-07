@@ -14,13 +14,6 @@ import java.util.Map;
 
 public class AdvancedGame extends GameLogic{
 
-
-    @Override
-    public void setBoard(Board board) {
-        super.setBoard(board);
-    }
-
-
     @Override
     public void makeMove()
     {
@@ -40,7 +33,7 @@ public class AdvancedGame extends GameLogic{
     }
 
     @Override
-    public  boolean checkExplicitBoard(Range range, List<Square> squares, jaxb.schema.generated.Marker marker, int boardSize)
+    public  boolean checkExplicitBoard(List<Square> squares, jaxb.schema.generated.Marker marker, int boardSize)
     {
         return true;
     }
@@ -52,26 +45,16 @@ public class AdvancedGame extends GameLogic{
     }
 
     @Override
-    public Map<Integer, game_objects.Player> getPlayers()
-    {
-        return super.players;
-    }
-
+    public Map<Integer, game_objects.Player> getPlayers() {return super.players;}
 
     @Override
-    public game_objects.Player getCurrentPlayer() {
-        return super.getCurrentPlayer();
-    }
+    public game_objects.Player getCurrentPlayer() {return super.getCurrentPlayer();}
 
     @Override
-    public void setCurrentPlayer(game_objects.Player currentPlayer) {
-        super.setCurrentPlayer(currentPlayer);
-    }
+    public void setCurrentPlayer(game_objects.Player currentPlayer) {super.setCurrentPlayer(currentPlayer);}
 
     @Override
-    public int getNumOfPlayers() {
-        return super.getNumOfPlayers();
-    }
+    public int getNumOfPlayers() {return super.getNumOfPlayers();}
 
     @Override
     public void setNumOfPlayers(int num) {
@@ -79,14 +62,10 @@ public class AdvancedGame extends GameLogic{
     }
 
     @Override
-    public void loadDataFromJaxbToGame(GameDescriptor loadedGame) {
-        super.loadDataFromJaxbToGame(loadedGame);
+    public void setBoard(Board board) {
+        super.setBoard(board);
     }
 
-//    @Override
-//    public boolean LoadGameFromXmlAndValidate() {
-//        return true;
-//    }
 
     @Override
     protected int updateBoard(Point squareLocation) {
@@ -104,29 +83,22 @@ public class AdvancedGame extends GameLogic{
     }
 
     @Override
-    protected boolean checkBoardXML(GameDescriptor loadedGame) {
-        return super.checkBoardXML(loadedGame);
-    }
-
-    @Override
-    protected boolean checkAndSetPlayersXML()
-    {
-        return super.checkAndSetPlayersXML();
-    }
-
-    @Override
     public  boolean checkXMLData(GameDescriptor loadedGame)
     {
-        return true;
+        boolean isValidXMLData;
+
+        isValidXMLData = super.checkBoardXML(loadedGame.getBoard());
+        if(isValidXMLData)
+        {
+            isValidXMLData = checkAndSetPlayersXML(loadedGame.getPlayers());
+        }
+
+        return isValidXMLData;
     }
+
 
     @Override
-    public boolean isInBoardRange(int num, int size)
-    {
-        return true;
-    }
-
-    private boolean checkAndSetPlayersXML(jaxb.schema.generated.Players players) //advanced game
+    public boolean checkAndSetPlayersXML(jaxb.schema.generated.Players players)
     {
         boolean areValidPlayers = true;
         List<Player> gamePlayers = players.getPlayer();

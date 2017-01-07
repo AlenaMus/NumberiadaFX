@@ -9,7 +9,6 @@ public class Square {
 
     private Point location;
     private boolean isEmpty;
-   // private int value;
     private String value;
     private int color;
 

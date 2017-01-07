@@ -39,7 +39,7 @@ public class BasicGame extends GameLogic {
     public String  TotalGameTime()
     {
         long millis = System.currentTimeMillis() - StartTime;
-       return String.format("%02d:%02d",
+         return String.format("%02d:%02d",
                TimeUnit.MILLISECONDS.toMinutes(millis),
                TimeUnit.MILLISECONDS.toSeconds(millis) -
                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
@@ -245,24 +245,7 @@ public class BasicGame extends GameLogic {
     @Override
     public boolean checkXMLData(GameDescriptor loadedGame)
     {
-        int index;
-        boolean isValidXMLData = false;
-
-        String gameType = loadedGame.getGameType();
-        isValidXMLData = checkBoardXML(loadedGame);
-
-        if(isValidXMLData && (eGameType.valueOf(gameType) != eGameType.Basic) ) {
-            if (eGameType.valueOf(gameType) == eGameType.Advance) {
-                isValidXMLData = super.checkAndSetPlayersXML();
-            }
-            else if(eGameType.valueOf(gameType) == eGameType.AdvanceDynamic) {
-                // isValidXMLData = checkAdvanceDynamicXML(loadedGame.getDynamicPlayers());
-            }
-            else {
-                isValidXMLData = false;
-              //  UserInterface.ValidationErrors.add(String.format("Game Type Error : No such game type %s !", gameType));
-            }
-        }
+        boolean isValidXMLData = super.checkBoardXML(loadedGame.getBoard());
         return isValidXMLData;
     }
 
@@ -305,7 +288,7 @@ public class BasicGame extends GameLogic {
     }
 
     @Override
-    public boolean checkExplicitBoard(Range range, List<jaxb.schema.generated.Square> squares, jaxb.schema.generated.Marker marker,int boardSize)
+    public boolean checkExplicitBoard(List<jaxb.schema.generated.Square> squares, jaxb.schema.generated.Marker marker,int boardSize)
     {
         boolean isValidBoard = true;
         game_objects.Square newSquare;
@@ -365,57 +348,6 @@ public class BasicGame extends GameLogic {
 
         return isValidBoard;
     }
-
-
-    @Override
-    public boolean isInBoardRange(int num, int size)
-    {
-        boolean isValid = true;
-        if(num < 0 || num > size)
-        {
-            isValid = false;
-        }
-        return isValid;
-
-    }
-
-//    public void loadDataFromJaxbToGame(GameDescriptor loadedGame)
-//    {
-//        jaxb.schema.generated.Board loadedBoard = loadedGame.getBoard();
-//        setBoard(loadedBoard);
-//
-//    }
-
-//    public GameDescriptor loadGameFromFile(String fileName)
-//    {
-//        try {
-//            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-//            InputStream xmlFileInputStream = BasicGame.class.getResourceAsStream("/xml_resources/Numberiada.xsd");
-//            Source schemaSource = new StreamSource(xmlFileInputStream);
-//            Schema schema = schemaFactory.newSchema(schemaSource);
-//            JAXBContext jaxbContext = JAXBContext.newInstance(GameDescriptor.class);
-//
-//            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-//            unmarshaller.setSchema(schema);
-//            GameDescriptor JaxbGame;
-//            JaxbGame = (GameDescriptor) unmarshaller.unmarshal(new File(fileName));
-//            return JaxbGame;
-//        }
-//        catch (JAXBException e) {
-//            //Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, e);
-//           // UserInterface.ValidationErrors.add("Load Game from File Error : Invalid XML !");
-//            return null;
-//        }
-//        catch (SAXException e) {
-//            // Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, e);
-//          //  UserInterface.ValidationErrors.add( "Load Game from File Error : Invalid XML !");
-//            return null;
-//        }
-//    }
-
-
-
-
 
 }
 

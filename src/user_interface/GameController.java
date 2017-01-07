@@ -1,8 +1,13 @@
 package user_interface;
 
+import game_engine.AdvancedGame;
 import game_engine.BasicGame;
+import game_engine.GameLogic;
+import game_engine.GameManager;
 import game_objects.GameColor;
 import game_objects.Player;
+import game_validation.ValidationResult;
+import game_validation.XmlNotValidException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,6 +25,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import jaxb.schema.generated.GameDescriptor;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,9 +37,9 @@ public class GameController implements Initializable {
     GridPane board;
     NumberiadaBuilder builder;
     Stage gameWindow;
+    GameLogic logic;
 
-    public void setGameWindow(Stage stage)
-    {
+    public void setGameWindow(Stage stage) {
         gameWindow = stage;
     }
 
@@ -41,24 +47,23 @@ public class GameController implements Initializable {
     @FXML
     private BorderPane borderPane;
 
-        @FXML
-        private Button MakeAMoveButton;
+    @FXML
+    private Button MakeAMoveButton;
 
-        @FXML
-        private Button RetireGameButton;
+    @FXML
+    private Button RetireGameButton;
 
-        @FXML
-        private Button PrevButton;
+    @FXML
+    private Button PrevButton;
 
-        @FXML
-        private Button NextButton;
+    @FXML
+    private Button NextButton;
 
-        @FXML
-        private Button LoadXmlFileButton;
+    @FXML
+    private Button LoadXmlFileButton;
 
-        @FXML
-        private Button StartGameButton;
-
+    @FXML
+    private Button StartGameButton;
 
 
     @FXML
@@ -86,49 +91,44 @@ public class GameController implements Initializable {
     private Label scoreGridLabel;
 
 
+    @FXML
+    void MakeAMoveButtonClicked(ActionEvent event) {
+
+    }
+
+    @FXML
+    void NextButtonClicked(ActionEvent event) {
+
+    }
+
+    @FXML
+    void PrevButtonClicked(ActionEvent event) {
+
+    }
+
+    @FXML
+    void RetireGameButtonClicked(ActionEvent event) {
+
+    }
+
+    @FXML
+    void StartGameButtonClicked(ActionEvent event) {
 
 
-        @FXML
-        void LoadXmlFileButtonClicked(ActionEvent event) {
-
-        }
-
-        @FXML
-        void MakeAMoveButtonClicked(ActionEvent event) {
-
-        }
-
-        @FXML
-        void NextButtonClicked(ActionEvent event) {
-
-        }
-
-        @FXML
-        void PrevButtonClicked(ActionEvent event) {
-
-        }
-
-        @FXML
-        void RetireGameButtonClicked(ActionEvent event) {
-
-        }
-
-        @FXML
-        void StartGameButtonClicked(ActionEvent event)
-        {
-
-        }
+    }
 
 
     GridPane gamePlayers;
 
+
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        builder = new NumberiadaBuilder();
-        board = builder.createBoard(10);
-        borderPane.setCenter(board);
-        builder.createPlayersTable();
-        gamePlayers=builder.getPlayersTable();
+//        builder = new NumberiadaBuilder();
+//        board = builder.createBoard(10);
+//        borderPane.setCenter(board);
+//        builder.createPlayersTable();
+//        gamePlayers = builder.getPlayersTable();
 
         borderPane.setRight(gamePlayers); //loading xml file
 
@@ -136,67 +136,47 @@ public class GameController implements Initializable {
 
     }
 
-    public void setStartGame()
-    {
+    public void setStartGame() {
         PlayerNameLabel.setMaxWidth(300);
         builder.setPlayersScore(PlayerScoreGridPane); //after Game Starts
-        builder.setCurrentPlayer(PlayerNameLabel,CurrentPlayerIDLabel,CurrentPlayerTypeLabel,CurrentPlayerColorLabel);
-        builder.setCurrentMove(MoveNumberLabel);
+        builder.setCurrentPlayer(PlayerNameLabel, CurrentPlayerIDLabel, CurrentPlayerTypeLabel, CurrentPlayerColorLabel);
+        builder.setCurrentMove(MoveNumberLabel,logic.getMoves());
 
     }
 
-    public void LoadXmlFileButtonClicked() throws IOException
-    {
+    public void LoadXmlFileButtonClicked() throws XmlNotValidException {
+        boolean xmLoaded = false;
 
-            try{
-                BasicGame logic = new BasicGame();
-                FileChooser fileChooser = new FileChooser();
-                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
-                fileChooser.getExtensionFilters().add(extFilter);
-                fileChooser.setTitle("Open Resource File");
-                File loadedFile = fileChooser.showOpenDialog(gameWindow);
-                if (loadedFile != null)
-                {
-
-//                        try
-//                        {
-//
-                             logic.loadGameFromFile(loadedFile.getAbsolutePath());
-//                        }
-//                        catch(XmlNotValidException i_Exception)
-//                        {
-//                            Alert alert = new Alert(Alert.AlertType.ERROR);
-//                            alert.setTitle("Invalid Game data file");
-//                            alert.setHeaderText("Error reading xml file, the following errors were found");
-//                            alert.setContentText(String.join(System.lineSeparator(), i_Exception.getValidationResult()));
-//                            alert.showAndWait();
-//                        }
-                    }
-
-
-                      FXMLLoader loader = new FXMLLoader(getClass().getResource("sample.fxml"));
-                      Parent gameBoard = (Parent)loader.load();
-//                    GameController controller = (GameController)loader.getController();
-//                    ((Node)event.getSource()).getScene().getWindow().hide();
-//                    controller.logic=logic;
-//                    controller.logic.setCurrPlayer(controller.logic.getPlayersList().get(logic.getPlayerIndex()));
-//                    controller.printPlayersTiles();
-//                    controller.printBoard();
-//                    Scene scene=new Scene(gameBoard);
-//                    Stage stage=new Stage();
-//                    stage.setScene(scene);
-//                    stage.show();
-//                    Button b= new Button();
-//                    //controller.computer();
-//                    throw new IOException("your message");
-            //    }
+        GameManager gameManager = new GameManager();
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
+        fileChooser.getExtensionFilters().add(extFilter);
+        fileChooser.setTitle("Open Resource File");
+        File loadedFile = fileChooser.showOpenDialog(gameWindow);
+        if (loadedFile != null) {
+            try {
+                gameManager.LoadGameFromXmlAndValidate(loadedFile.getAbsolutePath());
+                xmLoaded = true;
+            } catch (XmlNotValidException i_Exception) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Invalid Game data file");
+                alert.setHeaderText("Error reading xml file, the following errors were found");
+                alert.setContentText(String.join(System.lineSeparator(), i_Exception.getValidationResult()));
+                alert.showAndWait();
             }
-            catch(IOException e)
-            {
-                  e.printStackTrace();
-            }
+        } else {
+            ValidationResult res = new ValidationResult();
+            res.add("XML File Load Error: Invalid File - cannot be loaded!");
+            throw new XmlNotValidException(res);
+        }
+
+        if (xmLoaded) {
+
+            board = builder.createBoard(logic.getGameBoard());
+            borderPane.setCenter(board);
+            builder.createPlayersTable(logic.getPlayers());
+            gamePlayers = builder.getPlayersTable();
+
+        }
     }
-
-
-
 }
