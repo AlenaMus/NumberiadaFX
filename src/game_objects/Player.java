@@ -16,6 +16,8 @@ public class Player {
     protected int numOfMoves;
     private int color;
     private Color playerColor;
+    private int serialNumber;
+    private boolean IsActive;
 
     public Player(ePlayerType playerType,String playerName, int playerId,int color)
     {
@@ -39,6 +41,20 @@ public class Player {
         name = "";
 
     }
+
+    public int getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(int serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public boolean isActive() {
+        return IsActive;
+    }
+
+    public void setActive(boolean active) {IsActive = active;}
 
     public int getId() {
         return id;

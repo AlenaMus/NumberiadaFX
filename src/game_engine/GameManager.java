@@ -29,7 +29,7 @@ public class GameManager  {
     private static final int MAKE_A_MOVE = 2;
     private static final int SHOW_STATISTICS = 3;
     private static final int LEAVE_GAME = 4;
-    public static final int BAD_SQUARE = 100;
+
 
     private static int gameRound = 0;
     private boolean isLoadedGame = false;
@@ -80,7 +80,7 @@ public class GameManager  {
               gameLogic = new AdvancedGame();
           }
           else if(gameType.equals(String.valueOf(eGameType.AdvanceDynamic))) {
-              gameLogic = new DynamicAdvancedGame();
+              //gameLogic = new DynamicAdvancedGame();
           }
           else {
               loadSuccess = false;
@@ -129,9 +129,6 @@ public class GameManager  {
 
 
     }
-
-
-
 
 
 

@@ -11,6 +11,8 @@ public class Square {
     private boolean isEmpty;
     private String value;
     private int color;
+    private boolean disabled;
+
 
 
     public Square(Point location) {
@@ -30,6 +32,10 @@ public class Square {
         this.value = value;
         this.color = color;
     }
+
+    public boolean isDisabled() {return disabled;}
+
+    public void setDisabled(boolean disabled) {this.disabled = disabled;}
 
     public Point getLocation() {
         return location;

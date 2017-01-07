@@ -7,9 +7,9 @@ import jaxb.schema.generated.Marker;
 import jaxb.schema.generated.Player;
 import jaxb.schema.generated.Square;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 
 public class AdvancedGame extends GameLogic{
@@ -23,18 +23,25 @@ public class AdvancedGame extends GameLogic{
     @Override
     public void gameOver()
     {
+       // Collections.sort(players, (p1, p2) -> p1.getScore - p2.getScore());
+            //players in now sorted by SCORE
+            //need to print to UI the players SCORES
 
     }
 
     @Override
     public boolean checkRandomBoardValidity(Range boardRange, int boardSize)
     {
+
+
         return true;
     }
 
     @Override
     public  boolean checkExplicitBoard(List<Square> squares, jaxb.schema.generated.Marker marker, int boardSize)
     {
+
+
         return true;
     }
 
@@ -63,23 +70,93 @@ public class AdvancedGame extends GameLogic{
 
     @Override
     public void setBoard(Board board) {
-        super.setBoard(board);
+      //  super.setBoard(board);
     }
 
 
     @Override
     protected int updateBoard(Point squareLocation) {
-        return super.updateBoard(squareLocation);
+            int squareValue = gameBoard.updateBoard(squareLocation);
+            return squareValue;
+
     }
 
     @Override
     protected void updateUserData(int squareValue) {
-        super.updateUserData(squareValue);
+        currentPlayer.setNumOfMoves(currentPlayer.getNumOfMoves()+1); //maybe do totalmoves var in gameManager
+        currentPlayer.setScore(squareValue);
     }
 
     @Override
-    protected void switchPlayer() {
-        super.switchPlayer();
+    public void switchPlayer()
+    {
+        int activePlayerNumber = currentPlayer.getSerialNumber();
+        game_objects.Player nextPlayer = null;
+        if(isGameOver2(gameBoard.getMarker().getMarkerLocation()))
+        {
+            gameOver();
+        }
+        else //somebody have move
+            nextPlayer = players.get((activePlayerNumber+1) % gameBoard.GetBoardSize());
+        while (nextPlayer.isActive() == false)
+        {
+            nextPlayer = players.get((activePlayerNumber+1)%gameBoard.GetBoardSize());
+        }
+        while (!(isPlayerHaveMove(gameBoard.getMarker().getMarkerLocation(),nextPlayer)))
+        {
+            //need to update UI player have no move!!!
+            nextPlayer = players.get((activePlayerNumber+1)%gameBoard.GetBoardSize());
+            while (nextPlayer.isActive() == false)
+            {
+                nextPlayer = players.get((activePlayerNumber+1)%gameBoard.GetBoardSize());
+            }
+        }
+        setCurrentPlayer(nextPlayer);
+    }
+
+    private boolean isPlayerHaveMove(Point markerLocation, game_objects.Player player)
+    {
+        int MarkerRow = markerLocation.getRow()-1;
+        int MarkerCol = markerLocation.getCol()-1;
+        for (int i=0; i < gameBoard.GetBoardSize();i++)
+            if ((!gameBoard.getGameBoard()[MarkerRow][i].isDisabled()) &&(!gameBoard.getGameBoard()[MarkerRow][i].isEmpty())
+                    && (!gameBoard.getGameBoard()[MarkerRow][i].getValue().equals(gameBoard.getMarker().getMarkerSign()))
+                    && ((gameBoard.getGameBoard()[MarkerRow][i].getColor()  == (getCurrentPlayer().getColor()))))
+                return true;
+        for (int i=0; i < gameBoard.GetBoardSize(); i++)
+            if ((!gameBoard.getGameBoard()[i][MarkerCol].isDisabled() )&& (!gameBoard.getGameBoard()[i][MarkerCol].isEmpty() )
+                    && (!gameBoard.getGameBoard()[i][MarkerCol].getValue().equals(gameBoard.getMarker().getMarkerSign()))
+                    && ((gameBoard.getGameBoard()[i][MarkerCol].getColor()  == (player.getColor()))))
+                return true;
+        return false;
+    }
+
+    private boolean isGameOver2(Point markerLocation)
+    {
+        int MarkerRow = markerLocation.getRow()-1;
+        int MarkerCol = markerLocation.getCol()-1;
+        for (int i=0; i < gameBoard.GetBoardSize();i++)
+            if ((!gameBoard.getGameBoard()[MarkerRow][i].isDisabled()) &&(!gameBoard.getGameBoard()[MarkerRow][i].isEmpty())
+                    && (!gameBoard.getGameBoard()[MarkerRow][i].getValue().equals(gameBoard.getMarker().getMarkerSign())))
+                return false;
+        for (int i=0; i < gameBoard.GetBoardSize(); i++)
+            if ((!gameBoard.getGameBoard()[i][MarkerCol].isDisabled() )&& (!gameBoard.getGameBoard()[i][MarkerCol].isEmpty() )
+                    && (!gameBoard.getGameBoard()[i][MarkerCol].getValue().equals(gameBoard.getMarker().getMarkerSign())))
+                return false;
+        return true;
+    }
+
+    private void playerRetire (game_objects.Player player) {
+        for (int i = 0; i < gameBoard.GetBoardSize(); i++)
+            for (int j = 0; j < gameBoard.GetBoardSize(); j++)
+                if (gameBoard.getGameBoard()[i][j].getColor() == player.getColor())
+                {
+                    gameBoard.getGameBoard()[i][j].setDisabled(true);
+                    gameBoard.getGameBoard()[i][j].setValue(" ");
+                    gameBoard.getGameBoard()[i][j].setEmpty(true);
+                }
+        player.setActive(false);
+        //NEED TO UPDATE UI and delete all player squars
     }
 
     @Override
@@ -96,6 +173,50 @@ public class AdvancedGame extends GameLogic{
         return isValidXMLData;
     }
 
+
+    public static int ComputerMove(int boardSize) {
+        return (ThreadLocalRandom.current().nextInt(1, boardSize + 1));
+    }
+
+
+    private void makeComputerMove()
+    {
+        int squareValue = BAD_SQUARE ;
+        boolean foundSquare = false;
+        Point squareLocation = null;
+        int MarkerRow = gameBoard.getMarker().getMarkerLocation().getRow()-1;
+        int MarkerCol = gameBoard.getMarker().getMarkerLocation().getCol()-1;
+
+        while (!foundSquare) {
+            int random = ComputerMove(gameBoard.GetBoardSize());
+            if (gameBoard.getGameBoard()[MarkerRow][random].getColor() == (currentPlayer.getColor())) {
+                squareLocation = new Point(gameBoard.getMarker().getMarkerLocation().getRow(), random);
+                foundSquare = true;
+            }
+            else if (gameBoard.getGameBoard()[random][MarkerCol].getColor() == (currentPlayer.getColor())) {
+                squareLocation = new Point(random, gameBoard.getMarker().getMarkerLocation().getCol());
+                foundSquare = true;
+            }
+        }
+        squareValue = updateBoard(squareLocation); //update 2 squares
+        updateUserData(squareValue);
+        gameBoard.getMarker().setMarkerLocation(squareLocation.getRow(),squareLocation.getCol());
+    }
+
+    private boolean makeHumanMove(Point userPoint)
+    {
+        boolean IsValidMove;
+        int squareValue;
+        squareValue = updateBoard(userPoint); //update 2 squares
+        if (squareValue == GameLogic.BAD_SQUARE)
+            IsValidMove = false;
+        else {
+            updateUserData(squareValue);
+            gameBoard.getMarker().setMarkerLocation(userPoint.getRow(), userPoint.getCol());
+            IsValidMove = true;
+        }
+        return IsValidMove;
+    }
 
     @Override
     public boolean checkAndSetPlayersXML(jaxb.schema.generated.Players players)

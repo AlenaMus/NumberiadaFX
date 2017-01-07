@@ -127,6 +127,7 @@ public class NumberiadaBuilder {
                 {
                     Square square = (Square) observableBoard.get(ind);
                     BoardButton butt = new BoardButton(square);
+
                     butt.setPrefSize(squareSize,squareSize);
                     //butt.getStyleClass().add("button-blue");
                     butt.setOnAction(e->PressedBoardButton(butt));

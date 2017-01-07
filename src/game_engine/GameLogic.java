@@ -32,14 +32,13 @@ public abstract class GameLogic {
     public static final int HUMAN_PLAYER = 1;
     public static final int COMPUTER_PLAYER =2;
     public static final int COMPUTERS_GAME =3;
+    public static final int BAD_SQUARE = 100;
 
     protected String gameFile = " ";
     public  boolean isEndOfGame = false;
     private int gameMoves=0;
 
-    //protected List<Player> players = new ArrayList<Player>();
     protected Map<Integer, game_objects.Player> players = null;
-
     protected GameDescriptor loadedGame;
     protected  int numOfPlayers;
     protected game_objects.Board gameBoard;
@@ -64,23 +63,29 @@ public abstract class GameLogic {
     public void setGameType(eGameType type){gameType = type;}
     public int getNumOfPlayers () {return numOfPlayers;}
     public void setNumOfPlayers(int num) { numOfPlayers = num; }
+    public Board getGameBoard() {
+        return gameBoard;
+    }
+    public void setGameBoard(Board gameBoard) {
+        this.gameBoard = gameBoard;
+    }
+    public int getMoves() {return gameMoves;}
     public abstract Map<Integer, Player>  getPlayers();
 
     public abstract void makeMove();
     public abstract boolean InitMoveCheck();
+    public abstract void setBoard(jaxb.schema.generated.Board board);
     public abstract boolean checkXMLData(GameDescriptor loadedGame);
     public abstract boolean checkRandomBoardValidity(Range boardRange, int boardSize);
     public abstract boolean checkExplicitBoard(List<jaxb.schema.generated.Square> squares, jaxb.schema.generated.Marker marker, int boardSize);
     public abstract void gameOver();
-
-    public int getMoves()
-    {
-        return gameMoves;
-    }
+    protected abstract void switchPlayer();
 
 
 
-    public void setPlayers(jaxb.schema.generated.Players gamePlayers)
+
+
+    public void setPlayers(jaxb.schema.generated.Players gamePlayers) //after being checked
     {
        players = new HashMap<>(numOfPlayers);
         for (jaxb.schema.generated.Player player:gamePlayers.getPlayer()) {
@@ -95,7 +100,7 @@ public abstract class GameLogic {
 
 
 
-    public void setBoard(jaxb.schema.generated.Board board){}
+
     protected int updateBoard(Point squareLocation) //implement in Board - returns updated value of row/column
     {
         int squareValue = gameBoard.updateBoard(squareLocation);
@@ -107,16 +112,6 @@ public abstract class GameLogic {
     {
         currentPlayer.setNumOfMoves(currentPlayer.getNumOfMoves()+1); //maybe do totalmoves var in gameManager
         currentPlayer.setScore(squareValue);
-    }
-
-    protected void switchPlayer(){}
-
-    public Board getGameBoard() {
-        return gameBoard;
-    }
-
-    public void setGameBoard(Board gameBoard) {
-        this.gameBoard = gameBoard;
     }
 
 
@@ -161,7 +156,6 @@ public abstract class GameLogic {
             isValid = false;
         }
         return isValid;
-
     }
 
 }

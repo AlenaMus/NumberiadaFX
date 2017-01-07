@@ -114,25 +114,22 @@ public class GameController implements Initializable {
     @FXML
     void StartGameButtonClicked(ActionEvent event) {
 
-
     }
 
 
     GridPane gamePlayers;
-
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 //        builder = new NumberiadaBuilder();
 //        board = builder.createBoard(10);
 //        borderPane.setCenter(board);
-//        builder.createPlayersTable();
-//        gamePlayers = builder.getPlayersTable();
+     //   builder.createPlayersTable();
+       // gamePlayers = builder.getPlayersTable();
 
         borderPane.setRight(gamePlayers); //loading xml file
 
-        setStartGame();
+       // setStartGame();
 
     }
 

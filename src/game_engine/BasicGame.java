@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-import static game_engine.GameManager.BAD_SQUARE;
 
 public class BasicGame extends GameLogic {
 
@@ -49,35 +48,40 @@ public class BasicGame extends GameLogic {
     @Override
     public void gameOver()
     {
-//        if(isEndOfGame) {
-//            int rowPlayerScore = getRowPlayer().getScore();
-//            int ColPlayerScore = getColPlayer().getScore();
-//            if (rowPlayerScore > ColPlayerScore)
-//                //UserInterface.PrintWinner("Row Player"); //rowPlayer.getName()
-//            else if (ColPlayerScore > rowPlayerScore)
-//               // UserInterface.PrintWinner("Column Player"); //colPlayer.getName()
-//            else //(ColPlayerScore  == rowPlayerScore )
-//               // UserInterface.PrintWinner("TIE");
-//        }
-//        else{
-//            if(currentPlayer.checkPlayerTurn(rowPlayer))
-//            {
-//               // UserInterface.PrintUserMessage("Row player left the game ...");
-//               // UserInterface.PrintWinner("Column Player");
-//            }
-//            else
-//            {
-//               // UserInterface.PrintUserMessage("Column player left the game ...");
-//                //UserInterface.PrintWinner("Row Player");
-//            }
-//        }
-       // UserInterface.PrintBoard(getGameBoard().toString());
-        //UserInterface.ShowStatistics(getRowPlayer().getNumOfMoves()+getColPlayer().getNumOfMoves(),TotalGameTime(),getRowPlayer().getScore(),getColPlayer().getScore());
+        Player winner;
+        if(isEndOfGame) {
+            int rowPlayerScore = getRowPlayer().getScore();
+            int ColPlayerScore = getColPlayer().getScore();
+            if (rowPlayerScore > ColPlayerScore)
+                winner = rowPlayer;
+            else if (ColPlayerScore > rowPlayerScore)
+                winner = colPlayer;
+            else //tie
+            {
+                winner = null;
+            }
+        }
+        else {
+            if (currentPlayer.checkPlayerTurn(rowPlayer)) {
+                //row player left
+                winner = colPlayer;
+            } else {
+                //col player left
+                winner = rowPlayer;
+            }
+        }
+        //print to UI winner
     }
 
-    public static int ComputerMove(int boardSize) {
-        return (ThreadLocalRandom.current().nextInt(1, boardSize + 1));
+    public void setBasicPlayers()
+    {
+        rowPlayer = new Player(eTurn.ROW, ePlayerType.HUMAN);
+        colPlayer = new Player(eTurn.COL, ePlayerType.HUMAN);
     }
+
+//    public static int ComputerMove(int boardSize) {
+//        return (ThreadLocalRandom.current().nextInt(1, boardSize + 1));
+//    }
 
     @Override
     public Map<Integer, Player> getPlayers()
@@ -86,63 +90,84 @@ public class BasicGame extends GameLogic {
     }
 
 
-    public int makeComputerMove()
-    {
-        return ComputerMove(gameBoard.GetBoardSize());
-    }
-
     @Override
     public void makeMove()
     {
-        int chosenSquare;
-        int squareValue = BAD_SQUARE ;
-        Point squareLocation = null;
-        boolean badInput = true;
 
-        while (badInput) {
-            switch (super.currentPlayer.getTurn()) {
-                case ROW:
-                    if (rowPlayer.getPlayerType() == ePlayerType.HUMAN) {
-                       // chosenSquare = UserInterface.GetUserMove(gameBoard.getMarker().getMarkerLocation(), eTurn.ROW, gameBoard.GetBoardSize(), gameBoard.toString());
-                       // squareLocation = new Point(gameBoard.getMarker().getMarkerLocation().getRow(), chosenSquare);
-                        break;
-                    }
-                    else // COMPUTER
-                    {
-                        chosenSquare = makeComputerMove();
-                        squareLocation = new Point(gameBoard.getMarker().getMarkerLocation().getRow(), chosenSquare);
-                        break;
-                    }
-                case COL:
-                    if (colPlayer.getPlayerType() == ePlayerType.HUMAN) {
-                       // chosenSquare = UserInterface.GetUserMove(gameBoard.getMarker().getMarkerLocation(), eTurn.COL, gameBoard.GetBoardSize(), gameBoard.toString());
-                       // squareLocation = new Point(chosenSquare, gameBoard.getMarker().getMarkerLocation().getCol());
-                        break;
-                    }
-                    else // COMPUTER
-                    {
-                        chosenSquare = makeComputerMove();
-                        squareLocation = new Point(chosenSquare, gameBoard.getMarker().getMarkerLocation().getCol());
-                        break;
-                    }
-            }
-
-            squareValue = super.updateBoard(squareLocation); //update 2 squares
-            if (squareValue != BAD_SQUARE)
-                badInput = false;
-        //    else
-         //   if (currentPlayer.getPlayerType() == ePlayerType.HUMAN)
-               // UserInterface.PrintUserMessage("You choose invalid square! you can't select empty squares/marker square.choose another one..!");
-
-        }
-        if (currentPlayer.getPlayerType() == ePlayerType.COMPUTER)
-        {
-            //UserInterface.PrintUserMessage("computer " + currentPlayer.getTurn()+ " play his turn...he chose square ("+ squareLocation.getRow() + "," +squareLocation.getCol()+ ")");
-        }
-        updateUserData(squareValue); //update score and moves
-        gameBoard.getMarker().setMarkerLocation(squareLocation.getRow(),squareLocation.getCol());
-        //UserInterface.PrintBoard(gameBoard.toString());
     }
+    //public int makeComputerMove()
+//    {
+//        return ComputerMove(gameBoard.GetBoardSize());
+//    }
+
+//    @Override
+//    public void makeMove()
+//    {
+//        int chosenSquare;
+//        int squareValue = BAD_SQUARE ;
+//        Point squareLocation = null;
+//        boolean badInput = true;
+//
+//        while (badInput) {
+//            switch (super.currentPlayer.getTurn()) {
+//                case ROW:
+//                    if (rowPlayer.getPlayerType() == ePlayerType.HUMAN) {
+//                       // chosenSquare = UserInterface.GetUserMove(gameBoard.getMarker().getMarkerLocation(), eTurn.ROW, gameBoard.GetBoardSize(), gameBoard.toString());
+//                       // squareLocation = new Point(gameBoard.getMarker().getMarkerLocation().getRow(), chosenSquare);
+//                        break;
+//                    }
+//                    else // COMPUTER
+//                    {
+//                        chosenSquare = makeComputerMove();
+//                        squareLocation = new Point(gameBoard.getMarker().getMarkerLocation().getRow(), chosenSquare);
+//                        break;
+//                    }
+//                case COL:
+//                    if (colPlayer.getPlayerType() == ePlayerType.HUMAN) {
+//                       // chosenSquare = UserInterface.GetUserMove(gameBoard.getMarker().getMarkerLocation(), eTurn.COL, gameBoard.GetBoardSize(), gameBoard.toString());
+//                       // squareLocation = new Point(chosenSquare, gameBoard.getMarker().getMarkerLocation().getCol());
+//                        break;
+//                    }
+//                    else // COMPUTER
+//                    {
+//                        chosenSquare = makeComputerMove();
+//                        squareLocation = new Point(chosenSquare, gameBoard.getMarker().getMarkerLocation().getCol());
+//                        break;
+//                    }
+//            }
+//
+//            squareValue = super.updateBoard(squareLocation); //update 2 squares
+//            if (squareValue != BAD_SQUARE)
+//                badInput = false;
+//        //    else
+//         //   if (currentPlayer.getPlayerType() == ePlayerType.HUMAN)
+//               // UserInterface.PrintUserMessage("You choose invalid square! you can't select empty squares/marker square.choose another one..!");
+//
+//        }
+//        if (currentPlayer.getPlayerType() == ePlayerType.COMPUTER)
+//        {
+//            //UserInterface.PrintUserMessage("computer " + currentPlayer.getTurn()+ " play his turn...he chose square ("+ squareLocation.getRow() + "," +squareLocation.getCol()+ ")");
+//        }
+//        updateUserData(squareValue); //update score and moves
+//        gameBoard.getMarker().setMarkerLocation(squareLocation.getRow(),squareLocation.getCol());
+//        //UserInterface.PrintBoard(gameBoard.toString());
+//    }
+
+    private boolean makeHumanMove(Point userPoint) //GET POINT FROM UI
+    {
+        boolean IsValidMove;
+        int squareValue;
+        squareValue = updateBoard(userPoint); //update 2 squares
+        if (squareValue == BAD_SQUARE)
+            IsValidMove = false;
+        else {
+            updateUserData(squareValue);
+            gameBoard.getMarker().setMarkerLocation(userPoint.getRow(), userPoint.getCol());
+            IsValidMove = true;
+        }
+        return IsValidMove;
+    }
+
 
     @Override
     public void switchPlayer()
