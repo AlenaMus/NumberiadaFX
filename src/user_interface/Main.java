@@ -17,7 +17,9 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         primaryStage.setTitle("Numberiada");
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 800, 800);
+        GameController theGame = new GameController();
+        theGame.setGameWindow(primaryStage);
         scene.getStylesheets().add("user_interface/boardStyle.css");
         primaryStage.setScene(scene);
         primaryStage.show();

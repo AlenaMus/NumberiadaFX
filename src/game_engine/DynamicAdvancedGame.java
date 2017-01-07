@@ -1,25 +1,20 @@
 package game_engine;
 
-import game_objects.*;
+import game_objects.Point;
 import jaxb.schema.generated.*;
-import jaxb.schema.generated.Board;
-import jaxb.schema.generated.Marker;
-import jaxb.schema.generated.Player;
-import jaxb.schema.generated.Square;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-
-public class AdvancedGame extends GameLogic{
+/**
+ * Created by Alona on 1/7/2017.
+ */
+public class DynamicAdvancedGame extends GameLogic {
 
 
     @Override
     public void setBoard(Board board) {
         super.setBoard(board);
     }
-
 
     @Override
     public void makeMove()
@@ -52,11 +47,14 @@ public class AdvancedGame extends GameLogic{
     }
 
     @Override
-    public Map<Integer, game_objects.Player> getPlayers()
+    public List<game_objects.Player> getPlayers()
     {
         return super.players;
     }
-
+    @Override
+    public void setPlayers(Players players) {
+        super.setPlayers(players);
+    }
 
     @Override
     public game_objects.Player getCurrentPlayer() {
@@ -83,10 +81,10 @@ public class AdvancedGame extends GameLogic{
         super.loadDataFromJaxbToGame(loadedGame);
     }
 
-//    @Override
-//    public boolean LoadGameFromXmlAndValidate() {
-//        return true;
-//    }
+    @Override
+    public boolean LoadGameFromXmlAndValidate() {
+        return super.LoadGameFromXmlAndValidate();
+    }
 
     @Override
     protected int updateBoard(Point squareLocation) {
@@ -126,38 +124,17 @@ public class AdvancedGame extends GameLogic{
         return true;
     }
 
-    private boolean checkAndSetPlayersXML(jaxb.schema.generated.Players players) //advanced game
-    {
-        boolean areValidPlayers = true;
-        List<Player> gamePlayers = players.getPlayer();
-        game_objects.Player newPlayer ;
 
-        if(gamePlayers.size() <MIN_PLAYERS || gamePlayers.size() > MAX_PLAYERS)
-        {
-            areValidPlayers = false;
-            // UserInterface.ValidationErrors.add(String.format("Players Validation Error : %d - invalid numbers of players ," +
-            //   "number of players must be minimun 2 and maximum 6 !",gamePlayers.size()));
-        }
-        else
-        {
-            setNumOfPlayers(gamePlayers.size());
-            for(jaxb.schema.generated.Player player :gamePlayers)
-            {
-                newPlayer = new game_objects.Player(ePlayerType.valueOf(player.getType()),player.getName(),player.getId().intValue(),player.getColor());
-                if(getPlayers().containsKey(newPlayer.getId()))
-                {
-                    areValidPlayers =false;
-                    //  UserInterface.ValidationErrors.add(String.format("Player Validation Error: name = %s ,id = %d, color = %s already exists !",player.getName(),player.getId(),player.getColor()));
-                    getPlayers().clear();
-                    break;
-                }
-                else
-                {
-                    getPlayers().put(newPlayer.getId(),newPlayer);
-                }
-            }
-        }
-
-        return areValidPlayers;
-    }
+//    private boolean checkAdvanceDynamicXML(jaxb.schema.generated.DynamicPlayers dynamicPlayers) //dynamic advanced game
+//    {
+//        boolean areValidPlayers = true;
+//
+//        return areValidPlayers;
+//
+//    }
+//
+//    private void setDynamicPlayers(DynamicPlayers dynamicPlayers) //dynamic advanced game
+//    {
+//
+//    }
 }

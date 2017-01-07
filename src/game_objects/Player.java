@@ -1,6 +1,7 @@
 package game_objects;
 
 import game_engine.eTurn;
+import javafx.scene.paint.Color;
 
 /**
  * Created by Alona on 11/7/2016.
@@ -14,6 +15,7 @@ public class Player {
     protected int score;
     protected int numOfMoves;
     private int color;
+    private Color playerColor;
 
     public Player(ePlayerType playerType,String playerName, int playerId,int color)
     {
@@ -22,6 +24,7 @@ public class Player {
         this.playerType = playerType;
         //this.turn = playerTurn;
         this.color =color;
+        this.playerColor = GameColor.setColor(color);
         score = 0;
         numOfMoves = 0;
 

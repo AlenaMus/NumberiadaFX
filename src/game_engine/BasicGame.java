@@ -1,99 +1,39 @@
 package game_engine;
 
 import game_objects.*;
-import jaxb.schema.generated.GameDescriptor;
-import jaxb.schema.generated.Range;
-import org.xml.sax.SAXException;
+import game_objects.Board;
+import game_objects.Player;
+import game_objects.Square;
+import jaxb.schema.generated.*;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import static game_engine.GameManager.BAD_SQUARE;
 
-public class BasicGame implements ILogics
-{
-    public static final int MIN_PLAYERS = 2;
-    public static final int MAX_PLAYERS = 6;
-
-    public static final int HUMAN_PLAYER = 1;
-    public static final int COMPUTER_PLAYER =2;
-    public static final int COMPUTERS_GAME =3;
+public class BasicGame extends GameLogic {
 
     private long StartTime;
-    protected String gameFile = " ";
-    public  boolean isEndOfGame = false;
-    private List<Player> players = new ArrayList<Player>();
-    private int numOfPlayers;
-    private Board gameBoard;
     private Player rowPlayer;
     private Player colPlayer;
-    private GameDescriptor loadedGame;
-    private Player currentPlayer;
     private List<Square> explicitSquares = new ArrayList<Square>();
-
-    public Board getGameBoard() {
-        return gameBoard;
-    }
-
-    public void setGameBoard(Board gameBoard) {
-        this.gameBoard = gameBoard;
-    }
-
-    public Player getRowPlayer() {
-        return rowPlayer;
-    }
-
-    public void setRowPlayer(Player rowPlayer) {
-        this.rowPlayer = rowPlayer;
-    }
-
-    public Player getColPlayer() {
-        return colPlayer;
-    }
-
-
-    public GameDescriptor getLoadedGame() {
-        return loadedGame;
-    }
-
-    public void setLoadedGame(GameDescriptor loadedGame) {
-        this.loadedGame = loadedGame;
-    }
-
-    public Player getCurrentPlayer() {
-        return currentPlayer;
-    }
-
-    public void setCurrentPlayer(Player currentPlayer)
-    {
-        this.currentPlayer = currentPlayer;
-    }
-
-
-    public int getNumOfPlayers ()
-    {
-        return numOfPlayers;
-    }
-    public void setNumOfPlayers(int num)
-    {
-        numOfPlayers = num;
-    }
 
     public void setStartTime(long startTime) {
         StartTime = startTime;
     }
+    public Player getRowPlayer() {
+        return rowPlayer;
+    }
+    public void setRowPlayer(Player rowPlayer) {
+        this.rowPlayer = rowPlayer;
+    }
+    public Player getColPlayer() {
+        return colPlayer;
+    }
+
 
 
     public String  TotalGameTime()
@@ -106,7 +46,7 @@ public class BasicGame implements ILogics
 
     }
 
-
+    @Override
     public void gameOver()
     {
 //        if(isEndOfGame) {
@@ -139,16 +79,19 @@ public class BasicGame implements ILogics
         return (ThreadLocalRandom.current().nextInt(1, boardSize + 1));
     }
 
-    public List<Player> getPlayers()
+    @Override
+    public Map<Integer, Player> getPlayers()
     {
         return players;
     }
+
 
     public int makeComputerMove()
     {
         return ComputerMove(gameBoard.GetBoardSize());
     }
 
+    @Override
     public void makeMove()
     {
         int chosenSquare;
@@ -157,7 +100,7 @@ public class BasicGame implements ILogics
         boolean badInput = true;
 
         while (badInput) {
-            switch (currentPlayer.getTurn()) {
+            switch (super.currentPlayer.getTurn()) {
                 case ROW:
                     if (rowPlayer.getPlayerType() == ePlayerType.HUMAN) {
                        // chosenSquare = UserInterface.GetUserMove(gameBoard.getMarker().getMarkerLocation(), eTurn.ROW, gameBoard.GetBoardSize(), gameBoard.toString());
@@ -184,7 +127,7 @@ public class BasicGame implements ILogics
                     }
             }
 
-            squareValue = updateBoard(squareLocation); //update 2 squares
+            squareValue = super.updateBoard(squareLocation); //update 2 squares
             if (squareValue != BAD_SQUARE)
                 badInput = false;
         //    else
@@ -201,6 +144,7 @@ public class BasicGame implements ILogics
         //UserInterface.PrintBoard(gameBoard.toString());
     }
 
+    @Override
     public void switchPlayer()
     {
         if (currentPlayer.checkPlayerTurn(rowPlayer)) {
@@ -227,6 +171,7 @@ public class BasicGame implements ILogics
     }
 
 
+    @Override
     public boolean InitMoveCheck()
     {
         boolean canMove = true;
@@ -241,20 +186,24 @@ public class BasicGame implements ILogics
         return canMove;
     }
 
-    private int updateBoard(Point squareLocation) //implement in Board - returns updated value of row/column
+
+    @Override
+    public int updateBoard(Point squareLocation) //implement in Board - returns updated value of row/column
     {
         int squareValue = gameBoard.updateBoard(squareLocation);
         return squareValue;
     }
 
 
-    private void updateUserData(int squareValue) // in Player?
+    @Override
+    public void updateUserData(int squareValue) // in Player?
     {
         currentPlayer.setNumOfMoves(currentPlayer.getNumOfMoves()+1); //maybe do totalmoves var in gameManager
         currentPlayer.setScore(squareValue);
     }
 
-    private void setBoard(jaxb.schema.generated.Board board)
+    @Override
+    public void setBoard(jaxb.schema.generated.Board board)
     {
 
         eBoardType boardType = eBoardType.valueOf(board.getStructure().getType());
@@ -272,114 +221,29 @@ public class BasicGame implements ILogics
         }
     }
 
-//    public void setBasicPlayers()
-//    {
-//
-//       // UserInterface.PrintPlayerSubMenu();
-//       // int playerChoice = UserInterface.GetUserInput(1,3);
-//        switch (playerChoice)
-//        {
-//            case HUMAN_PLAYER:
-//                rowPlayer = new Player(eTurn.ROW, ePlayerType.HUMAN);
-//                colPlayer = new Player(eTurn.COL, ePlayerType.HUMAN);
-//                break;
-//            case COMPUTER_PLAYER:
-//                rowPlayer = new Player(eTurn.ROW, ePlayerType.HUMAN);
-//                colPlayer = new Player(eTurn.COL, ePlayerType.COMPUTER);
-//                break;
-//            case COMPUTERS_GAME:
-//                rowPlayer = new Player(eTurn.ROW, ePlayerType.COMPUTER);
-//                colPlayer = new Player(eTurn.COL, ePlayerType.COMPUTER);
-//                break;
-//        }
-//    }
-
-    private boolean checkAndSetPlayersXML(jaxb.schema.generated.Players players) //advanced game
+    public void setPlayers(int playerChoice)
     {
-        boolean areValidPlayers = true;
-        List<jaxb.schema.generated.Player> gamePlayers = players.getPlayer();
-        Player newPlayer ;
 
-        if(gamePlayers.size() <MIN_PLAYERS || gamePlayers.size() > MAX_PLAYERS)
+        switch (playerChoice)
         {
-            areValidPlayers = false;
-           // UserInterface.ValidationErrors.add(String.format("Players Validation Error : %d - invalid numbers of players ," +
-                 //   "number of players must be minimun 2 and maximum 6 !",gamePlayers.size()));
+            case HUMAN_PLAYER:
+                rowPlayer = new Player(eTurn.ROW, ePlayerType.HUMAN);
+                colPlayer = new Player(eTurn.COL, ePlayerType.HUMAN);
+                break;
+            case COMPUTER_PLAYER:
+                rowPlayer = new Player(eTurn.ROW, ePlayerType.HUMAN);
+                colPlayer = new Player(eTurn.COL, ePlayerType.COMPUTER);
+                break;
+            case COMPUTERS_GAME:
+                rowPlayer = new Player(eTurn.ROW, ePlayerType.COMPUTER);
+                colPlayer = new Player(eTurn.COL, ePlayerType.COMPUTER);
+                break;
         }
-        else
-        {
-            setNumOfPlayers(gamePlayers.size());
-            for(jaxb.schema.generated.Player player :gamePlayers)
-            {
-                newPlayer = new Player(ePlayerType.valueOf(player.getType()),player.getName(),player.getId().intValue(),player.getColor());
-                if(getPlayers().contains(newPlayer))
-                {
-                    areValidPlayers =false;
-                  //  UserInterface.ValidationErrors.add(String.format("Player Validation Error: name = %s ,id = %d, color = %s already exists !",player.getName(),player.getId(),player.getColor()));
-                    getPlayers().clear();
-                    break;
-                }
-                else
-                {
-                    getPlayers().add(newPlayer);
-                }
-            }
-        }
-
-        return areValidPlayers;
-    }
-
-//    private boolean checkAdvanceDynamicXML(jaxb.schema.generated.DynamicPlayers dynamicPlayers) //dynamic advanced game
-//    {
-//        boolean areValidPlayers = true;
-//
-//        return areValidPlayers;
-//
-//    }
-//
-//    private void setDynamicPlayers(DynamicPlayers dynamicPlayers) //dynamic advanced game
-//    {
-//
-//    }
-
-
-
-
-    public boolean LoadGameFromXmlAndValidate()
-    {
-        boolean  isValidXML = false;
-        String inValidXML = "Invalid XML File, please load valid xml file !\n ";
-        String filePath = "";
-        // File gameFile;
-
-        explicitSquares.clear();
-       // UserInterface.ValidationErrors.clear();
-
-        // while (!isValidXML)
-        // {
-       // filePath = UserInterface.getXMLfile();
-        loadedGame = loadGameFromFile(filePath);
-        if(loadedGame!=null) {
-            isValidXML = checkXMLData(loadedGame);
-        }
-        if (!isValidXML) {
-          //  if(!UserInterface.ValidationErrors.contains(inValidXML)) {
-            //    UserInterface.ValidationErrors.add(inValidXML);
-           // }
-           // UserInterface.PrintValidationErrors();
-        }
-        else {
-            loadDataFromJaxbToGame(loadedGame); //setBoard in Basic
-          //  UserInterface.PrintUserMessage("The XML Game file Loaded Successfully");
-        }
-
-        //}
-
-        return isValidXML;
     }
 
 
-    private boolean checkXMLData(GameDescriptor loadedGame)
+    @Override
+    public boolean checkXMLData(GameDescriptor loadedGame)
     {
         int index;
         boolean isValidXMLData = false;
@@ -389,7 +253,7 @@ public class BasicGame implements ILogics
 
         if(isValidXMLData && (eGameType.valueOf(gameType) != eGameType.Basic) ) {
             if (eGameType.valueOf(gameType) == eGameType.Advance) {
-                isValidXMLData = checkAndSetPlayersXML(loadedGame.getPlayers());
+                isValidXMLData = super.checkAndSetPlayersXML();
             }
             else if(eGameType.valueOf(gameType) == eGameType.AdvanceDynamic) {
                 // isValidXMLData = checkAdvanceDynamicXML(loadedGame.getDynamicPlayers());
@@ -403,50 +267,9 @@ public class BasicGame implements ILogics
     }
 
 
-    private boolean checkBoardXML(GameDescriptor loadedGame)
-    {
-        boolean isValidBoard;
-        int size;
-        eBoardType boardType;
-        List<jaxb.schema.generated.Square> squares;
 
-        jaxb.schema.generated.Board gameBoard = loadedGame.getBoard();
-        jaxb.schema.generated.Structure structure = gameBoard.getStructure();
-
-        size = gameBoard.getSize().intValue();
-        if((size >= Board.MIN_SIZE )&& (size <= Board.MAX_SIZE))
-        {
-            boardType = eBoardType.valueOf(structure.getType());
-
-            if(boardType.equals(eBoardType.Explicit))
-            {
-                squares = structure.getSquares().getSquare();
-                isValidBoard = checkExplicitBoard(structure.getRange(),squares,structure.getSquares().getMarker(),size);
-            }
-            else
-            {
-                if(boardType.equals(eBoardType.Random))
-                {
-                    isValidBoard =checkRandomBoardValidity(structure.getRange(),size);
-
-                }
-                else
-                {
-                    isValidBoard = false;
-                 //   UserInterface.ValidationErrors.add(String.format("Board type validation error : %s doesn't exist!",boardType));
-                }
-            }
-        }
-        else
-        {
-            isValidBoard = false;
-         //   UserInterface.ValidationErrors.add(String.format("Board size validation error : %d is not in board range size %d - %d!",size, Board.MIN_SIZE, Board.MAX_SIZE));
-        }
-
-        return isValidBoard;
-    }
-
-    private boolean checkRandomBoardValidity(Range boardRange, int boardSize)
+    @Override
+    public boolean checkRandomBoardValidity(Range boardRange, int boardSize)
     {
         boolean isValidBoard = false;
         int range;
@@ -481,7 +304,8 @@ public class BasicGame implements ILogics
 
     }
 
-    private boolean checkExplicitBoard(Range range, List<jaxb.schema.generated.Square> squares, jaxb.schema.generated.Marker marker,int boardSize)
+    @Override
+    public boolean checkExplicitBoard(Range range, List<jaxb.schema.generated.Square> squares, jaxb.schema.generated.Marker marker,int boardSize)
     {
         boolean isValidBoard = true;
         game_objects.Square newSquare;
@@ -543,7 +367,8 @@ public class BasicGame implements ILogics
     }
 
 
-    private boolean isInBoardRange(int num, int size)
+    @Override
+    public boolean isInBoardRange(int num, int size)
     {
         boolean isValid = true;
         if(num < 0 || num > size)
@@ -554,53 +379,39 @@ public class BasicGame implements ILogics
 
     }
 
-    public void loadDataFromJaxbToGame(GameDescriptor loadedGame)
-    {
-        // String gameType = loadedGame.getGameType();
-        jaxb.schema.generated.Board loadedBoard = loadedGame.getBoard();
-        setBoard(loadedBoard);
+//    public void loadDataFromJaxbToGame(GameDescriptor loadedGame)
+//    {
+//        jaxb.schema.generated.Board loadedBoard = loadedGame.getBoard();
+//        setBoard(loadedBoard);
+//
+//    }
 
-
-        // switch (eGameType.valueOf(gameType))
-        // {
-        // case Basic: setBasicPlayers();
-        //    break;
-//            case Advance: Players players = loadedGame.getPlayers();
-//                            setPlayers(players);
-//                             break;
-        // case AdvanceDynamic: DynamicPlayers dynamicPlayers = loadedGame.getDynamicPlayers();
-        // setDynamicPlayers(dynamicPlayers);
-        //    break;
-        //  }
-
-    }
-
-    public GameDescriptor loadGameFromFile(String fileName)
-    {
-        try {
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            InputStream xmlFileInputStream = BasicGame.class.getResourceAsStream("/xml_resources/Numberiada.xsd");
-            Source schemaSource = new StreamSource(xmlFileInputStream);
-            Schema schema = schemaFactory.newSchema(schemaSource);
-            JAXBContext jaxbContext = JAXBContext.newInstance(GameDescriptor.class);
-
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            unmarshaller.setSchema(schema);
-            GameDescriptor JaxbGame;
-            JaxbGame = (GameDescriptor) unmarshaller.unmarshal(new File(fileName));
-            return JaxbGame;
-        }
-        catch (JAXBException e) {
-            //Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, e);
-           // UserInterface.ValidationErrors.add("Load Game from File Error : Invalid XML !");
-            return null;
-        }
-        catch (SAXException e) {
-            // Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, e);
-          //  UserInterface.ValidationErrors.add( "Load Game from File Error : Invalid XML !");
-            return null;
-        }
-    }
+//    public GameDescriptor loadGameFromFile(String fileName)
+//    {
+//        try {
+//            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+//            InputStream xmlFileInputStream = BasicGame.class.getResourceAsStream("/xml_resources/Numberiada.xsd");
+//            Source schemaSource = new StreamSource(xmlFileInputStream);
+//            Schema schema = schemaFactory.newSchema(schemaSource);
+//            JAXBContext jaxbContext = JAXBContext.newInstance(GameDescriptor.class);
+//
+//            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+//            unmarshaller.setSchema(schema);
+//            GameDescriptor JaxbGame;
+//            JaxbGame = (GameDescriptor) unmarshaller.unmarshal(new File(fileName));
+//            return JaxbGame;
+//        }
+//        catch (JAXBException e) {
+//            //Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, e);
+//           // UserInterface.ValidationErrors.add("Load Game from File Error : Invalid XML !");
+//            return null;
+//        }
+//        catch (SAXException e) {
+//            // Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, e);
+//          //  UserInterface.ValidationErrors.add( "Load Game from File Error : Invalid XML !");
+//            return null;
+//        }
+//    }
 
 
 

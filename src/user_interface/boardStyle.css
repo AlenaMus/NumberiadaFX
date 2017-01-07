@@ -20,8 +20,29 @@
     -fx-text-fill: #FFFFFF;
 
 }
-#bold-label{
+#bold-label {
     -fx-font-weight: bold;
     -fx-text-fill: #AB4642;
+}
+
+#label-name{
+    -fx-font-weight: bold;
+    -fx-text-fill: #0407ce;
 
 }
+
+#label-score{
+    -fx-font-weight: bold;
+    -fx-text-fill: #02021a;
+
+}
+
+.grid {
+    -fx-background-color: greenyellow;
+    /*-fx-background-radius: 5.0;*/
+    /*-fx-background-insets: 0.0 5.0 0.0 5.0;*/
+    /*-fx-padding: 10;*/
+    /*-fx-hgap: 10;*/
+    /*-fx-vgap: 10;*/
+}
+

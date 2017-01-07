@@ -6,10 +6,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import game_objects.ePlayerType;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +23,18 @@ public class NumberiadaBuilder {
 
     private GridPane board;
     private GridPane m_players;
-    //private TableView<Player> m_players = new TableView<>();
-    //private TextField PlayerName, PlayerID, Type,Color;
-    List<Player> players = new ArrayList<>();
+    List<Player> players; //Get From Logics
+    Player currentPlayer = new Player(ePlayerType.HUMAN,"Koko Chanel",5,5);
+    int moveNum = 1;
 
-    public void setPlayers() {
-       players.add(new Player(ePlayerType.HUMAN,"Kate",2, 555));
-        players.add(new Player(ePlayerType.HUMAN,"Dana",6, 323));
+    public void setPlayers() { //take players from Logic
+        players = new ArrayList<>();
+        players.add(new Player(ePlayerType.HUMAN,"Kate Hanks",20, 1));
+        players.add(new Player(ePlayerType.HUMAN,"Dana Shir",6, 2));
+        players.add(new Player(ePlayerType.COMPUTER,"Doroty",4, 3));
+        players.add(new Player(ePlayerType.HUMAN,"Timon",0, 4));
+        players.add(new Player(ePlayerType.COMPUTER,"Kara",56, 5));
+        players.add(new Player(ePlayerType.COMPUTER,"Dan Veizman",78, 6));
     }
 
     public GridPane getPlayersTable()
@@ -41,8 +48,8 @@ public class NumberiadaBuilder {
         setPlayers();
         m_players = new GridPane();
         m_players.setPadding(new Insets(10, 10, 10, 40));
-        m_players.setVgap(5);
-        m_players.setHgap(5);
+        m_players.setVgap(8);
+        m_players.setHgap(10);
         Label name = new Label("Player Name");
         name.setStyle("-fx-font-weight: bold;" +
                 "-fx-text-fill: #AB4642;");
@@ -51,7 +58,7 @@ public class NumberiadaBuilder {
         id.setStyle("-fx-font-weight: bold;" +
                 "-fx-text-fill: #AB4642;");
         GridPane.setConstraints(id, 1, 0);
-        Label type = new Label("Player Type");
+        Label type = new Label("Type");
         type.setStyle("-fx-font-weight: bold;" +
                 "-fx-text-fill: #AB4642;");
         GridPane.setConstraints(type, 2, 0);
@@ -61,47 +68,21 @@ public class NumberiadaBuilder {
         GridPane.setConstraints(color, 3,0);
         m_players.getChildren().addAll(name,id,type,color);
         int i=1;
-//
-//        for (Player player:players) {
-//
-//            name.setText(player.getName());
-//            GridPane.setConstraints(name, i, 0);
-//            id.setText(String.valueOf(player.getId()));
-//            GridPane.setConstraints(id, i, 1);
-//            type.setText(player.getPlayerType().toString());
-//            GridPane.setConstraints(type, i, 2);
-//            color.setText(String.valueOf(player.getColor()));
-//            GridPane.setConstraints(color, i, 3);
-//            m_players.getChildren().addAll(name,id,type,color);
-//            i++;
-//        }
 
+        for (Player player:players) {
 
+            Label nameP = new Label(player.getName());
+            GridPane.setConstraints(nameP, 0, i);
+            Label idP = new Label((String.valueOf(player.getId())));
+            GridPane.setConstraints(idP, 1, i);
+            Label typeP = new Label(player.getPlayerType().toString());
+            GridPane.setConstraints(typeP, 2, i);
+            Label colorP = new Label(GameColor.getColor(player.getColor()));
+            GridPane.setConstraints(colorP, 3, i);
+            m_players.getChildren().addAll(nameP,idP,typeP,colorP);
+            i++;
+        }
 
-
-
-
-//        TableColumn<Player, String> nameColumn = new TableColumn<>("Name");
-//        nameColumn.setMinWidth(100);
-//        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-//
-//        TableColumn<Player, Integer> idColumn = new TableColumn<>("PlayerID");
-//        idColumn.setMinWidth(50);
-//        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-//
-//        TableColumn<Player, ePlayerType> typeColumn = new TableColumn<>("Type");
-//        typeColumn.setMinWidth(80);
-//        typeColumn.setCellValueFactory(new PropertyValueFactory<>("playerType"));
-//
-//        TableColumn<Player, Integer> colorColumn = new TableColumn<>("Color");
-//        colorColumn.setMinWidth(80);
-//        colorColumn.setCellValueFactory(new PropertyValueFactory<>("color"));
-//
-//        m_players.getColumns().addAll(nameColumn,idColumn,typeColumn,colorColumn);
-
-//        for (Player player:players) {
-//            m_players.getItems().add(player);
-//        }
 
 
     }
@@ -109,8 +90,7 @@ public class NumberiadaBuilder {
     public GridPane createBoard(int size) {
         board = new GridPane();
         board.setPrefSize(400,400);
-        //  board.setGridLinesVisible(true);
-        board.setPadding(new Insets(10, 0, 10, 0));
+        board.setPadding(new Insets(30, 10, 10, 10));
         board.setVgap(1);
         board.setHgap(1);
 
@@ -160,6 +140,43 @@ public class NumberiadaBuilder {
         }
 
         return board;
+    }
+
+
+    public void setPlayersScore(GridPane PlayerScoreGridPane)
+    {
+        int i=1;
+        PlayerScoreGridPane.setPadding(new Insets(5, 5, 5, 5));
+        PlayerScoreGridPane.setVgap(8);
+        PlayerScoreGridPane.setHgap(8);
+        PlayerScoreGridPane.getChildren().get(0).setStyle("-fx-background-color:#efff11;"+"-fx-border-color: #cc0e1a");
+        PlayerScoreGridPane.getChildren().get(1).setStyle("-fx-background-color:#efff11;"+"-fx-border-color: #cc0e1a");
+
+        for (Player player:players) {
+            Label name = new Label(player.getName());
+            name.setStyle(" -fx-font-weight: bold;" +
+                    "-fx-text-fill: #0407ce;");
+            Label score = new Label(String.valueOf(player.getScore()));
+            score.setStyle( "-fx-font-weight: bold;"
+            +"-fx-text-fill: #02021a;");
+            PlayerScoreGridPane.addRow(i, name, score);
+            i++;
+
+        }
+
+    }
+
+    public void setCurrentPlayer(Label PlayerNameLabel,Label CurrentPlayerIDLabel,Label CurrentPlayerTypeLabel,Label CurrentPlayerColorLabel)
+    {
+        PlayerNameLabel.setText(currentPlayer.getName());
+        CurrentPlayerIDLabel.setText(String.valueOf(currentPlayer.getId()));
+        CurrentPlayerTypeLabel.setText(String.valueOf(currentPlayer.getPlayerType()));
+        CurrentPlayerColorLabel.setText(GameColor.getColor(currentPlayer.getColor()));
+    }
+
+    public void setCurrentMove(Label MoveNumberLabel)
+    {
+        MoveNumberLabel.setText(String.valueOf(moveNum));
     }
 
     private void MakeMove(Button butt)

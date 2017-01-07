@@ -1,18 +1,28 @@
 package user_interface;
 
+import game_engine.BasicGame;
 import game_objects.GameColor;
 import game_objects.Player;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -20,9 +30,13 @@ public class GameController implements Initializable {
 
     GridPane board;
     NumberiadaBuilder builder;
+    Stage gameWindow;
 
-    @FXML
-    private ScrollPane scrollPane;
+    public void setGameWindow(Stage stage)
+    {
+        gameWindow = stage;
+    }
+
 
     @FXML
     private BorderPane borderPane;
@@ -45,20 +59,34 @@ public class GameController implements Initializable {
         @FXML
         private Button StartGameButton;
 
-        @FXML
-        private Label PlayerIDLabel;
 
-        @FXML
-        private Label PlayerNameLabel;
 
-        @FXML
-        private Label PlayerTypeLabel;
+    @FXML
+    private Label CurrentPlayerIDLabel;
 
-        @FXML
-        private Label PlayerColorLabel;
+    @FXML
+    private Label PlayerNameLabel;
 
-        @FXML
-        private Label MoveNumberLabel;
+    @FXML
+    private Label CurrentPlayerTypeLabel;
+
+    @FXML
+    private Label CurrentPlayerColorLabel;
+
+    @FXML
+    private Label MoveNumberLabel;
+
+    @FXML
+    private GridPane PlayerScoreGridPane;
+
+    @FXML
+    private Label nameScoreGridLabel;
+
+    @FXML
+    private Label scoreGridLabel;
+
+
+
 
         @FXML
         void LoadXmlFileButtonClicked(ActionEvent event) {
@@ -86,12 +114,13 @@ public class GameController implements Initializable {
         }
 
         @FXML
-        void StartGameButtonClicked(ActionEvent event) {
+        void StartGameButtonClicked(ActionEvent event)
+        {
 
         }
 
-       // TableView<Player> gamePlayers;
-        GridPane gamePlayers;
+
+    GridPane gamePlayers;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -100,27 +129,53 @@ public class GameController implements Initializable {
         borderPane.setCenter(board);
         builder.createPlayersTable();
         gamePlayers=builder.getPlayersTable();
-        borderPane.setRight(gamePlayers);
+
+        borderPane.setRight(gamePlayers); //loading xml file
+
+        setStartGame();
 
     }
 
+    public void setStartGame()
+    {
+        PlayerNameLabel.setMaxWidth(300);
+        builder.setPlayersScore(PlayerScoreGridPane); //after Game Starts
+        builder.setCurrentPlayer(PlayerNameLabel,CurrentPlayerIDLabel,CurrentPlayerTypeLabel,CurrentPlayerColorLabel);
+        builder.setCurrentMove(MoveNumberLabel);
 
-    public void LoadXmlFileButtonClicked() //throws IOException
+    }
+
+    public void LoadXmlFileButtonClicked() throws IOException
     {
 
-//            try{
-//                BasicGame logic = new BasicGame();
-//                FileChooser fileChooser = new FileChooser();
-//                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
-//                fileChooser.getExtensionFilters().add(extFilter);
-//                fileChooser.setTitle("Open Resource File");
-//                File loadedFile =fileChooser.showOpenDialog(myStage);
-//                if (loadedFile != null)
-//                {
+            try{
+                BasicGame logic = new BasicGame();
+                FileChooser fileChooser = new FileChooser();
+                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
+                fileChooser.getExtensionFilters().add(extFilter);
+                fileChooser.setTitle("Open Resource File");
+                File loadedFile = fileChooser.showOpenDialog(gameWindow);
+                if (loadedFile != null)
+                {
+
+//                        try
+//                        {
 //
-//                    logic.loadGame(loadedFile);
-//                    FXMLLoader loader = new FXMLLoader(getClass().getResource("GameBoard.fxml"));
-//                    Parent gameBoard = (Parent)loader.load();
+                             logic.loadGameFromFile(loadedFile.getAbsolutePath());
+//                        }
+//                        catch(XmlNotValidException i_Exception)
+//                        {
+//                            Alert alert = new Alert(Alert.AlertType.ERROR);
+//                            alert.setTitle("Invalid Game data file");
+//                            alert.setHeaderText("Error reading xml file, the following errors were found");
+//                            alert.setContentText(String.join(System.lineSeparator(), i_Exception.getValidationResult()));
+//                            alert.showAndWait();
+//                        }
+                    }
+
+
+                      FXMLLoader loader = new FXMLLoader(getClass().getResource("sample.fxml"));
+                      Parent gameBoard = (Parent)loader.load();
 //                    GameController controller = (GameController)loader.getController();
 //                    ((Node)event.getSource()).getScene().getWindow().hide();
 //                    controller.logic=logic;
@@ -134,17 +189,13 @@ public class GameController implements Initializable {
 //                    Button b= new Button();
 //                    //controller.computer();
 //                    throw new IOException("your message");
-//                }
-//            }
-//            catch(IOException e)
-//            {
-//
-//            };
-//
-
+            //    }
+            }
+            catch(IOException e)
+            {
+                  e.printStackTrace();
+            }
     }
-
-
 
 
 
