@@ -1,6 +1,7 @@
 package user_interface;
 
 import game_objects.GameColor;
+import game_objects.Marker;
 import game_objects.Point;
 import game_objects.Square;
 import javafx.geometry.Insets;
@@ -22,12 +23,17 @@ public BoardButton(Square buttonSquare)
     if(boardButton.getValue().isEmpty())
     {
         this.setButtonColor(GameColor.GRAY);
-        this.disableProperty().setValue(true);
+        //this.disableProperty().setValue(true);
     }
-    else {
+    else if(boardButton.getValue().equals(Marker.markerSign)) {
+        this.setText(boardButton.getValue());
+        this.setId(Marker.markerStyle);
+        this.getStyleClass().add(Marker.markerStyle);
+    }else{
         this.setText(boardButton.getValue());
         this.setButtonColor(buttonSquare.getColor());
     }
+
 
 }
 
@@ -44,9 +50,10 @@ public int getValue()
 
 public void setButtonColor(int color)
  {
-        Color color1 = GameColor.setColor(color);
-        this.setBackground(new Background(new BackgroundFill(
-                color1, CornerRadii.EMPTY, Insets.EMPTY)));
+        String setColor = GameColor.setColor(color);
+        this.setId(setColor);
+        this.getStyleClass().add(setColor);
+
  }
 
 

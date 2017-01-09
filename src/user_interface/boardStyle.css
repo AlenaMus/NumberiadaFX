@@ -9,10 +9,45 @@
     -fx-text-fill: #FFFFFF;
     -fx-background-radius: 4;
 }
+
+
 .button-blue{
     -fx-background-color: #7cafc2;
     -fx-text-fill: #FFFFFF;
     -fx-background-radius: 4;
+}
+
+#button-red{
+    -fx-background-color:#AB4642;
+}
+
+#button-blue{
+
+    -fx-background-color:#67aeff;
+}
+#button-green{
+    -fx-background-color:#00bb5e;
+}
+
+#button-yellow{
+    -fx-background-color:#ffda0a;
+}
+
+#button-purple{
+    -fx-background-color:#9d3b9c;
+}
+#button-gray{
+    -fx-background-color:#b8a3a3;
+}
+#button-pink{
+    -fx-background-color:#f8609f;
+}
+
+#button-marker
+{
+    -fx-background-color:#41eeee;
+    -fx-text-fill: #0407ce;
+    -fx-font-weight: bold;
 }
 
 .button-pup{

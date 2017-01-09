@@ -7,6 +7,7 @@ import game_validation.ValidationResult;
 import game_validation.XmlNotValidException;
 import jaxb.schema.generated.GameDescriptor;
 import org.xml.sax.SAXException;
+import user_interface.AlertPopup;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -19,7 +20,7 @@ import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.io.InputStream;
 
-public class GameManager  {
+public class GameManager {
 
     private static final int LOAD_GAME = 1;
     private static final int START_GAME = 2;
@@ -37,6 +38,7 @@ public class GameManager  {
     private GameLogic gameLogic = null;
     private GameDescriptor loadedGame =null;
 
+    public GameLogic getGameLogic(){return gameLogic;}
 
 
     public GameDescriptor loadGameFromFile(String fileName) throws XmlNotValidException {
@@ -69,44 +71,13 @@ public class GameManager  {
     }
 
 
-    public boolean loadDataFromJaxbToGame(GameDescriptor loadedGame) {
-        boolean loadSuccess = true;
-        String gameType = loadedGame.getGameType();
 
-          if(gameType.equals(String.valueOf(eGameType.Basic))) {
-              gameLogic = new BasicGame();
-          }
-          else if(gameType.equals(String.valueOf(eGameType.Advance))) {
-              gameLogic = new AdvancedGame();
-          }
-          else if(gameType.equals(String.valueOf(eGameType.AdvanceDynamic))) {
-              //gameLogic = new DynamicAdvancedGame();
-          }
-          else {
-              loadSuccess = false;
-          }
-          if(loadSuccess) {
-
-              gameLogic.setGameType(eGameType.valueOf(gameType));
-              jaxb.schema.generated.Board loadedBoard = loadedGame.getBoard();
-              gameLogic.setBoard(loadedBoard);
-              if(!gameType.equals(String.valueOf(eGameType.Basic)))
-              {
-                  jaxb.schema.generated.Players players = loadedGame.getPlayers();
-                  gameLogic.setPlayers(players);
-              }
-          }
-
-          return loadSuccess;
-    }
-
-    public boolean LoadGameFromXmlAndValidate(String filePath) throws XmlNotValidException
+    public void LoadGameFromXmlAndValidate(String filePath) throws XmlNotValidException
     {
-        boolean  isValidXML = false;
-        //String inValidXML = "Invalid XML File, please load valid xml file !\n ";
-        // explicitSquares.clear();
+        String gameType ="";
+
         try{
-            loadedGame = loadGameFromFile(filePath);
+              loadedGame = loadGameFromFile(filePath);
         }
         catch (XmlNotValidException ex)
         {
@@ -114,20 +85,29 @@ public class GameManager  {
         }
 
         if(loadedGame!= null) {
-            isValidXML = gameLogic.checkXMLData(loadedGame);
+
+            gameType = loadedGame.getGameType();
+
+
+            if(gameType.equals(String.valueOf(eGameType.Basic))) {
+                gameLogic = new BasicGame();
+            }
+            else if(gameType.equals(String.valueOf(eGameType.Advance))) {
+                gameLogic = new AdvancedGame();
+            }
+            else if(gameType.equals(String.valueOf(eGameType.AdvanceDynamic))) {
+                //gameLogic = new DynamicAdvancedGame();
+            }else{
+                ValidationResult valid = new ValidationResult();
+                valid.add("Invalid Game Type");
+                throw new XmlNotValidException(valid);
+            }
+
+            gameLogic.setGameType(eGameType.valueOf(gameType));
+            gameLogic.checkXMLData(loadedGame);
         }
-        if (!isValidXML) {
-            throw new XmlNotValidException(new ValidationResult());
-        }
-        else {
-            loadDataFromJaxbToGame(loadedGame); //setBoard in Basic
-        }
 
-        return isValidXML;
-    }
-
-
-
+          gameLogic.loadDataFromJaxbToGame(loadedGame,gameType);
     }
 
 
@@ -197,10 +177,10 @@ public class GameManager  {
 //            UserInterface.PrintUserMessage("Lets Start the Game ...\n Choose an option from the menu below :");
 //
 //            while (!basicGame.isEndOfGame) {
-//                if (basicGame.getCurrentPlayer().getPlayerType() == ePlayerType.COMPUTER) {
+//                if (basicGame.getCurrentPlayer().getPlayerType() == ePlayerType.Computer) {
 //                    basicGame.makeMove();
 //                    basicGame.switchPlayer();
-//                } else { //HUMAN TURN
+//                } else { //Human TURN
 //                    UserInterface.PrintSecondMenu();
 //                    option = UserInterface.GetUserInput(SHOW_BOARD_AND_CURRENT_PLAYER, LEAVE_GAME);
 //
@@ -240,6 +220,7 @@ public class GameManager  {
 //       runGame();
 //   }
 //
+}
 
 
 

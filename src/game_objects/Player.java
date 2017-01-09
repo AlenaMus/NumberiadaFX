@@ -15,7 +15,7 @@ public class Player {
     protected int score;
     protected int numOfMoves;
     private int color;
-    private Color playerColor;
+    private String playerColor;
     private int serialNumber;
     private boolean IsActive;
 
@@ -122,7 +122,7 @@ public class Player {
         if(player instanceof Player)
         {
             newPlayer = (Player)player;
-            if(newPlayer.getName() == this.name || newPlayer.getId() == this.id || newPlayer.color == this.color)
+            if(newPlayer.getId() == this.id || newPlayer.color == this.color)
             {
                 isEqual = true;
             }

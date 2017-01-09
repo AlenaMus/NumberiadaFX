@@ -5,6 +5,9 @@ package game_objects;
  */
 public class BoardRange {
 
+    public static final int MIN_BOARD_RANGE = -99;
+    public static final int MAX_BOARD_RANGE = 99;
+
     private int from;
     private int to;
 

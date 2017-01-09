@@ -15,14 +15,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setTitle("Numberiada");
-        Scene scene = new Scene(root, 800, 800);
-        GameController theGame = new GameController();
-        theGame.setGameWindow(primaryStage);
-        scene.getStylesheets().add("user_interface/boardStyle.css");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+      //   FXMLLoader fxmlLoader = new FXMLLoader();
+         Parent root = FXMLLoader.load(getClass().getResource("Numberiada.fxml"));
+         primaryStage.setTitle("Numberiada");
+         Scene scene = new Scene(root, 1000,600);
+         scene.getStylesheets().add("user_interface/boardStyle.css");
+         primaryStage.setScene(scene);
+         primaryStage.show();
     }
 
 

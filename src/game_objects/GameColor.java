@@ -12,25 +12,25 @@ public class GameColor {
     public static final int PINK = 6;
     public static final int GRAY = 0;
 
-    public static Color setColor(int color)
+    public static String setColor(int color)
     {
-        Color colorToSet = Color.BLACK;
+        String colorToSet="button-gray";
 
         switch (color)
         {
-            case RED: colorToSet = Color.RED;
+            case RED: colorToSet = "button-red";
                 break;
-            case BLUE: colorToSet = Color.BLUE;
+            case BLUE: colorToSet = "button-blue";
                 break;
-            case GREEN:colorToSet = Color.GREEN;
+            case GREEN:colorToSet = "button-green";
                 break;
-            case YELLOW:colorToSet = Color.YELLOW;
+            case YELLOW:colorToSet = "button-yellow";
                 break;
-            case PURPLE:colorToSet = Color.PURPLE;
+            case PURPLE:colorToSet = "button-purple";
                 break;
-            case PINK:colorToSet = Color.PINK;
+            case PINK:colorToSet = "button-pink";
                 break;
-            case GRAY:colorToSet = Color.GRAY;
+            case GRAY:colorToSet = "button-gray";
                 break;
         }
         return colorToSet;

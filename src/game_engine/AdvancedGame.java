@@ -1,6 +1,8 @@
 package game_engine;
 
 import game_objects.*;
+import game_validation.ValidationResult;
+import game_validation.XmlNotValidException;
 import jaxb.schema.generated.*;
 import jaxb.schema.generated.Board;
 import jaxb.schema.generated.Marker;
@@ -14,35 +16,18 @@ import java.util.stream.Collectors;
 
 public class AdvancedGame extends GameLogic{
 
-    @Override
-    public void makeMove()
-    {
+    public static final int MIN_PLAYERS = 3;
+    public static final int MAX_PLAYERS = 6;
 
-    }
+
 
     @Override
     public void gameOver()
     {
-       // Collections.sort(players, (p1, p2) -> p1.getScore - p2.getScore());
+        Collections.sort(players, (p1, p2) -> p1.getScore() - p2.getScore());
             //players in now sorted by SCORE
             //need to print to UI the players SCORES
 
-    }
-
-    @Override
-    public boolean checkRandomBoardValidity(Range boardRange, int boardSize)
-    {
-
-
-        return true;
-    }
-
-    @Override
-    public  boolean checkExplicitBoard(List<Square> squares, jaxb.schema.generated.Marker marker, int boardSize)
-    {
-
-
-        return true;
     }
 
     @Override
@@ -51,26 +36,11 @@ public class AdvancedGame extends GameLogic{
         return true;
     }
 
-    @Override
-    public Map<Integer, game_objects.Player> getPlayers() {return super.players;}
 
     @Override
-    public game_objects.Player getCurrentPlayer() {return super.getCurrentPlayer();}
+    public void makeMove()
+    {
 
-    @Override
-    public void setCurrentPlayer(game_objects.Player currentPlayer) {super.setCurrentPlayer(currentPlayer);}
-
-    @Override
-    public int getNumOfPlayers() {return super.getNumOfPlayers();}
-
-    @Override
-    public void setNumOfPlayers(int num) {
-        super.setNumOfPlayers(num);
-    }
-
-    @Override
-    public void setBoard(Board board) {
-      //  super.setBoard(board);
     }
 
 
@@ -98,7 +68,7 @@ public class AdvancedGame extends GameLogic{
         }
         else //somebody have move
             nextPlayer = players.get((activePlayerNumber+1) % gameBoard.GetBoardSize());
-        while (nextPlayer.isActive() == false)
+        while (!nextPlayer.isActive())
         {
             nextPlayer = players.get((activePlayerNumber+1)%gameBoard.GetBoardSize());
         }
@@ -106,7 +76,7 @@ public class AdvancedGame extends GameLogic{
         {
             //need to update UI player have no move!!!
             nextPlayer = players.get((activePlayerNumber+1)%gameBoard.GetBoardSize());
-            while (nextPlayer.isActive() == false)
+            while (!nextPlayer.isActive())
             {
                 nextPlayer = players.get((activePlayerNumber+1)%gameBoard.GetBoardSize());
             }
@@ -159,19 +129,7 @@ public class AdvancedGame extends GameLogic{
         //NEED TO UPDATE UI and delete all player squars
     }
 
-    @Override
-    public  boolean checkXMLData(GameDescriptor loadedGame)
-    {
-        boolean isValidXMLData;
 
-        isValidXMLData = super.checkBoardXML(loadedGame.getBoard());
-        if(isValidXMLData)
-        {
-            isValidXMLData = checkAndSetPlayersXML(loadedGame.getPlayers());
-        }
-
-        return isValidXMLData;
-    }
 
 
     public static int ComputerMove(int boardSize) {
@@ -219,38 +177,199 @@ public class AdvancedGame extends GameLogic{
     }
 
     @Override
-    public boolean checkAndSetPlayersXML(jaxb.schema.generated.Players players)
+    public void checkXMLData(GameDescriptor loadedGame)throws XmlNotValidException
     {
-        boolean areValidPlayers = true;
-        List<Player> gamePlayers = players.getPlayer();
-        game_objects.Player newPlayer ;
 
-        if(gamePlayers.size() <MIN_PLAYERS || gamePlayers.size() > MAX_PLAYERS)
+        validationResult = new ValidationResult();
+        int numOfPlayers= loadedGame.getPlayers().getPlayer().size();
+
+        if(numOfPlayers< MIN_PLAYERS || numOfPlayers> MAX_PLAYERS)
         {
-            areValidPlayers = false;
-            // UserInterface.ValidationErrors.add(String.format("Players Validation Error : %d - invalid numbers of players ," +
-            //   "number of players must be minimun 2 and maximum 6 !",gamePlayers.size()));
+            validationResult.add(String.format("XML Load error: %d is invalid number of players,must be minimum 3 - 6 players",getNumOfPlayers()));
+            throw new XmlNotValidException(validationResult);
         }
-        else
+            setNumOfPlayers(numOfPlayers);
+            super.checkBoardXML(loadedGame.getBoard());
+            checkAndSetPlayersXML(loadedGame.getPlayers());
+    }
+
+    @Override
+    public void checkRandomBoardValidity(Range boardRange, int boardSize) throws XmlNotValidException
+    {
+        int range;
+
+        if(!(boardRange.getFrom() >= BoardRange.MIN_BOARD_RANGE &&  boardRange.getTo() <= BoardRange.MAX_BOARD_RANGE))
         {
-            setNumOfPlayers(gamePlayers.size());
-            for(jaxb.schema.generated.Player player :gamePlayers)
+            validationResult.add(String.format("Random Board Validation Error: board range have to be in [-99,99] range,range [%d,%d] is invalid ",
+                    boardRange.getFrom(),boardRange.getTo()));
+            throw new XmlNotValidException(validationResult);
+        }
+        if(boardRange.getFrom() <= boardRange.getTo())
+        {
+            range = boardRange.getTo() - boardRange.getFrom() +1;
+
+            if(((boardSize*boardSize -1) / (range*getNumOfPlayers()) == 0))
             {
-                newPlayer = new game_objects.Player(ePlayerType.valueOf(player.getType()),player.getName(),player.getId().intValue(),player.getColor());
-                if(getPlayers().containsKey(newPlayer.getId()))
-                {
-                    areValidPlayers =false;
-                    //  UserInterface.ValidationErrors.add(String.format("Player Validation Error: name = %s ,id = %d, color = %s already exists !",player.getName(),player.getId(),player.getColor()));
-                    getPlayers().clear();
-                    break;
+               validationResult.add(String.format("Random Board Validation Error: Board Size %d < Board Range %d for %d players!",
+                   boardSize*boardSize,range,getNumOfPlayers()));
+                throw new XmlNotValidException(validationResult);
+            }
+
+        } else {
+                    validationResult.add(String.format("Random Board Validation Error: Board Range numbers invalid from %d > to %d",
+                     boardRange.getFrom(),boardRange.getTo()));
+                     throw new XmlNotValidException(validationResult);
+        }
+    }
+
+    @Override
+    public void checkExplicitBoard(List<Square> squares, jaxb.schema.generated.Marker marker, int boardSize) throws XmlNotValidException
+    {
+        game_objects.Square newSquare;
+        int row,col,val,color;
+
+        if(!isInBoardRange(marker.getRow().intValue(),boardSize))
+        {
+            validationResult.add(String.format("Explicit Board validation : invalid row of marker location ! Must be in range  from %d  to %d",1,boardSize));
+            throw new XmlNotValidException(validationResult);
+        }
+        if(!isInBoardRange(marker.getColumn().intValue(),boardSize))
+        {
+            validationResult.add(String.format("Explicit Board validation error: invalid column of marker location ! Must be in range  from %d  to %d",1,boardSize));
+            throw new XmlNotValidException(validationResult);
+        }
+
+            for (jaxb.schema.generated.Square square : squares) {
+                row = square.getRow().intValue();
+                col = square.getColumn().intValue();
+                val = square.getValue().intValue();
+                color = square.getColor();
+
+                if ((val < BoardRange.MIN_BOARD_RANGE )|| (val > BoardRange.MAX_BOARD_RANGE)) {
+                    validationResult.add("Explicit Board Validation Error: squares values must be in between -99 and 99" );
+                    throw new XmlNotValidException(validationResult);
                 }
-                else
-                {
-                    getPlayers().put(newPlayer.getId(),newPlayer);
+
+                if(!(row == marker.getRow().intValue() && col == marker.getColumn().intValue())) {
+
+                    if (isInBoardRange(row, boardSize) && isInBoardRange(col, boardSize)) //location is ok
+                    {
+                        newSquare = new game_objects.Square(new Point(row, col), String.valueOf(val), color);
+                        if (explicitSquares.contains(newSquare)) {
+                            validationResult.add(String.format("Explicit Board validation error: square double location [%d,%d] existance!",
+                                    square.getRow().intValue(), square.getColumn().intValue()));
+                            throw new XmlNotValidException(validationResult);
+
+                        } else {
+                            explicitSquares.add(newSquare);
+                        }
+                    } else {
+                             explicitSquares.clear();
+                             validationResult.add(String.format("Explicit Board Validation Error: Square row :%d,column:%d outside board size :%d", row, col, boardSize));
+                             throw new XmlNotValidException(validationResult);
+                    }
+                }else{
+                    validationResult.add(String.format("Explicit Board Validation Error: Square row :%d,column:%d is both @ marker location and play square location!",
+                            row, col));
+                    throw new XmlNotValidException(validationResult);
                 }
             }
         }
 
-        return areValidPlayers;
+
+
+    @Override
+    public void checkAndSetPlayersXML(jaxb.schema.generated.Players players)throws XmlNotValidException {
+        List<Player> gamePlayers = players.getPlayer();
+        game_objects.Player newPlayer;
+
+
+        for (jaxb.schema.generated.Player player : gamePlayers) {
+             newPlayer = new game_objects.Player(ePlayerType.valueOf(player.getType()), player.getName(), player.getId().intValue(), player.getColor());
+            if(getPlayers()!=null)
+            {
+                if (getPlayers().contains(newPlayer)) {
+                    validationResult.add(String.format("Player Validation Error: name = %s ,id = %d, color = %s already exists !",
+                            player.getName(),player.getId(),player.getColor()));
+                    getPlayers().clear();
+                    throw new XmlNotValidException(validationResult);
+                } else {
+                    getPlayers().add(newPlayer);
+                }
+            }
+            else
+            {
+                getPlayers().add(newPlayer);
+            }
+
+        }
     }
+
+    private void printValue(String num,int count)
+    {
+        for(int i=0;i<count;i++)
+        {
+
+        }
+
+    }
+    @Override
+    public void FillRandomBoard() {
+
+        int i = 0;
+        int j = 0;
+        int color = GameColor.GRAY;
+        int boardSize = gameBoard.GetBoardSize();
+        BoardRange boardRange = gameBoard.getBoardRange();
+        game_objects.Square[][] board = gameBoard.getGameBoard();
+       // Random rand = new Random();
+
+        // filling our numbers in given range
+        int rangeSize = boardRange.RangeSize();
+        int printNumCount = (boardSize * boardSize -1) / (rangeSize*numOfPlayers); //49/9=5
+        int rangeNumToPrint = boardRange.getFrom();
+
+        color++;
+        for(int m = 0;m < rangeSize && i< boardSize;m++) {
+            for (int k = 0; k < printNumCount && i< boardSize; k++) {
+
+                board[i][j].setValue(game_objects.Square.ConvertFromIntToStringValue(rangeNumToPrint));
+                board[i][j].setColor(color);
+                color++;
+                j++;
+                if (j == boardSize) {
+                    i++;
+                    j = 0;
+                }
+            }
+            rangeNumToPrint++;
+            color = 1;
+        }
+
+        if (j == boardSize) {
+            j = 0;
+        }
+
+        for (int m = i; m < boardSize; m++) {
+            for (int n = j; n < boardSize; n++) {
+                board[m][n].setValue("");
+                board[i][j].setColor(GameColor.GRAY);
+            }
+        }
+
+        board[boardSize - 1][boardSize - 1].setValue(game_objects.Marker.markerSign);
+        gameBoard.shuffleArray(board);
+
+        String MarkerSign = gameBoard.getMarker().getMarkerSign();
+        for(i =0 ;i<boardSize;i++)          //////FOR MARKER CONTROL IN INIT
+        {
+            for(j=0;j<boardSize;j++)
+                if  (board[i][j].getValue().equals(MarkerSign)) {
+                     gameBoard.getMarker().setMarkerLocation(i + 1, j + 1);
+                    break;
+                }
+        }
+    }
+
+
 }

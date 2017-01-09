@@ -2,14 +2,14 @@ package game_engine;
 
 import game_objects.*;
 import game_objects.Board;
+import game_objects.Marker;
 import game_objects.Player;
 import game_objects.Square;
+import game_validation.XmlNotValidException;
 import jaxb.schema.generated.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 
@@ -18,7 +18,7 @@ public class BasicGame extends GameLogic {
     private long StartTime;
     private Player rowPlayer;
     private Player colPlayer;
-    private List<Square> explicitSquares = new ArrayList<Square>();
+
 
     public void setStartTime(long startTime) {
         StartTime = startTime;
@@ -75,8 +75,8 @@ public class BasicGame extends GameLogic {
 
     public void setBasicPlayers()
     {
-        rowPlayer = new Player(eTurn.ROW, ePlayerType.HUMAN);
-        colPlayer = new Player(eTurn.COL, ePlayerType.HUMAN);
+        rowPlayer = new Player(eTurn.ROW, ePlayerType.Human);
+        colPlayer = new Player(eTurn.COL, ePlayerType.Human);
     }
 
 //    public static int ComputerMove(int boardSize) {
@@ -84,7 +84,7 @@ public class BasicGame extends GameLogic {
 //    }
 
     @Override
-    public Map<Integer, Player> getPlayers()
+    public List<Player> getPlayers()
     {
         return players;
     }
@@ -111,24 +111,24 @@ public class BasicGame extends GameLogic {
 //        while (badInput) {
 //            switch (super.currentPlayer.getTurn()) {
 //                case ROW:
-//                    if (rowPlayer.getPlayerType() == ePlayerType.HUMAN) {
+//                    if (rowPlayer.getPlayerType() == ePlayerType.Human) {
 //                       // chosenSquare = UserInterface.GetUserMove(gameBoard.getMarker().getMarkerLocation(), eTurn.ROW, gameBoard.GetBoardSize(), gameBoard.toString());
 //                       // squareLocation = new Point(gameBoard.getMarker().getMarkerLocation().getRow(), chosenSquare);
 //                        break;
 //                    }
-//                    else // COMPUTER
+//                    else // Computer
 //                    {
 //                        chosenSquare = makeComputerMove();
 //                        squareLocation = new Point(gameBoard.getMarker().getMarkerLocation().getRow(), chosenSquare);
 //                        break;
 //                    }
 //                case COL:
-//                    if (colPlayer.getPlayerType() == ePlayerType.HUMAN) {
+//                    if (colPlayer.getPlayerType() == ePlayerType.Human) {
 //                       // chosenSquare = UserInterface.GetUserMove(gameBoard.getMarker().getMarkerLocation(), eTurn.COL, gameBoard.GetBoardSize(), gameBoard.toString());
 //                       // squareLocation = new Point(chosenSquare, gameBoard.getMarker().getMarkerLocation().getCol());
 //                        break;
 //                    }
-//                    else // COMPUTER
+//                    else // Computer
 //                    {
 //                        chosenSquare = makeComputerMove();
 //                        squareLocation = new Point(chosenSquare, gameBoard.getMarker().getMarkerLocation().getCol());
@@ -140,11 +140,11 @@ public class BasicGame extends GameLogic {
 //            if (squareValue != BAD_SQUARE)
 //                badInput = false;
 //        //    else
-//         //   if (currentPlayer.getPlayerType() == ePlayerType.HUMAN)
+//         //   if (currentPlayer.getPlayerType() == ePlayerType.Human)
 //               // UserInterface.PrintUserMessage("You choose invalid square! you can't select empty squares/marker square.choose another one..!");
 //
 //        }
-//        if (currentPlayer.getPlayerType() == ePlayerType.COMPUTER)
+//        if (currentPlayer.getPlayerType() == ePlayerType.Computer)
 //        {
 //            //UserInterface.PrintUserMessage("computer " + currentPlayer.getTurn()+ " play his turn...he chose square ("+ squareLocation.getRow() + "," +squareLocation.getCol()+ ")");
 //        }
@@ -227,24 +227,23 @@ public class BasicGame extends GameLogic {
         currentPlayer.setScore(squareValue);
     }
 
-    @Override
-    public void setBoard(jaxb.schema.generated.Board board)
-    {
-
-        eBoardType boardType = eBoardType.valueOf(board.getStructure().getType());
-        gameBoard = new Board(board.getSize().intValue(),boardType);
-
-        switch (boardType) {
-            case Explicit: Point markerLocation = new Point(board.getStructure().getSquares().getMarker().getRow().intValue(),board.getStructure().getSquares().getMarker().getColumn().intValue());
-                gameBoard.FillExplicitBoard(explicitSquares,markerLocation);
-                break;
-            case Random:
-                BoardRange range = new BoardRange(board.getStructure().getRange().getFrom(),board.getStructure().getRange().getTo());
-                gameBoard.setBoardRange(range);
-                gameBoard.FillRandomBoard();
-                break;
-        }
-    }
+//    @Override
+//    public void setBoard(jaxb.schema.generated.Board board)
+//    {
+//        eBoardType boardType = eBoardType.valueOf(board.getStructure().getType());
+//        gameBoard = new Board(board.getSize().intValue(),boardType);
+//
+//        switch (boardType) {
+//            case Explicit: Point markerLocation = new Point(board.getStructure().getSquares().getMarker().getRow().intValue(),board.getStructure().getSquares().getMarker().getColumn().intValue());
+//                gameBoard.FillExplicitBoard(explicitSquares,markerLocation);
+//                break;
+//            case Random:
+//                BoardRange range = new BoardRange(board.getStructure().getRange().getFrom(),board.getStructure().getRange().getTo());
+//                gameBoard.setBoardRange(range);
+//                gameBoard.FillRandomBoard();
+//                break;
+//        }
+//    }
 
     public void setPlayers(int playerChoice)
     {
@@ -252,127 +251,178 @@ public class BasicGame extends GameLogic {
         switch (playerChoice)
         {
             case HUMAN_PLAYER:
-                rowPlayer = new Player(eTurn.ROW, ePlayerType.HUMAN);
-                colPlayer = new Player(eTurn.COL, ePlayerType.HUMAN);
+                rowPlayer = new Player(eTurn.ROW, ePlayerType.Human);
+                colPlayer = new Player(eTurn.COL, ePlayerType.Human);
                 break;
             case COMPUTER_PLAYER:
-                rowPlayer = new Player(eTurn.ROW, ePlayerType.HUMAN);
-                colPlayer = new Player(eTurn.COL, ePlayerType.COMPUTER);
+                rowPlayer = new Player(eTurn.ROW, ePlayerType.Human);
+                colPlayer = new Player(eTurn.COL, ePlayerType.Computer);
                 break;
             case COMPUTERS_GAME:
-                rowPlayer = new Player(eTurn.ROW, ePlayerType.COMPUTER);
-                colPlayer = new Player(eTurn.COL, ePlayerType.COMPUTER);
+                rowPlayer = new Player(eTurn.ROW, ePlayerType.Computer);
+                colPlayer = new Player(eTurn.COL, ePlayerType.Computer);
                 break;
         }
     }
 
 
     @Override
-    public boolean checkXMLData(GameDescriptor loadedGame)
+    public void checkXMLData(GameDescriptor loadedGame)throws XmlNotValidException
     {
-        boolean isValidXMLData = super.checkBoardXML(loadedGame.getBoard());
-        return isValidXMLData;
+        super.checkBoardXML(loadedGame.getBoard());
     }
 
 
 
     @Override
-    public boolean checkRandomBoardValidity(Range boardRange, int boardSize)
+    public void checkRandomBoardValidity(Range boardRange, int boardSize)
     {
-        boolean isValidBoard = false;
-        int range;
 
-        if(!(boardRange.getFrom() >= -99 &&  boardRange.getTo() <= 99))
-        {
-            //UserInterface.ValidationErrors.add(String.format("Random Board Validation Error: board range have to be in [-99,99] range,range [%d,%d] is invalid ",boardRange.getFrom(),boardRange.getTo()));
-            return isValidBoard;
-        }
-        if(boardRange.getFrom() <= boardRange.getTo())
-        {
-            range = boardRange.getTo() - boardRange.getFrom() +1;
-
-            if(((boardSize*boardSize -1) / range) > 0)
-            {
-                isValidBoard = true;
-            }
-            else
-            {
-                //UserInterface.ValidationErrors.add(String.format("Random Board Validation Error: Board Size %d < Board Range numbers %d (from %d to %d)",
-                    //    boardSize*boardSize,range,boardRange.getFrom(),boardRange.getTo()));
-            }
-
-        }
-        else
-        {
-          //  UserInterface.ValidationErrors.add(String.format("Random Board Validation Error: Board Range numbers invalid from %d > to %d",
-            //        boardRange.getFrom(),boardRange.getTo()));
-        }
-
-        return isValidBoard;
+//        int range;
+//
+//        if(!(boardRange.getFrom() >= -99 &&  boardRange.getTo() <= 99))
+//        {
+//            //UserInterface.ValidationErrors.add(String.format("Random Board Validation Error: board range have to be in [-99,99] range,range [%d,%d] is invalid ",boardRange.getFrom(),boardRange.getTo()));
+//            return isValidBoard;
+//        }
+//        if(boardRange.getFrom() <= boardRange.getTo())
+//        {
+//            range = boardRange.getTo() - boardRange.getFrom() +1;
+//
+//            if(((boardSize*boardSize -1) / range) > 0)
+//            {
+//                isValidBoard = true;
+//            }
+//            else
+//            {
+//                //UserInterface.ValidationErrors.add(String.format("Random Board Validation Error: Board Size %d < Board Range numbers %d (from %d to %d)",
+//                    //    boardSize*boardSize,range,boardRange.getFrom(),boardRange.getTo()));
+//            }
+//        }
+//        else
+//        {
+//          //  UserInterface.ValidationErrors.add(String.format("Random Board Validation Error: Board Range numbers invalid from %d > to %d",
+//            //        boardRange.getFrom(),boardRange.getTo()));
+//        }
 
     }
 
     @Override
-    public boolean checkExplicitBoard(List<jaxb.schema.generated.Square> squares, jaxb.schema.generated.Marker marker,int boardSize)
+    public void checkExplicitBoard(List<jaxb.schema.generated.Square> squares, jaxb.schema.generated.Marker marker,int boardSize)
     {
-        boolean isValidBoard = true;
-        game_objects.Square newSquare;
-        int row,col,val,color;
 
-        if(!isInBoardRange(marker.getRow().intValue(),boardSize))
-        {
-            isValidBoard = false;
-          //  UserInterface.ValidationErrors.add(String.format("Explicit Board validation : invalid row of marker location ! Must be in range  from %d  to %d",1,boardSize));
-        }
-        if(!isInBoardRange(marker.getColumn().intValue(),boardSize))
-        {
-            isValidBoard = false;
-           // UserInterface.ValidationErrors.add(String.format("Explicit Board validation error: invalid column of marker location ! Must be in range  from %d  to %d",1,boardSize));
-        }
+//        game_objects.Square newSquare;
+//        int row,col,val,color;
+//
+//        if(!isInBoardRange(marker.getRow().intValue(),boardSize))
+//        {
+//            isValidBoard = false;
+//          //  UserInterface.ValidationErrors.add(String.format("Explicit Board validation : invalid row of marker location ! Must be in range  from %d  to %d",1,boardSize));
+//        }
+//        if(!isInBoardRange(marker.getColumn().intValue(),boardSize))
+//        {
+//            isValidBoard = false;
+//           // UserInterface.ValidationErrors.add(String.format("Explicit Board validation error: invalid column of marker location ! Must be in range  from %d  to %d",1,boardSize));
+//        }
+//
+//        if(isValidBoard) {
+//
+//            for (jaxb.schema.generated.Square square : squares) {
+//                row = square.getRow().intValue();
+//                col = square.getColumn().intValue();
+//                val = square.getValue().intValue();
+//                color = square.getColor();
+//
+//                if ((val < -99 )|| (val > 99)) {
+//                 //   UserInterface.ValidationErrors.add("Explicit Board Validation Error: squares values must be in between -99 and 99" );
+//                    isValidBoard = false;
+//                    break;
+//
+//                }
+//                if(!(row == marker.getRow().intValue() && col == marker.getColumn().intValue())) {
+//
+//                    if (isInBoardRange(row, boardSize) && isInBoardRange(col, boardSize)) //location is ok
+//                    {
+//                        newSquare = new game_objects.Square(new Point(row, col), String.valueOf(val), color);
+//                        if (explicitSquares.contains(newSquare)) {
+//                            isValidBoard = false;
+//                         //   UserInterface.ValidationErrors.add(String.format("Explicit Board validation error: square double location [%d,%d] existance!",
+//                           //         square.getRow().intValue(), square.getColumn().intValue()));
+//                            break;
+//                        } else {
+//                            explicitSquares.add(newSquare);
+//                        }
+//                    } else {
+//                        explicitSquares.clear();
+//                        isValidBoard = false;
+//                       // UserInterface.ValidationErrors.add(String.format("Explicit Board Validation Error: Square row :%d,column:%d outside board size :%d", row, col, boardSize));
+//                        break;
+//                    }
+//                }else{
+//                    isValidBoard = false;
+//                   // UserInterface.ValidationErrors.add(String.format("Explicit Board Validation Error: Square row :%d,column:%d is both @ marker location and play square location!", row, col));
+//                    break;
+//                }
+//            }
+//        }
+    }
 
-        if(isValidBoard) {
+    @Override
+    public void FillRandomBoard() {
 
-            for (jaxb.schema.generated.Square square : squares) {
-                row = square.getRow().intValue();
-                col = square.getColumn().intValue();
-                val = square.getValue().intValue();
-                color = square.getColor();
+        int i = 0;
+        int j = 0;
+        int boardSize = gameBoard.GetBoardSize();
+        BoardRange boardRange = gameBoard.getBoardRange();
+        Square[][] board = gameBoard.getGameBoard();
+        Random rand = new Random();
 
-                if ((val < -99 )|| (val > 99)) {
-                 //   UserInterface.ValidationErrors.add("Explicit Board Validation Error: squares values must be in between -99 and 99" );
-                    isValidBoard = false;
-                    break;
+        // filling our numbers in given range
+        int rangeSize = boardRange.RangeSize();
+        int printNumCount = (boardSize * boardSize -1) / rangeSize; //49/9=5
+        int rangeNumToPrint = boardRange.getFrom();
 
+
+        for(int m = 0;m < rangeSize && i< boardSize;m++) {
+            for (int k = 0; k < printNumCount && i< boardSize; k++) {
+
+                board[i][j].setValue(Square.ConvertFromIntToStringValue(rangeNumToPrint));
+                board[i][j].setColor(GameColor.GRAY);
+                j++;
+                if (j == boardSize) {
+                    i++;
+                    j = 0;
                 }
-                if(!(row == marker.getRow().intValue() && col == marker.getColumn().intValue())) {
+            }
+            rangeNumToPrint++;
+        }
 
-                    if (isInBoardRange(row, boardSize) && isInBoardRange(col, boardSize)) //location is ok
-                    {
-                        newSquare = new game_objects.Square(new Point(row, col), String.valueOf(val), color);
-                        if (explicitSquares.contains(newSquare)) {
-                            isValidBoard = false;
-                         //   UserInterface.ValidationErrors.add(String.format("Explicit Board validation error: square double location [%d,%d] existance!",
-                           //         square.getRow().intValue(), square.getColumn().intValue()));
-                            break;
-                        } else {
-                            explicitSquares.add(newSquare);
-                        }
-                    } else {
-                        explicitSquares.clear();
-                        isValidBoard = false;
-                       // UserInterface.ValidationErrors.add(String.format("Explicit Board Validation Error: Square row :%d,column:%d outside board size :%d", row, col, boardSize));
-                        break;
-                    }
-                }else{
-                    isValidBoard = false;
-                   // UserInterface.ValidationErrors.add(String.format("Explicit Board Validation Error: Square row :%d,column:%d is both @ marker location and play square location!", row, col));
-                    break;
-                }
+
+        if (j == boardSize) {
+            j = 0;
+        }
+
+        for (int m = i; m < boardSize; m++) {
+            for (int n = j; n < boardSize; n++) {
+                board[m][n].setValue("");
+                board[i][j].setColor(GameColor.GRAY);
             }
         }
 
-        return isValidBoard;
+        board[boardSize - 1][boardSize - 1].setValue(Marker.markerSign);
+        gameBoard.shuffleArray(board);
+
+        String MarkerSign = gameBoard.getMarker().getMarkerSign();
+        for(i =0 ;i<boardSize;i++)          //////FOR MARKER CONTROL IN INIT
+        {
+            for(j=0;j<boardSize;j++)
+                if  (board[i][j].getValue().equals( MarkerSign)) {
+                    gameBoard.getMarker().setMarkerLocation(i + 1, j + 1);
+                    break;
+                }
+        }
     }
+
 
 }
 

@@ -4,10 +4,13 @@ import game_objects.*;
 
 import game_objects.Board;
 import game_objects.Player;
+import game_objects.Square;
 import game_validation.ValidationResult;
 import game_validation.XmlNotValidException;
 import jaxb.schema.generated.*;
 import org.xml.sax.SAXException;
+import user_interface.AlertPopup;
+
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -26,9 +29,6 @@ import java.util.Map;
 
 public abstract class GameLogic {
 
-    public static final int MIN_PLAYERS = 2;
-    public static final int MAX_PLAYERS = 6;
-
     public static final int HUMAN_PLAYER = 1;
     public static final int COMPUTER_PLAYER =2;
     public static final int COMPUTERS_GAME =3;
@@ -38,7 +38,9 @@ public abstract class GameLogic {
     public  boolean isEndOfGame = false;
     private int gameMoves=0;
 
-    protected Map<Integer, game_objects.Player> players = null;
+    public static ValidationResult validationResult;
+    protected List<Square> explicitSquares = new ArrayList<Square>();
+    protected List<Player>  players = new ArrayList<>();
     protected GameDescriptor loadedGame;
     protected  int numOfPlayers;
     protected game_objects.Board gameBoard;
@@ -63,50 +65,41 @@ public abstract class GameLogic {
     public void setGameType(eGameType type){gameType = type;}
     public int getNumOfPlayers () {return numOfPlayers;}
     public void setNumOfPlayers(int num) { numOfPlayers = num; }
-    public Board getGameBoard() {
-        return gameBoard;
-    }
+    public Board getGameBoard() {return gameBoard;}
     public void setGameBoard(Board gameBoard) {
         this.gameBoard = gameBoard;
     }
     public int getMoves() {return gameMoves;}
-    public abstract Map<Integer, Player>  getPlayers();
+    public List<Player>  getPlayers(){return players;}
 
     public abstract void makeMove();
     public abstract boolean InitMoveCheck();
-    public abstract void setBoard(jaxb.schema.generated.Board board);
-    public abstract boolean checkXMLData(GameDescriptor loadedGame);
-    public abstract boolean checkRandomBoardValidity(Range boardRange, int boardSize);
-    public abstract boolean checkExplicitBoard(List<jaxb.schema.generated.Square> squares, jaxb.schema.generated.Marker marker, int boardSize);
+   // public abstract void setBoard(jaxb.schema.generated.Board board);
+    public abstract void FillRandomBoard();
+    public abstract void checkXMLData(GameDescriptor loadedGame)throws XmlNotValidException;
+    public abstract void checkRandomBoardValidity(Range boardRange, int boardSize)throws XmlNotValidException;
+    public abstract void checkExplicitBoard(List<jaxb.schema.generated.Square> squares, jaxb.schema.generated.Marker marker, int boardSize)throws XmlNotValidException;
     public abstract void gameOver();
     protected abstract void switchPlayer();
 
 
-
-
-
     public void setPlayers(jaxb.schema.generated.Players gamePlayers) //after being checked
     {
-       players = new HashMap<>(numOfPlayers);
         for (jaxb.schema.generated.Player player:gamePlayers.getPlayer()) {
             int id = player.getId().intValue();
             String name = player.getName();
             ePlayerType playerType = ePlayerType.valueOf(player.getType());
             int color = player.getColor();
             game_objects.Player player1 = new game_objects.Player(playerType,name,id,color);
-            players.put(id,player1);
+            players.add(player1);
         }
     }
-
-
-
 
     protected int updateBoard(Point squareLocation) //implement in Board - returns updated value of row/column
     {
         int squareValue = gameBoard.updateBoard(squareLocation);
         return squareValue;
     }
-
 
     protected void updateUserData(int squareValue) // in Player?
     {
@@ -115,10 +108,9 @@ public abstract class GameLogic {
     }
 
 
-    public boolean checkBoardXML(jaxb.schema.generated.Board board)
+    public void checkBoardXML(jaxb.schema.generated.Board board)throws XmlNotValidException
     {
 
-        boolean isValidBoard = true;
         eBoardType boardType;
         int size = board.getSize().intValue();
 
@@ -128,25 +120,32 @@ public abstract class GameLogic {
             switch (boardType) {
                 case Random:
                     Range range = board.getStructure().getRange();
-                    isValidBoard = checkRandomBoardValidity(range, size);
+                    try {
+                        checkRandomBoardValidity(range, size);
+                    }
+                    catch (XmlNotValidException ex)
+                    {
+                        validationResult.add("Random Board Validation Failed!");
+                        throw new XmlNotValidException(validationResult);
+                    }
                     break;
                 case Explicit:
+                    explicitSquares.clear();
                     Squares square = board.getStructure().getSquares();
-                    isValidBoard = checkExplicitBoard(square.getSquare(), square.getMarker(), size);
+                    try {
+                        checkExplicitBoard(square.getSquare(), square.getMarker(), size);
+                    }
+                    catch (XmlNotValidException ex)
+                    {
+                        validationResult.add("Random Board Validation Failed!");
+                        throw new XmlNotValidException(validationResult);
+                    }
                     break;
             }
         }
-        else{
-            isValidBoard = false;
-        }
-
-        return isValidBoard;
     }
 
-    protected boolean checkAndSetPlayersXML(jaxb.schema.generated.Players players)
-    {
-        return true;
-    }
+    protected void checkAndSetPlayersXML(jaxb.schema.generated.Players players)throws XmlNotValidException{}
 
     public boolean isInBoardRange(int num, int size)
     {
@@ -156,6 +155,54 @@ public abstract class GameLogic {
             isValid = false;
         }
         return isValid;
+    }
+
+    public void loadDataFromJaxbToGame(GameDescriptor loadedGame,String gameType) {
+
+       // explicitSquares.clear();
+        setGameType(eGameType.valueOf(gameType));
+        jaxb.schema.generated.Board loadedBoard = loadedGame.getBoard();
+        setBoard(loadedBoard);
+    }
+
+    public void setBoard(jaxb.schema.generated.Board board)
+    {
+        eBoardType boardType = eBoardType.valueOf(board.getStructure().getType());
+        gameBoard = new Board(board.getSize().intValue(),boardType);
+
+        switch (boardType) {
+            case Explicit: Point markerLocation = new Point(board.getStructure().getSquares().getMarker().getRow().intValue(),board.getStructure().getSquares().getMarker().getColumn().intValue());
+                FillExplicitBoard(explicitSquares,markerLocation);
+                break;
+            case Random:
+                BoardRange range = new BoardRange(board.getStructure().getRange().getFrom(),board.getStructure().getRange().getTo());
+                gameBoard.setBoardRange(range);
+                FillRandomBoard();
+                break;
+        }
+    }
+
+
+    public void FillExplicitBoard(List<Square> xmlBoardList,Point markerLocation)
+    {
+        int col ,row,color;
+        String val;
+        Square[][] board = gameBoard.getGameBoard();
+
+        for(Square square:xmlBoardList)
+        {
+            col = square.getLocation().getCol();
+            row = square.getLocation().getRow();
+            val = square.getValue();
+            color = square.getColor();
+
+            board[row-1][col-1].setColor(color);
+            board[row-1][col-1].setValue(val);
+        }
+
+        gameBoard.getMarker().setMarkerLocation(markerLocation.getRow(),markerLocation.getCol());
+        board[markerLocation.getRow()-1][markerLocation.getCol()-1].setValue(gameBoard.getMarker().getMarkerSign());
+
     }
 
 }

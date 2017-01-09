@@ -5,7 +5,8 @@ public class Marker {
 
     private Point markerLocation;
 
-    public static final String markerSign = "#";
+    public static final String markerSign = "@";
+    public static final String markerStyle ="button-marker";
 
     public Marker(int row,int col)
     {

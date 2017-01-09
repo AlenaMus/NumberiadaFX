@@ -117,7 +117,9 @@ public class Square {
         if(square != null) {
             if (square instanceof Square) {
                   Square square1 = (Square) square;
-                if (this.getLocation().getCol() == square1.getLocation().getCol() && this.getLocation().getRow() == square1.getLocation().getRow()) {
+                if (this.getLocation().getCol() == square1.getLocation().getCol() &&
+                        this.getLocation().getRow() == square1.getLocation().getRow()&&
+                        this.getColor() == square1.getColor()) {
                     isEqual = true;
                 }
             }

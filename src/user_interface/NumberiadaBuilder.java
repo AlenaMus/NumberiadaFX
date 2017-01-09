@@ -8,11 +8,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,20 +19,24 @@ import java.util.Map;
 public class NumberiadaBuilder {
 
 
-    private static final int squareSize = 20;
+    public static final int squareSize = 40;
 
     private GridPane board;
     private GridPane m_players;
-    private Map<Integer,Player>players;
+    private List <Player> players;
+    private Stage gameWindow;
 
-    Player currentPlayer = new Player(ePlayerType.HUMAN,"Koko Chanel",5,5);
 
     public GridPane getPlayersTable()
     {
         return m_players;
     }
+    public void setGameWindow(Stage stage) {
+        gameWindow = stage;
+    }
+    public Stage getGameWindow(){return gameWindow;}
 
-    public void createPlayersTable(Map<Integer,Player> gamePlayers)
+    public void createPlayersTable(List<Player> gamePlayers)
     {
         players = gamePlayers;
         m_players = new GridPane();
@@ -60,15 +62,15 @@ public class NumberiadaBuilder {
         m_players.getChildren().addAll(name,id,type,color);
         int i=1;
 
-        for (Map.Entry<Integer, Player> player : players.entrySet())
+        for (Player player : players)
         {
-            Label nameP = new Label(player.getValue().getName());
+            Label nameP = new Label(player.getName());
             GridPane.setConstraints(nameP, 0, i);
-            Label idP = new Label((String.valueOf(player.getKey())));
+            Label idP = new Label((String.valueOf(player.getId())));
             GridPane.setConstraints(idP, 1, i);
-            Label typeP = new Label(player.getValue().getPlayerType().toString());
+            Label typeP = new Label(player.getPlayerType().toString());
             GridPane.setConstraints(typeP, 2, i);
-            Label colorP = new Label(GameColor.getColor(player.getValue().getColor()));
+            Label colorP = new Label(GameColor.getColor(player.getColor()));
             GridPane.setConstraints(colorP, 3, i);
             m_players.getChildren().addAll(nameP,idP,typeP,colorP);
             i++;
@@ -80,23 +82,23 @@ public class NumberiadaBuilder {
 
         int ind =0;
         int size = gameBoard.GetBoardSize();
-        Square[][] logicBoard = gameBoard.getGameBoard();
-
         ObservableList<ObservableList<Square>> observableBoard = createObservableBoard(gameBoard);
 
         board = new GridPane();
-        board.setPrefSize(400,400);
-        board.setPadding(new Insets(30, 10, 10, 10));
+        board.setPadding(new Insets(30, 30, 30, 30));
         board.setVgap(1);
         board.setHgap(1);
 
-        for(int i = 0; i < size; i++) {
+        for(int i = 0; i <= size; i++) {
             ColumnConstraints column = new ColumnConstraints(squareSize);
+            column.setMinWidth(squareSize);
             board.getColumnConstraints().add(column);
+
         }
 
-        for(int i = 0; i < size; i++) {
+        for(int i = 0; i <= size; i++) {
             RowConstraints row = new RowConstraints(squareSize);
+            row.setMinHeight(squareSize);
             board.getRowConstraints().add(row);
         }
 
@@ -115,6 +117,7 @@ public class NumberiadaBuilder {
             board.add(lab,i,0);
         }
 
+
         for (j =1;j <=size; j++) {
             for ( i=0 ; i <=size; i++) {
                 if (i==0) {
@@ -125,15 +128,15 @@ public class NumberiadaBuilder {
                 }
                 else
                 {
-                    Square square = (Square) observableBoard.get(ind);
-                    BoardButton butt = new BoardButton(square);
+                    final ObservableList<Square> row1 = observableBoard.get(j-1);
 
+                    Square square = row1.get(ind);
+                    BoardButton butt = new BoardButton(square);
                     butt.setPrefSize(squareSize,squareSize);
-                    //butt.getStyleClass().add("button-blue");
+                    butt.setAlignment(Pos.CENTER);
                     butt.setOnAction(e->PressedBoardButton(butt));
-                    GridPane.setConstraints(butt, i, j);
-                    board.getChildren().add(butt);
-                    ind++;
+                    board.add(butt,i,j);
+                    ind=(ind+1)%size;
                 }
             }
         }
@@ -144,7 +147,7 @@ public class NumberiadaBuilder {
     private  ObservableList<ObservableList<Square>> createObservableBoard(Board logicBoard)
     {
          Square[][] gameBoard = logicBoard.getGameBoard();
-        int size = logicBoard.GetBoardSize();
+         int size = logicBoard.GetBoardSize();
 
         ObservableList<ObservableList<Square>> board = FXCollections.<ObservableList<Square>>observableArrayList();
         for (int i = 0; i < size; i++) {
@@ -154,7 +157,6 @@ public class NumberiadaBuilder {
                 row.add(gameBoard[i][j]);
             }
         }
-
         return board;
     }
 
@@ -168,12 +170,12 @@ public class NumberiadaBuilder {
         PlayerScoreGridPane.getChildren().get(0).setStyle("-fx-background-color:#efff11;"+"-fx-border-color: #cc0e1a");
         PlayerScoreGridPane.getChildren().get(1).setStyle("-fx-background-color:#efff11;"+"-fx-border-color: #cc0e1a");
 
-        for (Map.Entry<Integer, Player> player : players.entrySet())
+        for (Player player : players)
         {
-            Label name = new Label(player.getValue().getName());
+            Label name = new Label(player.getName());
             name.setStyle(" -fx-font-weight: bold;" +
                     "-fx-text-fill: #0407ce;");
-            Label score = new Label(String.valueOf(player.getValue().getScore()));
+            Label score = new Label(String.valueOf(player.getScore()));
             score.setStyle( "-fx-font-weight: bold;"
             +"-fx-text-fill: #02021a;");
             PlayerScoreGridPane.addRow(i, name, score);
@@ -183,12 +185,12 @@ public class NumberiadaBuilder {
 
     }
 
-    public void setCurrentPlayer(Label PlayerNameLabel,Label CurrentPlayerIDLabel,Label CurrentPlayerTypeLabel,Label CurrentPlayerColorLabel)
+    public void setCurrentPlayer(Player player,Label PlayerNameLabel,Label CurrentPlayerIDLabel,Label CurrentPlayerTypeLabel,Label CurrentPlayerColorLabel)
     {
-        PlayerNameLabel.setText(currentPlayer.getName());
-        CurrentPlayerIDLabel.setText(String.valueOf(currentPlayer.getId()));
-        CurrentPlayerTypeLabel.setText(String.valueOf(currentPlayer.getPlayerType()));
-        CurrentPlayerColorLabel.setText(GameColor.getColor(currentPlayer.getColor()));
+        PlayerNameLabel.setText(player.getName());
+        CurrentPlayerIDLabel.setText(String.valueOf(player.getId()));
+        CurrentPlayerTypeLabel.setText(String.valueOf(player.getPlayerType()));
+        CurrentPlayerColorLabel.setText(GameColor.getColor(player.getColor()));
     }
 
     public void setCurrentMove(Label MoveNumberLabel,int move)

@@ -43,6 +43,7 @@ public class Board {
     {
         boardRange = new BoardRange(range.getFrom(),range.getTo());
     }
+    public BoardRange getBoardRange(){return boardRange;}
 
     public Marker getMarker() {
         return marker;
@@ -63,97 +64,13 @@ public class Board {
             for(int j=0;j<boardSize;j++)
             {
                 gameBoard[i][j] = new Square(new Point(i,j));
+                gameBoard[i][j].setColor(GameColor.GRAY);
             }
         }
 
     }
 
-
-
-
-    public void FillExplicitBoard(List<Square> xmlBoardList,Point markerLocation)
-    {
-        int col ,row,color;
-        String val;
-
-        for(Square square:xmlBoardList)
-        {
-            col = square.getLocation().getCol();
-            row = square.getLocation().getRow();
-            val = square.getValue();
-            color = square.getColor();
-            if(val.length() > maxDigitsNum)
-            {
-                maxDigitsNum = val.length();
-            }
-
-            gameBoard[row-1][col-1].setColor(color);
-            gameBoard[row-1][col-1].setValue(val);
-        }
-
-        marker.setMarkerLocation(markerLocation.getRow(),markerLocation.getCol());
-        gameBoard[markerLocation.getRow()-1][markerLocation.getCol()-1].setValue(marker.getMarkerSign());
-
-    }
-
-
-
-    public void FillRandomBoard() {
-
-        int i = 0;
-        int j = 0;
-
-            Random rand = new Random();
-
-            // filling our numbers in given range
-            int rangeSize = boardRange.RangeSize();
-            int printNumCount = (boardSize * boardSize -1) / rangeSize; //49/9=5
-            int rangeNumToPrint = boardRange.getFrom();
-
-
-            for(int m = 0;m < rangeSize && i< boardSize;m++) {
-                for (int k = 0; k < printNumCount && i< boardSize; k++) {
-                    gameBoard[i][j].setValue(Square.ConvertFromIntToStringValue(rangeNumToPrint));
-                    gameBoard[i][j].setColor(0);
-                    j++;
-                    if (j == boardSize) {
-                        i++;
-                        j = 0;
-                    }
-                }
-                rangeNumToPrint++;
-            }
-
-
-        if (j == boardSize) {
-            j = 0;
-        }
-
-        for (int m = i; m < boardSize; m++) {
-            for (int n = j; n < boardSize; n++) {
-                gameBoard[m][n].setValue("");
-                gameBoard[i][j].setColor(0);
-            }
-        }
-
-        gameBoard[boardSize - 1][boardSize - 1].setValue(Marker.markerSign);
-        shuffleArray(gameBoard);
-
-            String MarkerSign = marker.getMarkerSign();
-            for(i =0 ;i<boardSize;i++)          //////FOR MARKER CONTROL IN INIT
-            {
-                for(j=0;j<boardSize;j++)
-                    if  (gameBoard[i][j].getValue().equals( MarkerSign)) {
-                          marker.setMarkerLocation(i + 1, j + 1);
-                        break;
-                    }
-            }
-    }
-
-
-
-
-   private void shuffleArray(Square[][] matrix) {
+   public void shuffleArray(Square[][] matrix) {
         Random random = new Random();
 
         for (int i = matrix.length - 1; i > 0; i--) {

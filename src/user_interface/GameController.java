@@ -34,8 +34,8 @@ import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
 
-    GridPane board;
-    NumberiadaBuilder builder;
+    GridPane board = new GridPane();
+    NumberiadaBuilder builder = new NumberiadaBuilder();
     Stage gameWindow;
     GameLogic logic;
 
@@ -113,30 +113,24 @@ public class GameController implements Initializable {
 
     @FXML
     void StartGameButtonClicked(ActionEvent event) {
-
+        setStartGame();
     }
 
 
-    GridPane gamePlayers;
+   private GridPane gamePlayers;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-//        builder = new NumberiadaBuilder();
-//        board = builder.createBoard(10);
-//        borderPane.setCenter(board);
-     //   builder.createPlayersTable();
-       // gamePlayers = builder.getPlayersTable();
 
-        borderPane.setRight(gamePlayers); //loading xml file
 
-       // setStartGame();
-
+          StartGameButton.disableProperty().setValue(true);
+          MakeAMoveButton.disableProperty().setValue(true);
     }
 
-    public void setStartGame() {
+    private void setStartGame() {
         PlayerNameLabel.setMaxWidth(300);
         builder.setPlayersScore(PlayerScoreGridPane); //after Game Starts
-        builder.setCurrentPlayer(PlayerNameLabel, CurrentPlayerIDLabel, CurrentPlayerTypeLabel, CurrentPlayerColorLabel);
+        builder.setCurrentPlayer(logic.getCurrentPlayer(),PlayerNameLabel, CurrentPlayerIDLabel, CurrentPlayerTypeLabel, CurrentPlayerColorLabel);
         builder.setCurrentMove(MoveNumberLabel,logic.getMoves());
 
     }
@@ -154,7 +148,11 @@ public class GameController implements Initializable {
             try {
                 gameManager.LoadGameFromXmlAndValidate(loadedFile.getAbsolutePath());
                 xmLoaded = true;
+                logic = gameManager.getGameLogic();
+
+                StartGameButton.disableProperty().setValue(false);
             } catch (XmlNotValidException i_Exception) {
+                //  AlertPopup.display("XML Data Reading Error",GameLogic.validationResult.toString());
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Invalid Game data file");
                 alert.setHeaderText("Error reading xml file, the following errors were found");
@@ -162,9 +160,8 @@ public class GameController implements Initializable {
                 alert.showAndWait();
             }
         } else {
-            ValidationResult res = new ValidationResult();
-            res.add("XML File Load Error: Invalid File - cannot be loaded!");
-            throw new XmlNotValidException(res);
+                ValidationResult res = new ValidationResult();
+                res.add("XML File Load Error: Invalid File - cannot be loaded!");
         }
 
         if (xmLoaded) {
@@ -173,6 +170,7 @@ public class GameController implements Initializable {
             borderPane.setCenter(board);
             builder.createPlayersTable(logic.getPlayers());
             gamePlayers = builder.getPlayersTable();
+            borderPane.setRight(gamePlayers);
 
         }
     }
