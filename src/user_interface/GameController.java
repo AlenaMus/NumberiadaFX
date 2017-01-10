@@ -121,8 +121,6 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-
           StartGameButton.disableProperty().setValue(true);
           MakeAMoveButton.disableProperty().setValue(true);
     }

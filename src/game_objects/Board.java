@@ -75,13 +75,15 @@ public class Board {
 
         for (int i = matrix.length - 1; i > 0; i--) {
             for (int j = matrix[i].length - 1; j > 0; j--) {
-                //if (matrix[i][j].getValue()!= getMarker().getMarkerSign()) {
                     int m = random.nextInt(i + 1);
                     int n = random.nextInt(j + 1);
 
                     String temp = matrix[i][j].getValue();
+                    int color = matrix[i][j].getColor();
                     matrix[i][j].setValue(matrix[m][n].getValue());
+                    matrix[i][j].setColor(matrix[m][n].getColor());
                     matrix[m][n].setValue(temp);
+                    matrix[m][n].setColor(color);
 
             }
         }

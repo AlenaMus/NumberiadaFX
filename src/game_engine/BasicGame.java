@@ -375,7 +375,6 @@ public class BasicGame extends GameLogic {
         int boardSize = gameBoard.GetBoardSize();
         BoardRange boardRange = gameBoard.getBoardRange();
         Square[][] board = gameBoard.getGameBoard();
-        Random rand = new Random();
 
         // filling our numbers in given range
         int rangeSize = boardRange.RangeSize();
@@ -396,7 +395,6 @@ public class BasicGame extends GameLogic {
             }
             rangeNumToPrint++;
         }
-
 
         if (j == boardSize) {
             j = 0;
