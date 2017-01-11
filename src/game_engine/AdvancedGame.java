@@ -333,20 +333,17 @@ public class AdvancedGame extends GameLogic{
         }
     }
 
-    private void printValue(String num,int count)
-    {
-        for(int i=0;i<count;i++)
-        {
 
-        }
-
-    }
     @Override
     public void FillRandomBoard() {
 
-        int i = 0;
-        int j = 0;
-        int color = GameColor.GRAY;
+       // List<game_objects.Square> randomList = new ArrayList<>();
+
+        int i ;
+        int j ;
+        int row =0;
+        int col=0;
+        int color=1;
         int boardSize = gameBoard.GetBoardSize();
         BoardRange boardRange = gameBoard.getBoardRange();
         game_objects.Square[][] board = gameBoard.getGameBoard();
@@ -354,34 +351,37 @@ public class AdvancedGame extends GameLogic{
 
         // filling our numbers in given range
         int rangeSize = boardRange.RangeSize();
-        int printNumCount = (boardSize * boardSize -1) / (rangeSize*numOfPlayers); //49/9=5
+     //   int printNumCount = (boardSize * boardSize -1) / (rangeSize*numOfPlayers); //49/9=5
         int rangeNumToPrint = boardRange.getFrom();
 
-        color++;
-        for(int m = 0;m < rangeSize && i< boardSize;m++) {
-            for (int k = 0; k < printNumCount && i< boardSize; k++) {
 
-                board[i][j].setValue(game_objects.Square.ConvertFromIntToStringValue(rangeNumToPrint));
-                board[i][j].setColor(color);
+        for(int m = 0;m < rangeSize ;m++) {              ///&& i< boardSize
+            for (int k = 0; k < numOfPlayers; k++) {    // && i< boardSize;
+
+                board[row][col].setValue(game_objects.Square.ConvertFromIntToStringValue(rangeNumToPrint));
+                board[row][col].setColor(color);
                 color++;
-                j++;
-                if (j == boardSize) {
-                    i++;
-                    j = 0;
+                if(col == boardSize-1)
+                {
+                    col = -1;
+                    row++;
                 }
+                col++;
+
             }
             rangeNumToPrint++;
-            color = 1;
+            color=1;
         }
 
-        if (j == boardSize) {
-            j = 0;
+        if (col == boardSize) {
+            col = 0;
         }
 
-        for (int m = i; m < boardSize; m++) {
-            for (int n = j; n < boardSize; n++) {
+
+        for (int m = row; m < boardSize; m++) {
+            for (int n = col; n < boardSize; n++) {
                 board[m][n].setValue("");
-                board[i][j].setColor(GameColor.GRAY);
+                board[m][n].setColor(GameColor.GRAY);
             }
         }
 
