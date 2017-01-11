@@ -1,17 +1,19 @@
 package game_engine;
 
-import game_objects.*;
+import game_objects.BoardRange;
+import game_objects.GameColor;
+import game_objects.Point;
+import game_objects.ePlayerType;
 import game_validation.ValidationResult;
 import game_validation.XmlNotValidException;
-import jaxb.schema.generated.*;
-import jaxb.schema.generated.Board;
-import jaxb.schema.generated.Marker;
+import jaxb.schema.generated.GameDescriptor;
 import jaxb.schema.generated.Player;
+import jaxb.schema.generated.Range;
 import jaxb.schema.generated.Square;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 
 public class AdvancedGame extends GameLogic{
@@ -20,6 +22,11 @@ public class AdvancedGame extends GameLogic{
     public static final int MAX_PLAYERS = 6;
 
 
+    @Override
+    public void initGame()
+    {
+        setCurrentPlayer(players.get(0));
+    }
 
     @Override
     public void gameOver()
@@ -44,12 +51,12 @@ public class AdvancedGame extends GameLogic{
     }
 
 
-    @Override
+/*    @Override
     protected int updateBoard(Point squareLocation) {
             int squareValue = gameBoard.updateBoard(squareLocation);
             return squareValue;
 
-    }
+    }*/
 
     @Override
     protected void updateUserData(int squareValue) {
@@ -161,7 +168,7 @@ public class AdvancedGame extends GameLogic{
         gameBoard.getMarker().setMarkerLocation(squareLocation.getRow(),squareLocation.getCol());
     }
 
-    private boolean makeHumanMove(Point userPoint)
+    public boolean makeHumanMove(Point userPoint)
     {
         boolean IsValidMove;
         int squareValue;
@@ -174,6 +181,27 @@ public class AdvancedGame extends GameLogic{
             IsValidMove = true;
         }
         return IsValidMove;
+    }
+
+
+    public int updateBoard(Point squareLocation)
+    {
+        int squareValue = 100;
+        Point oldMarkerPoint = gameBoard.getMarker().getMarkerLocation();
+
+        if (currentPlayer.getColor() != gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].getColor())
+            return squareValue;
+        String squareStringValue = gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].getValue();//get number
+        if (squareStringValue.equals(gameBoard.getMarker().getMarkerSign()) || squareStringValue.isEmpty()) { //checks if wrong square-marker or empty
+            return squareValue;
+        }
+        squareValue = game_objects.Square.ConvertFromStringToIntValue(squareStringValue); //return number value
+
+        gameBoard.getGameBoard()[oldMarkerPoint.getRow()-1][oldMarkerPoint.getCol()-1].setValue("");    //empty old marker location
+
+        gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].setValue( gameBoard.getMarker().markerSign); //update marker to square
+
+        return squareValue;
     }
 
     @Override

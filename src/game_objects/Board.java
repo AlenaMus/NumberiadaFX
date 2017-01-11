@@ -3,7 +3,6 @@
  */
 package game_objects;
 
-import java.util.List;
 import java.util.Random;
 
 public class Board {
@@ -211,7 +210,7 @@ public class Board {
         int squareValue = 100;
         Point oldMarkerPoint = marker.getMarkerLocation();
 
-        String squareStringValue = gameBoard[squareLocation.getRow()-1][squareLocation.getCol()-1].getValue();//get number
+        String squareStringValue = gameBoard[squareLocation.getRow()][squareLocation.getCol()].getValue();//get number
         if (squareStringValue.equals(marker.getMarkerSign()) || squareStringValue.isEmpty()) { //checks if wrong square-marker or empty
             return squareValue;
         }
@@ -219,7 +218,7 @@ public class Board {
 
         gameBoard[oldMarkerPoint.getRow()-1][oldMarkerPoint.getCol()-1].setValue("");    //empty old marker location
 
-        gameBoard[squareLocation.getRow()-1][squareLocation.getCol()-1].setValue(marker.markerSign); //update marker to square
+        gameBoard[squareLocation.getRow()][squareLocation.getCol()].setValue(marker.markerSign); //update marker to square
 
         return squareValue;
     }

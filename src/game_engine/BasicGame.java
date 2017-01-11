@@ -1,12 +1,9 @@
 package game_engine;
 
 import game_objects.*;
-import game_objects.Board;
-import game_objects.Marker;
-import game_objects.Player;
-import game_objects.Square;
 import game_validation.XmlNotValidException;
-import jaxb.schema.generated.*;
+import jaxb.schema.generated.GameDescriptor;
+import jaxb.schema.generated.Range;
 
 import java.util.List;
 import java.util.Random;
@@ -72,6 +69,16 @@ public class BasicGame extends GameLogic {
         }
         //print to UI winner
     }
+
+   @Override
+   public void initGame()
+       {
+           setBasicPlayers();
+           setCurrentPlayer(rowPlayer);
+       }
+
+
+
 
     public void setBasicPlayers()
     {
@@ -153,7 +160,7 @@ public class BasicGame extends GameLogic {
 //        //UserInterface.PrintBoard(gameBoard.toString());
 //    }
 
-    private boolean makeHumanMove(Point userPoint) //GET POINT FROM UI
+    public boolean makeHumanMove(Point userPoint) //GET POINT FROM UI
     {
         boolean IsValidMove;
         int squareValue;
@@ -162,7 +169,7 @@ public class BasicGame extends GameLogic {
             IsValidMove = false;
         else {
             updateUserData(squareValue);
-            gameBoard.getMarker().setMarkerLocation(userPoint.getRow(), userPoint.getCol());
+            gameBoard.getMarker().setMarkerLocation(userPoint.getRow() +1, userPoint.getCol() +1);
             IsValidMove = true;
         }
         return IsValidMove;
@@ -211,13 +218,30 @@ public class BasicGame extends GameLogic {
         return canMove;
     }
 
+    public int updateBoard(Point squareLocation)
+    {
+        int squareValue = 100;
+        Point oldMarkerPoint = gameBoard.getMarker().getMarkerLocation();
 
-    @Override
+        String squareStringValue = gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].getValue();//get number
+        if (squareStringValue.equals(gameBoard.getMarker().getMarkerSign()) || squareStringValue.isEmpty()) { //checks if wrong square-marker or empty
+            return squareValue;
+        }
+        squareValue = Square.ConvertFromStringToIntValue(squareStringValue); //return number value
+
+        gameBoard.getGameBoard()[oldMarkerPoint.getRow()-1][oldMarkerPoint.getCol()-1].setValue("");    //empty old marker location
+
+        gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].setValue( gameBoard.getMarker().markerSign); //update marker to square
+
+        return squareValue;
+    }
+
+    /*@Override
     public int updateBoard(Point squareLocation) //implement in Board - returns updated value of row/column
     {
         int squareValue = gameBoard.updateBoard(squareLocation);
         return squareValue;
-    }
+    }*/
 
 
     @Override

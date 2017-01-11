@@ -1,34 +1,23 @@
 package user_interface;
 
 import game_engine.AdvancedGame;
-import game_engine.BasicGame;
 import game_engine.GameLogic;
 import game_engine.GameManager;
-import game_objects.GameColor;
-import game_objects.Player;
+import game_objects.Point;
 import game_validation.ValidationResult;
 import game_validation.XmlNotValidException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import jaxb.schema.generated.GameDescriptor;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -37,10 +26,19 @@ public class GameController implements Initializable {
     GridPane board = new GridPane();
     NumberiadaBuilder builder = new NumberiadaBuilder();
     Stage gameWindow;
-    GameLogic logic;
+    GameLogic logic= new AdvancedGame();
+    Point chosenPoint;
 
     public void setGameWindow(Stage stage) {
         gameWindow = stage;
+    }
+
+    public Point getChosenPoint() {
+        return chosenPoint;
+    }
+
+    public void setChosenPoint(Point chosenPoint) {
+        chosenPoint = chosenPoint;
     }
 
 
@@ -93,7 +91,25 @@ public class GameController implements Initializable {
 
     @FXML
     void MakeAMoveButtonClicked(ActionEvent event) {
+        boolean isValidMove = false ;
+        Point userPoint = builder.getChosenPoint();
+        if (userPoint != null)
+        {
+            isValidMove = logic.makeHumanMove(userPoint);
+            if (!isValidMove)
+            {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("You choose illegal square");
+                alert.showAndWait();
+            }
 
+        }
+        else
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("YOU DIDNT CHOOSE A SQUARE YOU DUMB FUCK");
+            alert.showAndWait();
+        }
     }
 
     @FXML
@@ -113,6 +129,8 @@ public class GameController implements Initializable {
 
     @FXML
     void StartGameButtonClicked(ActionEvent event) {
+        MakeAMoveButton.disableProperty().setValue(false);
+        logic.initGame();
         setStartGame();
     }
 
@@ -174,4 +192,12 @@ public class GameController implements Initializable {
 
         }
     }
+
+    public void PressedBoardButton(BoardButton butt)
+    {
+
+
+    }
+
+
 }
