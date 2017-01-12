@@ -9,7 +9,6 @@ import game_validation.XmlNotValidException;
 import jaxb.schema.generated.GameDescriptor;
 import jaxb.schema.generated.Player;
 import jaxb.schema.generated.Range;
-import jaxb.schema.generated.Square;
 
 import java.util.Collections;
 import java.util.List;
@@ -123,16 +122,17 @@ public class AdvancedGame extends GameLogic{
         return true;
     }
 
-    private void playerRetire (game_objects.Player player) {
+    public void playerRetire () {
         for (int i = 0; i < gameBoard.GetBoardSize(); i++)
             for (int j = 0; j < gameBoard.GetBoardSize(); j++)
-                if (gameBoard.getGameBoard()[i][j].getColor() == player.getColor())
+                if (gameBoard.getGameBoard()[i][j].getColor() == currentPlayer.getColor())
                 {
+                    gameBoard.getGameBoard()[i][j].setColor(0);
                     gameBoard.getGameBoard()[i][j].setDisabled(true);
                     gameBoard.getGameBoard()[i][j].setValue(" ");
                     gameBoard.getGameBoard()[i][j].setEmpty(true);
                 }
-        player.setActive(false);
+        currentPlayer.setActive(false);
         //NEED TO UPDATE UI and delete all player squars
     }
 
@@ -140,13 +140,13 @@ public class AdvancedGame extends GameLogic{
 
 
     public static int ComputerMove(int boardSize) {
-        return (ThreadLocalRandom.current().nextInt(1, boardSize + 1));
+        return (ThreadLocalRandom.current().nextInt(0, boardSize));
     }
 
 
-    private void makeComputerMove()
+    public void makeComputerMove()
     {
-        int squareValue = BAD_SQUARE ;
+        int squareValue ;
         boolean foundSquare = false;
         Point squareLocation = null;
         int MarkerRow = gameBoard.getMarker().getMarkerLocation().getRow()-1;
@@ -155,51 +155,53 @@ public class AdvancedGame extends GameLogic{
         while (!foundSquare) {
             int random = ComputerMove(gameBoard.GetBoardSize());
             if (gameBoard.getGameBoard()[MarkerRow][random].getColor() == (currentPlayer.getColor())) {
-                squareLocation = new Point(gameBoard.getMarker().getMarkerLocation().getRow(), random);
+                squareLocation = new Point(MarkerRow, random);
                 foundSquare = true;
             }
             else if (gameBoard.getGameBoard()[random][MarkerCol].getColor() == (currentPlayer.getColor())) {
-                squareLocation = new Point(random, gameBoard.getMarker().getMarkerLocation().getCol());
+                squareLocation = new Point(random, MarkerCol);
                 foundSquare = true;
             }
         }
         squareValue = updateBoard(squareLocation); //update 2 squares
         updateUserData(squareValue);
-        gameBoard.getMarker().setMarkerLocation(squareLocation.getRow(),squareLocation.getCol());
+        gameBoard.getMarker().setMarkerLocation(squareLocation.getRow()+1,squareLocation.getCol()+1);
     }
 
-    public boolean makeHumanMove(Point userPoint)
+    public void makeHumanMove(Point userPoint)
     {
-        boolean IsValidMove;
         int squareValue;
         squareValue = updateBoard(userPoint); //update 2 squares
-        if (squareValue == GameLogic.BAD_SQUARE)
-            IsValidMove = false;
-        else {
-            updateUserData(squareValue);
-            gameBoard.getMarker().setMarkerLocation(userPoint.getRow(), userPoint.getCol());
-            IsValidMove = true;
-        }
-        return IsValidMove;
+        updateUserData(squareValue);
+        gameBoard.getMarker().setMarkerLocation(userPoint.getRow()+1, userPoint.getCol()+1);
     }
 
+    public int isValidPoint(Point squareLocation)
+    {
+        /*   if (squareStringValue.equals(gameBoard.getMarker().getMarkerSign()) || squareStringValue.isEmpty()) { //checks if wrong square-marker or empty
+            return squareValue;
+        }*/
+        int returnPointStatus = GOOD_POINT;
+        Point markerPoint = gameBoard.getMarker().getMarkerLocation();
+        if (squareLocation.getRow() != (markerPoint.getRow()-1) && squareLocation.getCol() != (markerPoint.getCol()-1)  )
+            returnPointStatus = NOT_IN_MARKER_ROW_AND_COLUMN;
+        else if  (currentPlayer.getColor() != gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].getColor())
+            returnPointStatus = NOT_PLAYER_COLOR;
+        return returnPointStatus;
+    }
 
     public int updateBoard(Point squareLocation)
     {
-        int squareValue = 100;
-        Point oldMarkerPoint = gameBoard.getMarker().getMarkerLocation();
+        int squareValue;
 
-        if (currentPlayer.getColor() != gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].getColor())
-            return squareValue;
+        Point oldMarkerPoint = gameBoard.getMarker().getMarkerLocation();
         String squareStringValue = gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].getValue();//get number
-        if (squareStringValue.equals(gameBoard.getMarker().getMarkerSign()) || squareStringValue.isEmpty()) { //checks if wrong square-marker or empty
-            return squareValue;
-        }
         squareValue = game_objects.Square.ConvertFromStringToIntValue(squareStringValue); //return number value
 
         gameBoard.getGameBoard()[oldMarkerPoint.getRow()-1][oldMarkerPoint.getCol()-1].setValue("");    //empty old marker location
-
+        //gameBoard.getGameBoard()[oldMarkerPoint.getRow()-1][oldMarkerPoint.getCol()-1].setColor(GameColor.GRAY);
         gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].setValue( gameBoard.getMarker().markerSign); //update marker to square
+        gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].setColor(GameColor.GRAY); //update marker to square
 
         return squareValue;
     }

@@ -1,35 +1,22 @@
 package user_interface;
 
-import game_engine.AdvancedGame;
-import game_engine.BasicGame;
 import game_engine.GameLogic;
 import game_engine.GameManager;
-import game_objects.GameColor;
-import game_objects.Player;
-import game_objects.Square;
+import game_objects.Point;
 import game_validation.ValidationResult;
 import game_validation.XmlNotValidException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import jaxb.schema.generated.GameDescriptor;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -91,10 +78,47 @@ public class GameController implements Initializable {
     @FXML
     private Label scoreGridLabel;
 
+    @FXML
+    void StartGameButtonClicked(ActionEvent event) {
+        MakeAMoveButton.disableProperty().setValue(false);
+        logic.initGame();
+        setStartGame();
+    }
 
     @FXML
     void MakeAMoveButtonClicked(ActionEvent event) {
+        boolean isValidMove = false ;
+        int pointStatus;
+        Point userPoint = builder.getChosenPoint();
+        if (userPoint != null)
+        {
+            pointStatus = logic.isValidPoint(userPoint);
+            if (pointStatus == logic.GOOD_POINT) {
+                //logic.makeComputerMove();
+                logic.makeHumanMove(userPoint);
+                logic.setCurrentPlayer(logic.getPlayers().get(1));
+                builder.setCurrentPlayer(logic.getCurrentPlayer(),PlayerNameLabel, CurrentPlayerIDLabel, CurrentPlayerTypeLabel, CurrentPlayerColorLabel);
+            }
+            else if (pointStatus == logic.NOT_IN_MARKER_ROW_AND_COLUMN)
+            {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("You choose illegal square -the square needs to be in the marker raw or column");
+                alert.showAndWait();
+            }
+            else if (pointStatus == logic.NOT_PLAYER_COLOR)
+            {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("You choose illegal square - the square is not in your color!");
+                alert.showAndWait();
+            }
 
+        }
+        else
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("YOU DIDNT CHOOSE A SQUARE YOU DUMB FUCK");
+            alert.showAndWait();
+        }
     }
 
     @FXML
@@ -109,13 +133,11 @@ public class GameController implements Initializable {
 
     @FXML
     void RetireGameButtonClicked(ActionEvent event) {
+        logic.playerRetire();
 
     }
 
-    @FXML
-    void StartGameButtonClicked(ActionEvent event) {
-        setStartGame();
-    }
+
 
 
    private GridPane gamePlayers;
@@ -136,8 +158,8 @@ public class GameController implements Initializable {
 
         PlayerNameLabel.setMaxWidth(300);
         builder.setPlayersScore(PlayerScoreGridPane); //after Game Starts
-       // builder.setCurrentPlayer(logic.getCurrentPlayer(),PlayerNameLabel, CurrentPlayerIDLabel, CurrentPlayerTypeLabel, CurrentPlayerColorLabel);
-        //builder.setCurrentMove(MoveNumberLabel,logic.getMoves());
+        builder.setCurrentPlayer(logic.getCurrentPlayer(),PlayerNameLabel, CurrentPlayerIDLabel, CurrentPlayerTypeLabel, CurrentPlayerColorLabel);
+        builder.setCurrentMove(MoveNumberLabel,logic.getMoves());
 
     }
 

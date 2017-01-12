@@ -1,16 +1,12 @@
 package game_engine;
 
 import game_objects.*;
-import game_objects.Board;
-import game_objects.Marker;
-import game_objects.Player;
-import game_objects.Square;
 import game_validation.ValidationResult;
 import game_validation.XmlNotValidException;
-import jaxb.schema.generated.*;
+import jaxb.schema.generated.GameDescriptor;
+import jaxb.schema.generated.Range;
 
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 
@@ -34,7 +30,16 @@ public class BasicGame extends GameLogic {
         return colPlayer;
     }
 
+    public void playerRetire()
+    {}
+    public void makeComputerMove()
+    {}
 
+    public void initGame()
+    {
+        setBasicPlayers();
+        setCurrentPlayer(rowPlayer);
+    }
 
     public String  TotalGameTime()
     {
@@ -154,19 +159,26 @@ public class BasicGame extends GameLogic {
 //        //UserInterface.PrintBoard(gameBoard.toString());
 //    }
 
-    private boolean makeHumanMove(Point userPoint) //GET POINT FROM UI
+    public void makeHumanMove(Point userPoint)
     {
-        boolean IsValidMove;
         int squareValue;
         squareValue = updateBoard(userPoint); //update 2 squares
-        if (squareValue == BAD_SQUARE)
-            IsValidMove = false;
-        else {
-            updateUserData(squareValue);
-            gameBoard.getMarker().setMarkerLocation(userPoint.getRow(), userPoint.getCol());
-            IsValidMove = true;
-        }
-        return IsValidMove;
+        updateUserData(squareValue);
+        gameBoard.getMarker().setMarkerLocation(userPoint.getRow()+1, userPoint.getCol()+1);
+    }
+
+    public int isValidPoint(Point squareLocation)
+    {
+        /*   if (squareStringValue.equals(gameBoard.getMarker().getMarkerSign()) || squareStringValue.isEmpty()) { //checks if wrong square-marker or empty
+            return squareValue;
+        }*/
+        int returnPointStatus = GOOD_POINT;
+        Point markerPoint = gameBoard.getMarker().getMarkerLocation();
+        if (squareLocation.getRow() != (markerPoint.getRow()-1) && squareLocation.getCol() != (markerPoint.getCol()-1)  )
+            returnPointStatus = NOT_IN_MARKER_ROW_AND_COLUMN;
+        else if  (currentPlayer.getColor() != gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].getColor())
+            returnPointStatus = NOT_PLAYER_COLOR;
+        return returnPointStatus;
     }
 
 
@@ -213,12 +225,32 @@ public class BasicGame extends GameLogic {
     }
 
 
-    @Override
+
+    public int updateBoard(Point squareLocation)
+    {
+        int squareValue = 100;
+        Point oldMarkerPoint = gameBoard.getMarker().getMarkerLocation();
+        if (squareLocation.getRow() != oldMarkerPoint.getRow() && squareLocation.getCol() != oldMarkerPoint.getCol()  )
+            return squareValue;
+
+        String squareStringValue = gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].getValue();//get number
+        if (squareStringValue.equals(gameBoard.getMarker().getMarkerSign()) || squareStringValue.isEmpty()) { //checks if wrong square-marker or empty
+            return squareValue;
+        }
+        squareValue = Square.ConvertFromStringToIntValue(squareStringValue); //return number value
+
+        gameBoard.getGameBoard()[oldMarkerPoint.getRow()-1][oldMarkerPoint.getCol()-1].setValue("");    //empty old marker location
+
+        gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].setValue( gameBoard.getMarker().markerSign); //update marker to square
+
+        return squareValue;
+    }
+   /* @Override
     public int updateBoard(Point squareLocation) //implement in Board - returns updated value of row/column
     {
         int squareValue = gameBoard.updateBoard(squareLocation);
         return squareValue;
-    }
+    }*/
 
 
     @Override
@@ -226,26 +258,6 @@ public class BasicGame extends GameLogic {
     {
         currentPlayer.setNumOfMoves(currentPlayer.getNumOfMoves()+1); //maybe do totalmoves var in gameManager
         currentPlayer.setScore(squareValue);
-    }
-
-    public void setPlayers(int playerChoice)
-    {
-
-        switch (playerChoice)
-        {
-            case HUMAN_PLAYER:
-                rowPlayer = new Player(eTurn.ROW, ePlayerType.Human);
-                colPlayer = new Player(eTurn.COL, ePlayerType.Human);
-                break;
-            case COMPUTER_PLAYER:
-                rowPlayer = new Player(eTurn.ROW, ePlayerType.Human);
-                colPlayer = new Player(eTurn.COL, ePlayerType.Computer);
-                break;
-            case COMPUTERS_GAME:
-                rowPlayer = new Player(eTurn.ROW, ePlayerType.Computer);
-                colPlayer = new Player(eTurn.COL, ePlayerType.Computer);
-                break;
-        }
     }
 
 

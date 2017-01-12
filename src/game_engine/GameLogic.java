@@ -13,10 +13,14 @@ import java.util.List;
 
 public abstract class GameLogic {
 
-    public static final int HUMAN_PLAYER = 1;
+    /*public static final int HUMAN_PLAYER = 1;
     public static final int COMPUTER_PLAYER =2;
-    public static final int COMPUTERS_GAME =3;
-    public static final int BAD_SQUARE = 100;
+    public static final int COMPUTERS_GAME =3;*/
+    //public static final int BAD_SQUARE = 100;
+
+    public static final int GOOD_POINT = 1000;
+    public static final int NOT_IN_MARKER_ROW_AND_COLUMN = 1001;
+    public static final int NOT_PLAYER_COLOR =1002;
 
     protected String gameFile = " ";
     public  boolean isEndOfGame = false;
@@ -56,8 +60,12 @@ public abstract class GameLogic {
     public int getMoves() {return gameMoves;}
     public List<Player>  getPlayers(){return players;}
 
+    public abstract void makeComputerMove();
+    public abstract void playerRetire();
     public abstract void initGame();
     public abstract int updateBoard(Point squareLocation);
+    public abstract void makeHumanMove(Point userPoint); //GET POINT FROM UI
+    public abstract int isValidPoint(Point squareLocation);
     public abstract void makeMove();
     public abstract boolean InitMoveCheck();
    // public abstract void setBoard(jaxb.schema.generated.Board board);
@@ -65,7 +73,7 @@ public abstract class GameLogic {
     public abstract void checkXMLData(GameDescriptor loadedGame)throws XmlNotValidException;
     public abstract void checkRandomBoardValidity(Range boardRange, int boardSize)throws XmlNotValidException;
     public abstract void gameOver();
-    protected abstract void switchPlayer();
+    public abstract void switchPlayer();
     protected void checkAndSetPlayersXML(jaxb.schema.generated.Players players)throws XmlNotValidException{}
 
 
@@ -82,7 +90,7 @@ public abstract class GameLogic {
         }
     }
 
-    public boolean makeHumanMove(Point userPoint) //GET POINT FROM UI
+   /* public int makeHumanMove(Point userPoint) //GET POINT FROM UI
     {
         boolean IsValidMove;
         int squareValue;
@@ -95,7 +103,7 @@ public abstract class GameLogic {
             IsValidMove = true;
         }
         return IsValidMove;
-    }
+    }*/
 
     /*protected int updateBoard(Point squareLocation) //implement in Board - returns updated value of row/column
     {
