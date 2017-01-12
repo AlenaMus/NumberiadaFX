@@ -1,6 +1,5 @@
 package user_interface;
 
-import com.sun.javafx.collections.MappingChange;
 import game_objects.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -8,15 +7,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
+import javafx.scene.control.Label;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class NumberiadaBuilder {
 
@@ -27,7 +24,15 @@ public class NumberiadaBuilder {
     private GridPane m_players;
     private List <Player> players;
     private Stage gameWindow;
+    public Point chosenPoint;
 
+    public Point getChosenPoint() {
+        return chosenPoint;
+    }
+
+    public void setChosenPoint(Point chosenPoint) {
+        this.chosenPoint = chosenPoint;
+    }
 
     public GridPane getPlayersTable()
     {
@@ -215,8 +220,8 @@ public class NumberiadaBuilder {
         MoveNumberLabel.setText(String.valueOf(move));
     }
 
-    private void PressedBoardButton(Button butt)
+    private void PressedBoardButton(BoardButton butt)
     {
-
+        setChosenPoint(butt.getLocation());
     }
 }

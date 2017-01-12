@@ -1,30 +1,14 @@
 package game_engine;
 
 import game_objects.*;
-
-import game_objects.Board;
-import game_objects.Player;
-import game_objects.Square;
 import game_validation.ValidationResult;
 import game_validation.XmlNotValidException;
-import jaxb.schema.generated.*;
-import org.xml.sax.SAXException;
-import user_interface.AlertPopup;
+import jaxb.schema.generated.GameDescriptor;
+import jaxb.schema.generated.Range;
+import jaxb.schema.generated.Squares;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public abstract class GameLogic {
@@ -72,6 +56,8 @@ public abstract class GameLogic {
     public int getMoves() {return gameMoves;}
     public List<Player>  getPlayers(){return players;}
 
+    public abstract void initGame();
+    public abstract int updateBoard(Point squareLocation);
     public abstract void makeMove();
     public abstract boolean InitMoveCheck();
    // public abstract void setBoard(jaxb.schema.generated.Board board);
@@ -96,11 +82,26 @@ public abstract class GameLogic {
         }
     }
 
-    protected int updateBoard(Point squareLocation) //implement in Board - returns updated value of row/column
+    public boolean makeHumanMove(Point userPoint) //GET POINT FROM UI
+    {
+        boolean IsValidMove;
+        int squareValue;
+        squareValue = updateBoard(userPoint); //update 2 squares
+        if (squareValue == BAD_SQUARE)
+            IsValidMove = false;
+        else {
+            updateUserData(squareValue);
+            gameBoard.getMarker().setMarkerLocation(userPoint.getRow(), userPoint.getCol());
+            IsValidMove = true;
+        }
+        return IsValidMove;
+    }
+
+    /*protected int updateBoard(Point squareLocation) //implement in Board - returns updated value of row/column
     {
         int squareValue = gameBoard.updateBoard(squareLocation);
         return squareValue;
-    }
+    }*/
 
     protected void updateUserData(int squareValue) // in Player?
     {
