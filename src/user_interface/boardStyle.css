@@ -19,28 +19,35 @@
 
 #button-red{
     -fx-background-color:#AB4642;
+    -fx-text-fill: black;
 }
 
 #button-blue{
 
     -fx-background-color:#67aeff;
+    -fx-text-fill: black;
 }
 #button-green{
     -fx-background-color:#00bb5e;
+    -fx-text-fill: black;
 }
 
 #button-yellow{
     -fx-background-color:#ffda0a;
+    -fx-text-fill: black;
 }
 
 #button-purple{
     -fx-background-color:#9d3b9c;
+    -fx-text-fill: black;
 }
 #button-gray{
     -fx-background-color:#b8a3a3;
+    -fx-text-fill: black;
 }
 #button-pink{
     -fx-background-color:#f8609f;
+    -fx-text-fill: black;
 }
 
 #button-marker
@@ -70,6 +77,22 @@
     -fx-font-weight: bold;
     -fx-text-fill: #02021a;
 
+}
+
+#player-score-label
+{
+   -fx-font-weight: bold;
+   -fx-text-fill: #0407ce;
+}
+
+#score-label{
+    -fx-font-weight: bold;
+    -fx-text-fill: #02021a;
+}
+
+#player-gridPane{
+    -fx-font-weight: bold;
+    -fx-text-fill: #AB4642;
 }
 
 .grid {

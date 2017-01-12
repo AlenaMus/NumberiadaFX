@@ -6,6 +6,7 @@ import game_engine.GameLogic;
 import game_engine.GameManager;
 import game_objects.GameColor;
 import game_objects.Player;
+import game_objects.Square;
 import game_validation.ValidationResult;
 import game_validation.XmlNotValidException;
 import javafx.event.ActionEvent;
@@ -34,10 +35,10 @@ import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
 
-    GridPane board = new GridPane();
-    NumberiadaBuilder builder = new NumberiadaBuilder();
-    Stage gameWindow;
-    GameLogic logic;
+    private GridPane board;
+    private NumberiadaBuilder builder = new NumberiadaBuilder();
+    private Stage gameWindow;
+    private GameLogic logic;
 
     public void setGameWindow(Stage stage) {
         gameWindow = stage;
@@ -121,15 +122,22 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+          board = new GridPane();
           StartGameButton.disableProperty().setValue(true);
           MakeAMoveButton.disableProperty().setValue(true);
+
     }
 
     private void setStartGame() {
+
+        int size = logic.getGameBoard().GetBoardSize();
+        logic.getGameBoard().getGameBoard()[size-1][size-1].setColor(5);
+        logic.getGameBoard().getGameBoard()[size-1][size-1].setValue("00");
+
         PlayerNameLabel.setMaxWidth(300);
         builder.setPlayersScore(PlayerScoreGridPane); //after Game Starts
-        builder.setCurrentPlayer(logic.getCurrentPlayer(),PlayerNameLabel, CurrentPlayerIDLabel, CurrentPlayerTypeLabel, CurrentPlayerColorLabel);
-        builder.setCurrentMove(MoveNumberLabel,logic.getMoves());
+       // builder.setCurrentPlayer(logic.getCurrentPlayer(),PlayerNameLabel, CurrentPlayerIDLabel, CurrentPlayerTypeLabel, CurrentPlayerColorLabel);
+        //builder.setCurrentMove(MoveNumberLabel,logic.getMoves());
 
     }
 

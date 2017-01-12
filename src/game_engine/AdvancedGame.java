@@ -222,59 +222,7 @@ public class AdvancedGame extends GameLogic{
         }
     }
 
-    @Override
-    public void checkExplicitBoard(List<Square> squares, jaxb.schema.generated.Marker marker, int boardSize) throws XmlNotValidException
-    {
-        game_objects.Square newSquare;
-        int row,col,val,color;
 
-        if(!isInBoardRange(marker.getRow().intValue(),boardSize))
-        {
-            validationResult.add(String.format("Explicit Board validation : invalid row of marker location ! Must be in range  from %d  to %d",1,boardSize));
-            throw new XmlNotValidException(validationResult);
-        }
-        if(!isInBoardRange(marker.getColumn().intValue(),boardSize))
-        {
-            validationResult.add(String.format("Explicit Board validation error: invalid column of marker location ! Must be in range  from %d  to %d",1,boardSize));
-            throw new XmlNotValidException(validationResult);
-        }
-
-            for (jaxb.schema.generated.Square square : squares) {
-                row = square.getRow().intValue();
-                col = square.getColumn().intValue();
-                val = square.getValue().intValue();
-                color = square.getColor();
-
-                if ((val < BoardRange.MIN_BOARD_RANGE )|| (val > BoardRange.MAX_BOARD_RANGE)) {
-                    validationResult.add("Explicit Board Validation Error: squares values must be in between -99 and 99" );
-                    throw new XmlNotValidException(validationResult);
-                }
-
-                if(!(row == marker.getRow().intValue() && col == marker.getColumn().intValue())) {
-
-                    if (isInBoardRange(row, boardSize) && isInBoardRange(col, boardSize)) //location is ok
-                    {
-                        newSquare = new game_objects.Square(new Point(row, col), String.valueOf(val), color);
-                        if (explicitSquares.contains(newSquare)) {
-                            validationResult.add(String.format("Explicit Board validation error: square double location [%d,%d] existance!",
-                                    square.getRow().intValue(), square.getColumn().intValue()));
-                            throw new XmlNotValidException(validationResult);
-
-                        } else {
-                            explicitSquares.add(newSquare);
-                        }
-                    } else {
-                             explicitSquares.clear();
-                             validationResult.add(String.format("Explicit Board Validation Error: Square row :%d,column:%d outside board size :%d", row, col, boardSize));
-                             throw new XmlNotValidException(validationResult);
-                    }
-                }else{
-                    validationResult.add(String.format("Explicit Board Validation Error: Square row :%d,column:%d is both @ marker location and play square location!",
-                            row, col));
-                    throw new XmlNotValidException(validationResult);
-                }
-            }
-        }
 
 
 

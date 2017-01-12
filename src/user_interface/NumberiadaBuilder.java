@@ -2,6 +2,8 @@ package user_interface;
 
 import com.sun.javafx.collections.MappingChange;
 import game_objects.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -43,21 +45,29 @@ public class NumberiadaBuilder {
         m_players.setPadding(new Insets(10, 10, 10, 40));
         m_players.setVgap(8);
         m_players.setHgap(10);
+
         Label name = new Label("Player Name");
-        name.setStyle("-fx-font-weight: bold;" +
-                "-fx-text-fill: #AB4642;");
+        name.setId("player-gridPane");
+        name.getStyleClass().add("player-gridPane");
+
+
         GridPane.setConstraints(name, 0, 0);
         Label id = new Label("ID");
-        id.setStyle("-fx-font-weight: bold;" +
-                "-fx-text-fill: #AB4642;");
+        id.setId("player-gridPane");
+        id.getStyleClass().add("player-gridPane");
+
         GridPane.setConstraints(id, 1, 0);
+
         Label type = new Label("Type");
-        type.setStyle("-fx-font-weight: bold;" +
-                "-fx-text-fill: #AB4642;");
+        type.setId("player-gridPane");
+        type.getStyleClass().add("player-gridPane");
+
         GridPane.setConstraints(type, 2, 0);
+
         Label color = new Label("Color");
-        color.setStyle("-fx-font-weight: bold;" +
-                "-fx-text-fill: #AB4642;");
+        color.setId("player-gridPane");
+        color.getStyleClass().add("player-gridPane");
+
         GridPane.setConstraints(color, 3,0);
         m_players.getChildren().addAll(name,id,type,color);
         int i=1;
@@ -81,7 +91,10 @@ public class NumberiadaBuilder {
     public GridPane createBoard(Board gameBoard) {
 
         int ind =0;
+        int col1 =0;
+        int row1 =0;
         int size = gameBoard.GetBoardSize();
+        Square[][]gBoard = gameBoard.getGameBoard();
         ObservableList<ObservableList<Square>> observableBoard = createObservableBoard(gameBoard);
 
         board = new GridPane();
@@ -128,15 +141,16 @@ public class NumberiadaBuilder {
                 }
                 else
                 {
-                    final ObservableList<Square> row1 = observableBoard.get(j-1);
 
-                    Square square = row1.get(ind);
-                    BoardButton butt = new BoardButton(square);
+                    BoardButton butt = new BoardButton(gBoard[j-1][i-1]); //square
+                    gBoard[j-1][i-1].colorProperty().addListener((observable, oldValue, newValue) -> butt.setBColor((int) newValue));
+                    butt.textProperty().bind(gBoard[j-1][i-1].squareValueProperty());
+                    //butt.buttonColorProperty().bind(gBoard[j - 1][i - 1].colorProperty());
                     butt.setPrefSize(squareSize,squareSize);
                     butt.setAlignment(Pos.CENTER);
                     butt.setOnAction(e->PressedBoardButton(butt));
                     board.add(butt,i,j);
-                    ind=(ind+1)%size;
+
                 }
             }
         }
@@ -144,7 +158,7 @@ public class NumberiadaBuilder {
         return board;
     }
 
-    private  ObservableList<ObservableList<Square>> createObservableBoard(Board logicBoard)
+    private ObservableList<ObservableList<Square>> createObservableBoard(Board logicBoard)
     {
          Square[][] gameBoard = logicBoard.getGameBoard();
          int size = logicBoard.GetBoardSize();
@@ -173,11 +187,15 @@ public class NumberiadaBuilder {
         for (Player player : players)
         {
             Label name = new Label(player.getName());
-            name.setStyle(" -fx-font-weight: bold;" +
-                    "-fx-text-fill: #0407ce;");
-            Label score = new Label(String.valueOf(player.getScore()));
-            score.setStyle( "-fx-font-weight: bold;"
-            +"-fx-text-fill: #02021a;");
+            name.textProperty().bind(player.nameProperty());
+            name.setId("player-score-label");
+            name.getStyleClass().add("player-score-label");
+            String scoree = String.valueOf(player.getScore());
+            Label score = new Label();
+            score.setText(scoree);
+            score.setId("score-label");
+            score.getStyleClass().add("score-label");
+            score.textProperty().bind(player.scoreStringProperty());
             PlayerScoreGridPane.addRow(i, name, score);
             i++;
 

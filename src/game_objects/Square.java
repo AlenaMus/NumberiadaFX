@@ -5,66 +5,121 @@
 package game_objects;
 
 
+import javafx.beans.property.*;
+
 public class Square {
 
     private Point location;
-    private boolean isEmpty;
-    private String value;
-    private int color;
-    private boolean disabled;
+    private StringProperty squareValue;
+    private BooleanProperty isDisabled;
+    private IntegerProperty color;
+    private BooleanProperty isEmpty;
+
 
 
 
     public Square(Point location) {
         this.location = location;
-        this.isEmpty = true;
-        this.value = "";
+        initSquare();
+        isEmpty.setValue(true);
+        squareValue.setValue("");
+        color.setValue(GameColor.GRAY);
+        isDisabled.setValue(false);
     }
 
     public Square(){
-        this.isEmpty = true;
+        initSquare();
+        isEmpty.setValue(true);
     }
 
-    public Square(Point location, String value, int color)
+    public void initSquare()
     {
-        this.isEmpty = false;
-        this.location = new Point(location.getRow(),location.getCol());
-        this.value = value;
-        this.color = color;
+        squareValue = new SimpleStringProperty();
+        isDisabled = new SimpleBooleanProperty();
+        isEmpty = new SimpleBooleanProperty();
+        color = new SimpleIntegerProperty();
     }
 
-    public boolean isDisabled() {return disabled;}
+    public int getColor() {
+        return color.get();
+    }
 
-    public void setDisabled(boolean disabled) {this.disabled = disabled;}
+    public IntegerProperty colorProperty() {
+        return color;
+    }
+
+    public void setColor(int color1) {
+        color.set(color1);
+    }
+
+
+    public Square(Point location, String value, int color1)
+    {
+        initSquare();
+        squareValue.setValue(value);
+        this.location = new Point(location.getRow(),location.getCol());
+        isDisabled.setValue(false);
+        isEmpty.setValue(false);
+        color.setValue(color1);
+
+    }
+
+    public String getSquareValue() {
+        return squareValue.get();
+    }
+
+    public StringProperty squareValueProperty() {
+        return squareValue;
+    }
+
+    public void setSquareValue(String squareValue) {
+        this.squareValue.set(squareValue);
+    }
+
+    public boolean isIsDisabled() {
+        return isDisabled.get();
+    }
+
+    public BooleanProperty isDisabledProperty() {
+        return isDisabled;
+    }
+
+    public void setIsDisabled(boolean isDisabled) {
+        this.isDisabled.set(isDisabled);
+    }
+
+
+    public boolean isIsEmpty() {
+        return isEmpty.get();
+    }
+
+    public BooleanProperty isEmptyProperty() {
+        return isEmpty;
+    }
+
+    public void setIsEmpty(boolean isEmpty) {
+        this.isEmpty.set(isEmpty);
+    }
+
+    public boolean isDisabled() {return isDisabled.get();}
+    public void setDisabled(boolean disabled) {isDisabled.setValue(disabled);}
 
     public Point getLocation() {
         return location;
     }
-
     public void setLocation(Point location) {
         this.location = location;
     }
 
-    public int getColor() {
-        return color;
-    }
-
-    public void setColor(int color) {
-        this.color = color;
-    }
-
-    public boolean isEmpty() {
-        return isEmpty;
-    }
-
+    public boolean isEmpty() {return isEmpty.get();}
     public void setEmpty(boolean empty) {
-        isEmpty = empty;
+        isEmpty.setValue(empty);
     }
 
-    public String getValue(){return value;}
+    public String getValue(){return squareValue.getValue();}
     public void setValue(String value)
     {
-        this.value = value;
+        squareValue.setValue(value);
         if(value.equals(""))
         {
             this.setEmpty(true);
@@ -72,6 +127,7 @@ public class Square {
         else
         {
             this.setEmpty(false);
+            squareValue.setValue(value);
         }
     }
 

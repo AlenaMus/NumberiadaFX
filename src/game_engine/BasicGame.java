@@ -5,6 +5,7 @@ import game_objects.Board;
 import game_objects.Marker;
 import game_objects.Player;
 import game_objects.Square;
+import game_validation.ValidationResult;
 import game_validation.XmlNotValidException;
 import jaxb.schema.generated.*;
 
@@ -227,24 +228,6 @@ public class BasicGame extends GameLogic {
         currentPlayer.setScore(squareValue);
     }
 
-//    @Override
-//    public void setBoard(jaxb.schema.generated.Board board)
-//    {
-//        eBoardType boardType = eBoardType.valueOf(board.getStructure().getType());
-//        gameBoard = new Board(board.getSize().intValue(),boardType);
-//
-//        switch (boardType) {
-//            case Explicit: Point markerLocation = new Point(board.getStructure().getSquares().getMarker().getRow().intValue(),board.getStructure().getSquares().getMarker().getColumn().intValue());
-//                gameBoard.FillExplicitBoard(explicitSquares,markerLocation);
-//                break;
-//            case Random:
-//                BoardRange range = new BoardRange(board.getStructure().getRange().getFrom(),board.getStructure().getRange().getTo());
-//                gameBoard.setBoardRange(range);
-//                gameBoard.FillRandomBoard();
-//                break;
-//        }
-//    }
-
     public void setPlayers(int playerChoice)
     {
 
@@ -275,96 +258,35 @@ public class BasicGame extends GameLogic {
 
 
     @Override
-    public void checkRandomBoardValidity(Range boardRange, int boardSize)
+    public void checkRandomBoardValidity(Range boardRange, int boardSize)throws XmlNotValidException
     {
+        int range;
+        validationResult = new ValidationResult();
 
-//        int range;
-//
-//        if(!(boardRange.getFrom() >= -99 &&  boardRange.getTo() <= 99))
-//        {
-//            //UserInterface.ValidationErrors.add(String.format("Random Board Validation Error: board range have to be in [-99,99] range,range [%d,%d] is invalid ",boardRange.getFrom(),boardRange.getTo()));
-//            return isValidBoard;
-//        }
-//        if(boardRange.getFrom() <= boardRange.getTo())
-//        {
-//            range = boardRange.getTo() - boardRange.getFrom() +1;
-//
-//            if(((boardSize*boardSize -1) / range) > 0)
-//            {
-//                isValidBoard = true;
-//            }
-//            else
-//            {
-//                //UserInterface.ValidationErrors.add(String.format("Random Board Validation Error: Board Size %d < Board Range numbers %d (from %d to %d)",
-//                    //    boardSize*boardSize,range,boardRange.getFrom(),boardRange.getTo()));
-//            }
-//        }
-//        else
-//        {
-//          //  UserInterface.ValidationErrors.add(String.format("Random Board Validation Error: Board Range numbers invalid from %d > to %d",
-//            //        boardRange.getFrom(),boardRange.getTo()));
-//        }
+        if(!(boardRange.getFrom() >= BoardRange.MIN_BOARD_RANGE &&  boardRange.getTo() <= BoardRange.MAX_BOARD_RANGE))
+        {
+            validationResult.add(String.format("Random Board Validation Error: board range have to be in [-99,99] range,range [%d,%d] is invalid ",
+                    boardRange.getFrom(),boardRange.getTo()));
+            throw new XmlNotValidException(validationResult);
+        }
+        if(boardRange.getFrom() <= boardRange.getTo())
+        {
+            range = boardRange.getTo() - boardRange.getFrom() +1;
 
-    }
+            if(((boardSize*boardSize -1) / range == 0))
+            {
+                validationResult.add(String.format("Random Board Validation Error: Board Size %d < Board Range %d!",
+                        boardSize*boardSize,range));
+                throw new XmlNotValidException(validationResult);
+            }
 
-    @Override
-    public void checkExplicitBoard(List<jaxb.schema.generated.Square> squares, jaxb.schema.generated.Marker marker,int boardSize)
-    {
+        } else {
+            validationResult.add(String.format("Random Board Validation Error: Board Range numbers invalid from %d > to %d",
+                    boardRange.getFrom(),boardRange.getTo()));
+            throw new XmlNotValidException(validationResult);
+        }
 
-//        game_objects.Square newSquare;
-//        int row,col,val,color;
-//
-//        if(!isInBoardRange(marker.getRow().intValue(),boardSize))
-//        {
-//            isValidBoard = false;
-//          //  UserInterface.ValidationErrors.add(String.format("Explicit Board validation : invalid row of marker location ! Must be in range  from %d  to %d",1,boardSize));
-//        }
-//        if(!isInBoardRange(marker.getColumn().intValue(),boardSize))
-//        {
-//            isValidBoard = false;
-//           // UserInterface.ValidationErrors.add(String.format("Explicit Board validation error: invalid column of marker location ! Must be in range  from %d  to %d",1,boardSize));
-//        }
-//
-//        if(isValidBoard) {
-//
-//            for (jaxb.schema.generated.Square square : squares) {
-//                row = square.getRow().intValue();
-//                col = square.getColumn().intValue();
-//                val = square.getValue().intValue();
-//                color = square.getColor();
-//
-//                if ((val < -99 )|| (val > 99)) {
-//                 //   UserInterface.ValidationErrors.add("Explicit Board Validation Error: squares values must be in between -99 and 99" );
-//                    isValidBoard = false;
-//                    break;
-//
-//                }
-//                if(!(row == marker.getRow().intValue() && col == marker.getColumn().intValue())) {
-//
-//                    if (isInBoardRange(row, boardSize) && isInBoardRange(col, boardSize)) //location is ok
-//                    {
-//                        newSquare = new game_objects.Square(new Point(row, col), String.valueOf(val), color);
-//                        if (explicitSquares.contains(newSquare)) {
-//                            isValidBoard = false;
-//                         //   UserInterface.ValidationErrors.add(String.format("Explicit Board validation error: square double location [%d,%d] existance!",
-//                           //         square.getRow().intValue(), square.getColumn().intValue()));
-//                            break;
-//                        } else {
-//                            explicitSquares.add(newSquare);
-//                        }
-//                    } else {
-//                        explicitSquares.clear();
-//                        isValidBoard = false;
-//                       // UserInterface.ValidationErrors.add(String.format("Explicit Board Validation Error: Square row :%d,column:%d outside board size :%d", row, col, boardSize));
-//                        break;
-//                    }
-//                }else{
-//                    isValidBoard = false;
-//                   // UserInterface.ValidationErrors.add(String.format("Explicit Board Validation Error: Square row :%d,column:%d is both @ marker location and play square location!", row, col));
-//                    break;
-//                }
-//            }
-//        }
+
     }
 
     @Override
@@ -378,7 +300,7 @@ public class BasicGame extends GameLogic {
 
         // filling our numbers in given range
         int rangeSize = boardRange.RangeSize();
-        int printNumCount = (boardSize * boardSize -1) / rangeSize; //49/9=5
+        int printNumCount = (boardSize * boardSize -1) / rangeSize;
         int rangeNumToPrint = boardRange.getFrom();
 
 

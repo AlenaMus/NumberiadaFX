@@ -1,33 +1,60 @@
 package game_objects;
 
 import game_engine.eTurn;
+import javafx.beans.property.*;
 import javafx.scene.paint.Color;
 
-/**
- * Created by Alona on 11/7/2016.
- */
 public class Player {
 
-    protected String name;
-    protected int id;
+    protected StringProperty name;
+    protected IntegerProperty id;
     private ePlayerType playerType;
     protected eTurn turn;
-    protected int score;
+    protected IntegerProperty score;
     protected int numOfMoves;
-    private int color;
-    private String playerColor;
+    private IntegerProperty color;
+    private StringProperty playerColor;
     private int serialNumber;
-    private boolean IsActive;
+    private BooleanProperty IsActive;
+    private StringProperty scoreString;
 
-    public Player(ePlayerType playerType,String playerName, int playerId,int color)
+    public StringProperty nameProperty() {return name;}
+    public IntegerProperty idProperty() {return id;}
+    public IntegerProperty scoreProperty() {return score;}
+    public int getScore(){return score.get();}
+    public void setScore(int addScore) {
+        int newScore = score.get()+addScore;
+        score.setValue(newScore);
+        scoreString.setValue(String.valueOf(score.get()));
+    }
+    public String getPlayerColor() {return playerColor.get();}
+    public StringProperty playerColorProperty() {return playerColor;}
+    public boolean isIsActive() {return IsActive.get();}
+    public BooleanProperty isActiveProperty() {return IsActive;}
+    public void setIsActive(boolean isActive) {this.IsActive.set(isActive);}
+    public IntegerProperty colorProperty() {return color;}
+    public void setColor(int color) {this.color.set(color);}
+    public String getScoreString() {return scoreString.get();}
+    public StringProperty scoreStringProperty() {return scoreString;}
+    public void setScoreString(String scoreString) {this.scoreString.setValue(scoreString);}
+
+    public Player(ePlayerType playerType, String playerName, int playerId, int color1)
     {
-        this.name = playerName;
-        this.id = playerId;
+        scoreString = new SimpleStringProperty();
+        IsActive = new SimpleBooleanProperty(true);
+        name = new SimpleStringProperty();
+        name.setValue(playerName);
+        id = new SimpleIntegerProperty(playerId);
+        //id.setValue(playerId);
         this.playerType = playerType;
-        //this.turn = playerTurn;
-        this.color =color;
-        this.playerColor = GameColor.setColor(color);
-        score = 0;
+        color = new SimpleIntegerProperty(color1);
+        //color.setValue(color1);
+        playerColor = new SimpleStringProperty(GameColor.setColor(color1));
+        //playerColor.setValue(GameColor.setColor(color1));
+        score = new SimpleIntegerProperty(0);
+        score.setValue(0);
+        scoreString.setValue(String.valueOf(score.get()));
+        scoreString.setValue(score.toString());
         numOfMoves = 0;
 
     }
@@ -36,9 +63,11 @@ public class Player {
     {
         this.turn = turn;
         this.playerType = playerType;
-        score = 0;
+        score = new SimpleIntegerProperty();
+        score.setValue(0);
         numOfMoves = 0;
-        name = "";
+        name = new SimpleStringProperty();
+        name.setValue("");
 
     }
 
@@ -51,18 +80,16 @@ public class Player {
     }
 
     public boolean isActive() {
-        return IsActive;
+        return IsActive.get();
     }
 
-    public void setActive(boolean active) {IsActive = active;}
+    public void setActive(boolean active) {IsActive.setValue(active);}
 
     public int getId() {
-        return id;
+        return id.get();
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public void setId(int playerID) { id.setValue(playerID);}
 
     public ePlayerType getPlayerType() {
         return playerType;
@@ -80,13 +107,7 @@ public class Player {
         this.turn = turn;
     }
 
-    public int getScore() {
-        return score;
-    }
 
-    public void setScore(int score) {
-        this.score+= score;
-    }
 
     public int getNumOfMoves() {
         return numOfMoves;
@@ -97,16 +118,16 @@ public class Player {
     }
 
     public String getName() {
-        return name;
+        return name.get();
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String name1) {
+        name.setValue(name1);
     }
 
     public int getColor()
     {
-        return color;
+        return color.get();
     }
 
     @Override
@@ -122,13 +143,11 @@ public class Player {
         if(player instanceof Player)
         {
             newPlayer = (Player)player;
-            if(newPlayer.getId() == this.id || newPlayer.color == this.color)
+            if(newPlayer.getId() == id.get() || newPlayer.color == this.color)
             {
                 isEqual = true;
             }
-
         }
-
         return isEqual;
     }
 
@@ -143,8 +162,6 @@ public class Player {
                 isCurrentPlayer = true;
             }
         }
-
         return isCurrentPlayer;
-
     }
 }
