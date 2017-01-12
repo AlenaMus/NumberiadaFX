@@ -146,7 +146,6 @@ public class NumberiadaBuilder {
                 }
                 else
                 {
-
                     BoardButton butt = new BoardButton(gBoard[j-1][i-1]); //square
                     gBoard[j-1][i-1].colorProperty().addListener((observable, oldValue, newValue) -> butt.setBColor((int) newValue));
                     butt.textProperty().bind(gBoard[j-1][i-1].squareValueProperty());
