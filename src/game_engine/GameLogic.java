@@ -22,7 +22,6 @@ public abstract class GameLogic {
     public static final int NOT_IN_MARKER_ROW_AND_COLUMN = 1001;
     public static final int NOT_PLAYER_COLOR =1002;
 
-    protected String gameFile = " ";
     public  boolean isEndOfGame = false;
     private int gameMoves=0;
 
@@ -32,7 +31,7 @@ public abstract class GameLogic {
     protected GameDescriptor loadedGame;
     protected  int numOfPlayers;
     protected game_objects.Board gameBoard;
-    protected game_objects.Player currentPlayer;
+    protected game_objects.Player currentPlayer = new Player();
     private eGameType gameType;
 
 
@@ -42,7 +41,19 @@ public abstract class GameLogic {
     }
     public void setCurrentPlayer(game_objects.Player currentPlayer)
     {
-        this.currentPlayer = currentPlayer;
+        //this.currentPlayer = currentPlayer;
+        this.currentPlayer.setName(currentPlayer.getName());
+        this.currentPlayer.idProperty().set(currentPlayer.idProperty().get());
+        this.currentPlayer.playerIDProperty().set(currentPlayer.playerIDProperty().get());
+
+        this.currentPlayer.playerColorProperty().set(currentPlayer.playerColorProperty().get());
+        this.currentPlayer.colorProperty().set(currentPlayer.colorProperty().get());
+        this.currentPlayer.setActive(currentPlayer.isActive());
+        this.currentPlayer.setPlayerType(currentPlayer.getPlayerType());
+        this.currentPlayer.playerTypeProperty().set(currentPlayer.playerTypeProperty().get());
+        this.currentPlayer.scoreStringProperty().set(currentPlayer.scoreStringProperty().get());
+        this.currentPlayer.setScore(currentPlayer.getScore());
+
     }
     public GameDescriptor getLoadedGame() {
         return loadedGame;
@@ -73,22 +84,23 @@ public abstract class GameLogic {
     public abstract void checkXMLData(GameDescriptor loadedGame)throws XmlNotValidException;
     public abstract void checkRandomBoardValidity(Range boardRange, int boardSize)throws XmlNotValidException;
     public abstract void gameOver();
-    public abstract void switchPlayer();
+    public abstract boolean switchPlayer();
     protected void checkAndSetPlayersXML(jaxb.schema.generated.Players players)throws XmlNotValidException{}
+    public abstract boolean isGameOver();
 
 
 
-    public void setPlayers(jaxb.schema.generated.Players gamePlayers)
-    {
-        for (jaxb.schema.generated.Player player:gamePlayers.getPlayer()) {
-            int id = player.getId().intValue();
-            String name = player.getName();
-            ePlayerType playerType = ePlayerType.valueOf(player.getType());
-            int color = player.getColor();
-            game_objects.Player player1 = new game_objects.Player(playerType,name,id,color);
-            players.add(player1);
-        }
-    }
+//    public void setPlayers(jaxb.schema.generated.Players gamePlayers)
+//    {
+//        for (jaxb.schema.generated.Player player:gamePlayers.getPlayer()) {
+//            int id = player.getId().intValue();
+//            String name = player.getName();
+//            ePlayerType playerType = ePlayerType.valueOf(player.getType());
+//            int color = player.getColor();
+//            game_objects.Player player1 = new game_objects.Player(playerType,name,id,color);
+//            players.add(player1);
+//        }
+//    }
 
    /* public int makeHumanMove(Point userPoint) //GET POINT FROM UI
     {
@@ -211,8 +223,6 @@ public abstract class GameLogic {
 
 
     public void loadDataFromJaxbToGame(GameDescriptor loadedGame,String gameType) {
-
-       // explicitSquares.clear();
         setGameType(eGameType.valueOf(gameType));
         jaxb.schema.generated.Board loadedBoard = loadedGame.getBoard();
         setBoard(loadedBoard);

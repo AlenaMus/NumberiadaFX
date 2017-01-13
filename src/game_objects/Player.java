@@ -8,101 +8,141 @@ public class Player {
 
     protected StringProperty name;
     protected IntegerProperty id;
-    private ePlayerType playerType;
+    protected StringProperty playerID;
     protected eTurn turn;
     protected IntegerProperty score;
+
+    public String getPlayerID() {
+        return playerID.get();
+    }
+
+
+
+    public void setPlayerID(String playerID) {
+        this.playerID.set(playerID);
+    }
+
     protected int numOfMoves;
     private IntegerProperty color;
     private StringProperty playerColor;
-    private int serialNumber;
+
+    public void setPlayerColor(String playerColor) {
+        this.playerColor.set(playerColor);
+    }
+
     private BooleanProperty IsActive;
     private StringProperty scoreString;
+    private StringProperty playerType;
+    private ePlayerType playerEtype;
+
+
+    public Player(ePlayerType playerType1, String playerName, int playerId, int color1)
+    {
+        this();
+        playerID.setValue(String.valueOf(playerId));
+        scoreString.setValue(String.valueOf(score.get()));
+        name.setValue(playerName);
+        id.setValue(playerId);
+        playerType.setValue(String.valueOf(playerType1));
+        color.setValue(color1);
+        playerColor.setValue(String.valueOf(color1));
+        score.setValue(0);
+        scoreString.setValue(String.valueOf(score));
+        numOfMoves = 0;
+        this.playerEtype = playerType1;
+
+    }
+
+    public Player(eTurn turn,ePlayerType playerType1)
+    {
+        IsActive = new SimpleBooleanProperty(true);
+        this.turn = turn;
+        score = new SimpleIntegerProperty(0);
+        numOfMoves = 0;
+        name = new SimpleStringProperty("");
+        playerType = new SimpleStringProperty(String.valueOf(playerType1));
+        this.playerEtype = playerType1;
+
+    }
+
+
+    public Player()
+    {
+        playerID = new SimpleStringProperty();
+        scoreString = new SimpleStringProperty();
+        IsActive = new SimpleBooleanProperty(true);
+        name = new SimpleStringProperty();
+        id = new SimpleIntegerProperty();
+        playerType = new SimpleStringProperty();
+        color = new SimpleIntegerProperty();
+        playerColor = new SimpleStringProperty();
+        score = new SimpleIntegerProperty(0);
+        numOfMoves = 0;
+
+
+    }
 
     public StringProperty nameProperty() {return name;}
-    public IntegerProperty idProperty() {return id;}
-    public IntegerProperty scoreProperty() {return score;}
+    public StringProperty playerTypeProperty() {return playerType;}
+    public StringProperty playerIDProperty() {
+        return playerID;
+    }
+
+    public void setPlayerType(String playerType) {
+        this.playerType.set(playerType);
+    }
+
+
+
     public int getScore(){return score.get();}
     public void setScore(int addScore) {
         int newScore = score.get()+addScore;
         score.setValue(newScore);
         scoreString.setValue(String.valueOf(score.get()));
     }
+
     public String getPlayerColor() {return playerColor.get();}
     public StringProperty playerColorProperty() {return playerColor;}
-    public boolean isIsActive() {return IsActive.get();}
-    public BooleanProperty isActiveProperty() {return IsActive;}
-    public void setIsActive(boolean isActive) {this.IsActive.set(isActive);}
+
+
     public IntegerProperty colorProperty() {return color;}
     public void setColor(int color) {this.color.set(color);}
+
     public String getScoreString() {return scoreString.get();}
     public StringProperty scoreStringProperty() {return scoreString;}
     public void setScoreString(String scoreString) {this.scoreString.setValue(scoreString);}
 
-    public Player(ePlayerType playerType, String playerName, int playerId, int color1)
-    {
-        scoreString = new SimpleStringProperty();
-        IsActive = new SimpleBooleanProperty(true);
-        name = new SimpleStringProperty();
-        name.setValue(playerName);
-        id = new SimpleIntegerProperty(playerId);
-        //id.setValue(playerId);
-        this.playerType = playerType;
-        color = new SimpleIntegerProperty(color1);
-        //color.setValue(color1);
-        playerColor = new SimpleStringProperty(GameColor.setColor(color1));
-        //playerColor.setValue(GameColor.setColor(color1));
-        score = new SimpleIntegerProperty(0);
-        score.setValue(0);
-        scoreString.setValue(String.valueOf(score.get()));
-        scoreString.setValue(score.toString());
-        numOfMoves = 0;
-
+    public ePlayerType getPlayerEtype() {
+        return playerEtype;
     }
 
-    public Player(eTurn turn,ePlayerType playerType)
-    {
-        this.turn = turn;
-        this.playerType = playerType;
-        score = new SimpleIntegerProperty();
-        score.setValue(0);
-        numOfMoves = 0;
-        name = new SimpleStringProperty();
-        name.setValue("");
-
+    public void setPlayerEtype(ePlayerType playerEtype) {
+        this.playerEtype = playerEtype;
     }
 
-    public int getSerialNumber() {
-        return serialNumber;
-    }
-
-    public void setSerialNumber(int serialNumber) {
-        this.serialNumber = serialNumber;
-    }
+    public IntegerProperty idProperty() {return id;}
+    public IntegerProperty scoreProperty() {return score;}
 
     public boolean isActive() {
         return IsActive.get();
     }
-
     public void setActive(boolean active) {IsActive.setValue(active);}
 
     public int getId() {
         return id.get();
     }
-
     public void setId(int playerID) { id.setValue(playerID);}
 
     public ePlayerType getPlayerType() {
-        return playerType;
+        return playerEtype;
     }
-
     public void setPlayerType(ePlayerType playerType) {
-        this.playerType = playerType;
+        this.playerEtype = playerType;
     }
 
     public eTurn getTurn() {
         return turn;
     }
-
     public void setTurn(eTurn turn) {
         this.turn = turn;
     }
@@ -112,7 +152,6 @@ public class Player {
     public int getNumOfMoves() {
         return numOfMoves;
     }
-
     public void setNumOfMoves(int numOfMoves) {
         this.numOfMoves = numOfMoves;
     }
@@ -120,7 +159,6 @@ public class Player {
     public String getName() {
         return name.get();
     }
-
     public void setName(String name1) {
         name.setValue(name1);
     }

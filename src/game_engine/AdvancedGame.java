@@ -19,12 +19,14 @@ public class AdvancedGame extends GameLogic{
 
     public static final int MIN_PLAYERS = 3;
     public static final int MAX_PLAYERS = 6;
+    private int currentPlayerIndex;
 
 
     @Override
     public void initGame()
     {
-        setCurrentPlayer(players.get(0));
+        super.setCurrentPlayer(players.get(0));
+        currentPlayerIndex = 0;
     }
 
     @Override
@@ -39,7 +41,7 @@ public class AdvancedGame extends GameLogic{
     @Override
     public boolean InitMoveCheck()
     {
-        return true;
+        return isPlayerHaveMove(gameBoard.getMarker().getMarkerLocation(),currentPlayer)?true:false;
     }
 
 
@@ -63,31 +65,42 @@ public class AdvancedGame extends GameLogic{
         currentPlayer.setScore(squareValue);
     }
 
+
     @Override
-    public void switchPlayer()
+    public boolean switchPlayer()
     {
-        int activePlayerNumber = currentPlayer.getSerialNumber();
-        game_objects.Player nextPlayer = null;
-        if(isGameOver2(gameBoard.getMarker().getMarkerLocation()))
-        {
-            gameOver();
-        }
-        else //somebody have move
-            nextPlayer = players.get((activePlayerNumber+1) % gameBoard.GetBoardSize());
+       boolean isSwitchSuccssed =true;
+
+           game_objects.Player nextPlayer;
+
+            currentPlayerIndex++;
+            nextPlayer = players.get(currentPlayerIndex); //% numOfPlayers
+
+
         while (!nextPlayer.isActive())
         {
-            nextPlayer = players.get((activePlayerNumber+1)%gameBoard.GetBoardSize());
+            currentPlayerIndex++;
+            nextPlayer = players.get(currentPlayerIndex%numOfPlayers);
         }
-        while (!(isPlayerHaveMove(gameBoard.getMarker().getMarkerLocation(),nextPlayer)))
+        if ((isPlayerHaveMove(gameBoard.getMarker().getMarkerLocation(),nextPlayer)))
         {
+            super.setCurrentPlayer(nextPlayer);
+
             //need to update UI player have no move!!!
-            nextPlayer = players.get((activePlayerNumber+1)%gameBoard.GetBoardSize());
+
+           /* currentPlayerIndex++;
+            nextPlayer = players.get(currentPlayerIndex%numOfPlayers);
             while (!nextPlayer.isActive())
             {
-                nextPlayer = players.get((activePlayerNumber+1)%gameBoard.GetBoardSize());
-            }
+                currentPlayerIndex++;
+                nextPlayer = players.get(currentPlayerIndex%numOfPlayers);
+            }*/
         }
-        setCurrentPlayer(nextPlayer);
+        else{
+
+            isSwitchSuccssed = false;
+        }
+        return isSwitchSuccssed;
     }
 
     private boolean isPlayerHaveMove(Point markerLocation, game_objects.Player player)
@@ -97,7 +110,7 @@ public class AdvancedGame extends GameLogic{
         for (int i=0; i < gameBoard.GetBoardSize();i++)
             if ((!gameBoard.getGameBoard()[MarkerRow][i].isDisabled()) &&(!gameBoard.getGameBoard()[MarkerRow][i].isEmpty())
                     && (!gameBoard.getGameBoard()[MarkerRow][i].getValue().equals(gameBoard.getMarker().getMarkerSign()))
-                    && ((gameBoard.getGameBoard()[MarkerRow][i].getColor()  == (getCurrentPlayer().getColor()))))
+                    && ((gameBoard.getGameBoard()[MarkerRow][i].getColor()  == (player.getColor()))))
                 return true;
         for (int i=0; i < gameBoard.GetBoardSize(); i++)
             if ((!gameBoard.getGameBoard()[i][MarkerCol].isDisabled() )&& (!gameBoard.getGameBoard()[i][MarkerCol].isEmpty() )
@@ -107,8 +120,10 @@ public class AdvancedGame extends GameLogic{
         return false;
     }
 
-    private boolean isGameOver2(Point markerLocation)
+    @Override
+    public boolean isGameOver()
     {
+        Point markerLocation = gameBoard.getMarker().getMarkerLocation();
         int MarkerRow = markerLocation.getRow()-1;
         int MarkerCol = markerLocation.getCol()-1;
         for (int i=0; i < gameBoard.GetBoardSize();i++)

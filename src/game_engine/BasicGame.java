@@ -35,13 +35,14 @@ public class BasicGame extends GameLogic {
     public void makeComputerMove()
     {}
 
+
     public void initGame()
     {
         setBasicPlayers();
         setCurrentPlayer(rowPlayer);
     }
 
-    public String  TotalGameTime()
+    public String TotalGameTime()
     {
         long millis = System.currentTimeMillis() - StartTime;
          return String.format("%02d:%02d",
@@ -101,6 +102,9 @@ public class BasicGame extends GameLogic {
     {
 
     }
+
+    @Override
+    public boolean isGameOver(){return true;}
     //public int makeComputerMove()
 //    {
 //        return ComputerMove(gameBoard.GetBoardSize());
@@ -157,7 +161,7 @@ public class BasicGame extends GameLogic {
 //        updateUserData(squareValue); //update score and moves
 //        gameBoard.getMarker().setMarkerLocation(squareLocation.getRow(),squareLocation.getCol());
 //        //UserInterface.PrintBoard(gameBoard.toString());
-//    }
+
 
     public void makeHumanMove(Point userPoint)
     {
@@ -183,7 +187,7 @@ public class BasicGame extends GameLogic {
 
 
     @Override
-    public void switchPlayer()
+    public boolean switchPlayer()
     {
         if (currentPlayer.checkPlayerTurn(rowPlayer)) {
             if (gameBoard.isColPlayerHaveMoves(gameBoard.getMarker().getMarkerLocation()))
@@ -206,6 +210,7 @@ public class BasicGame extends GameLogic {
                 gameOver();
             }
         }
+        return true;
     }
 
 

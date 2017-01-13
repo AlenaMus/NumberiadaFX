@@ -95,12 +95,9 @@ public class NumberiadaBuilder {
 
     public GridPane createBoard(Board gameBoard) {
 
-        int ind =0;
-        int col1 =0;
-        int row1 =0;
         int size = gameBoard.GetBoardSize();
         Square[][]gBoard = gameBoard.getGameBoard();
-        ObservableList<ObservableList<Square>> observableBoard = createObservableBoard(gameBoard);
+      //  ObservableList<ObservableList<Square>> observableBoard = createObservableBoard(gameBoard);
 
         board = new GridPane();
         board.setPadding(new Insets(30, 30, 30, 30));
@@ -135,7 +132,6 @@ public class NumberiadaBuilder {
             board.add(lab,i,0);
         }
 
-
         for (j =1;j <=size; j++) {
             for ( i=0 ; i <=size; i++) {
                 if (i==0) {
@@ -161,21 +157,22 @@ public class NumberiadaBuilder {
         return board;
     }
 
-    private ObservableList<ObservableList<Square>> createObservableBoard(Board logicBoard)
-    {
-         Square[][] gameBoard = logicBoard.getGameBoard();
-         int size = logicBoard.GetBoardSize();
 
-        ObservableList<ObservableList<Square>> board = FXCollections.<ObservableList<Square>>observableArrayList();
-        for (int i = 0; i < size; i++) {
-            final ObservableList<Square> row = FXCollections.<Square>observableArrayList();
-            board.add(i, row);
-            for (int j = 0; j < size; j++) {
-                row.add(gameBoard[i][j]);
-            }
-        }
-        return board;
-    }
+//    private ObservableList<ObservableList<Square>> createObservableBoard(Board logicBoard)
+//    {
+//         Square[][] gameBoard = logicBoard.getGameBoard();
+//         int size = logicBoard.GetBoardSize();
+//
+//        ObservableList<ObservableList<Square>> board = FXCollections.<ObservableList<Square>>observableArrayList();
+//        for (int i = 0; i < size; i++) {
+//            final ObservableList<Square> row = FXCollections.<Square>observableArrayList();
+//            board.add(i, row);
+//            for (int j = 0; j < size; j++) {
+//                row.add(gameBoard[i][j]);
+//            }
+//        }
+//        return board;
+//    }
 
 
     public void setPlayersScore(GridPane PlayerScoreGridPane)
@@ -201,18 +198,9 @@ public class NumberiadaBuilder {
             score.textProperty().bind(player.scoreStringProperty());
             PlayerScoreGridPane.addRow(i, name, score);
             i++;
-
         }
-
     }
 
-    public void setCurrentPlayer(Player player,Label PlayerNameLabel,Label CurrentPlayerIDLabel,Label CurrentPlayerTypeLabel,Label CurrentPlayerColorLabel)
-    {
-        PlayerNameLabel.setText(player.getName());
-        CurrentPlayerIDLabel.setText(String.valueOf(player.getId()));
-        CurrentPlayerTypeLabel.setText(String.valueOf(player.getPlayerType()));
-        CurrentPlayerColorLabel.setText(GameColor.getColor(player.getColor()));
-    }
 
     public void setCurrentMove(Label MoveNumberLabel,int move)
     {

@@ -2,9 +2,12 @@ package user_interface;
 
 import game_engine.GameLogic;
 import game_engine.GameManager;
+import game_objects.GameColor;
+import game_objects.Player;
 import game_objects.Point;
 import game_validation.ValidationResult;
 import game_validation.XmlNotValidException;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -80,32 +83,55 @@ public class GameController implements Initializable {
 
     @FXML
     void StartGameButtonClicked(ActionEvent event) {
+
         MakeAMoveButton.disableProperty().setValue(false);
         logic.initGame();
         setStartGame();
+
+       if(!logic.InitMoveCheck())
+       {
+           Alert alert = new Alert(Alert.AlertType.INFORMATION);
+           alert.setHeaderText("You have no available moves! Skipped to next player ! Wait to your next turn:)");
+           alert.showAndWait();
+           findPlayerToNextMove();
+       }
     }
+
+
+  private void findPlayerToNextMove()
+  {
+      boolean hasMove = logic.switchPlayer();
+      while(!hasMove) {
+          Alert alert = new Alert(Alert.AlertType.INFORMATION);
+          alert.setHeaderText("You have no available moves! Skipped to next player ! Wait to your next turn:)");
+          alert.showAndWait();
+          hasMove = logic.switchPlayer();
+      }
+  }
 
     @FXML
     void MakeAMoveButtonClicked(ActionEvent event) {
         boolean isValidMove = false ;
+        boolean switchPlayerSuccess;
         int pointStatus;
         Point userPoint = builder.getChosenPoint();
-        if (userPoint != null)
-        {
+        if (userPoint != null) {
             pointStatus = logic.isValidPoint(userPoint);
-            if (pointStatus == logic.GOOD_POINT) {
-                //logic.makeComputerMove();
+            if (pointStatus == GameLogic.GOOD_POINT) {
                 logic.makeHumanMove(userPoint);
-                logic.setCurrentPlayer(logic.getPlayers().get(1));
-                builder.setCurrentPlayer(logic.getCurrentPlayer(),PlayerNameLabel, CurrentPlayerIDLabel, CurrentPlayerTypeLabel, CurrentPlayerColorLabel);
+                if (!logic.isGameOver()) {
+                    findPlayerToNextMove();
+                   // setCurrentPlayerView();
+                }
+                else { logic.gameOver();}
             }
-            else if (pointStatus == logic.NOT_IN_MARKER_ROW_AND_COLUMN)
+            else if (pointStatus ==GameLogic.NOT_IN_MARKER_ROW_AND_COLUMN)
             {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setHeaderText("You choose illegal square -the square needs to be in the marker raw or column");
                 alert.showAndWait();
             }
-            else if (pointStatus == logic.NOT_PLAYER_COLOR)
+            else if (pointStatus == GameLogic.NOT_PLAYER_COLOR)
             {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setHeaderText("You choose illegal square - the square is not in your color!");
@@ -116,7 +142,7 @@ public class GameController implements Initializable {
         else
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("YOU DIDNT CHOOSE A SQUARE YOU DUMB FUCK");
+            alert.setHeaderText("YOU DIDNT CHOOSE A SQUARE!");
             alert.showAndWait();
         }
     }
@@ -152,13 +178,9 @@ public class GameController implements Initializable {
 
     private void setStartGame() {
 
-        int size = logic.getGameBoard().GetBoardSize();
-        logic.getGameBoard().getGameBoard()[size-1][size-1].setColor(5);
-        logic.getGameBoard().getGameBoard()[size-1][size-1].setValue("00");
-
         PlayerNameLabel.setMaxWidth(300);
         builder.setPlayersScore(PlayerScoreGridPane); //after Game Starts
-        builder.setCurrentPlayer(logic.getCurrentPlayer(),PlayerNameLabel, CurrentPlayerIDLabel, CurrentPlayerTypeLabel, CurrentPlayerColorLabel);
+        setCurrentPlayer(logic.getCurrentPlayer());
         builder.setCurrentMove(MoveNumberLabel,logic.getMoves());
 
     }
@@ -202,4 +224,14 @@ public class GameController implements Initializable {
 
         }
     }
+
+    private void setCurrentPlayer(Player currentPlayer)
+    {
+        PlayerNameLabel.textProperty().bind(currentPlayer.nameProperty());
+        CurrentPlayerIDLabel.textProperty().bind(currentPlayer.playerIDProperty());
+        CurrentPlayerColorLabel.textProperty().bind(currentPlayer.playerColorProperty());
+        CurrentPlayerTypeLabel.textProperty().bind(currentPlayer.playerTypeProperty());
+    }
+
+
 }
