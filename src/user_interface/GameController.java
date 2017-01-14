@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
@@ -121,11 +122,11 @@ public class GameController implements Initializable {
 
   private void setGameOver()
   {
-      Player winner = logic.getWinner();
+      String winnerMessage = logic.getWinner();
       String statistics = logic.gameOver();
       Alert alert = new Alert(Alert.AlertType.INFORMATION);
       alert.setTitle("GAME OVER !!!");
-      alert.setHeaderText(String.format("The Winner is: %s with score %d !",winner.getName(),winner.getScore()));
+      alert.setHeaderText(winnerMessage);
       alert.setContentText(String.join(System.lineSeparator(),statistics));
       alert.showAndWait();
       LoadXmlFileButton.disableProperty().setValue(false);
@@ -184,9 +185,14 @@ public class GameController implements Initializable {
     @FXML
     void RetireGameButtonClicked(ActionEvent event) {
         logic.playerRetire();
-        builder.clearPlayersScoreView(PlayerScoreGridPane);
-        builder.setPlayersScore(PlayerScoreGridPane);
-        findPlayerToNextMove();
+       if(!GameLogic.isEndOfGame){
+           builder.clearPlayersScoreView(PlayerScoreGridPane);
+           builder.setPlayersScore(PlayerScoreGridPane);
+           findPlayerToNextMove();
+       }else{
+           setGameOver();
+       }
+
     }
 
 

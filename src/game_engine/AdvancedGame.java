@@ -27,40 +27,67 @@ public class AdvancedGame extends GameLogic{
         currentPlayerIndex = 0;
     }
 
-    @Override
-    public game_objects.Player getWinner(){
-        int maxScore = -999;
-        game_objects.Player winner = null;
-        for (game_objects.Player player:players) {
-           if(player!=null){
-                maxScore = player.getScore();
-               break;
-           }
-        }
 
+    public void setWinners(){
+        int maxScore=-10000;
+        for (game_objects.Player player:players) {
+                maxScore = player.getScore();
+                break;
+        }
         for (game_objects.Player player:players) {
             if(player!=null)
             {
                 if(player.getScore()> maxScore){
                     maxScore = player.getScore();
-                    winner = player;
                 }
             }
         }
-        return winner;
+        for (game_objects.Player player:players) {
+            if(player!=null)
+            {
+                if(player.getScore()== maxScore){
+                    winners.add(player);
+                }
+            }
+        }
+    }
+
+    @Override
+    public String getWinner(){
+        String winnerMessage="";
+        setWinners();
+       if(winners.size()> 1){
+           winnerMessage = "It's a TIE!\nThe Winners are :\n";
+           for (game_objects.Player player:winners) {
+               winnerMessage+=String.format("%s id:%d -> score :%d\n",player.getName(),player.getId(),player.getScore());
+           }
+       }else{
+           for (game_objects.Player player:winners) {
+               if(player!=null){
+                   winnerMessage = "The Winner is:\n" +
+                           String.format("%s id : %d -> score : %d", player.getName(), player.getId(), player.getScore());
+                   break;
+               }
+           }
+       }
+        return winnerMessage;
     }
 
     @Override
     public String gameOver()
     {
         int i=0;
+        game_objects.Player player;
         String winnerStatistics="";
         Collections.sort(players);
         Collections.reverse(players);
         while(i < players.size())
         {
-            winnerStatistics += (String.format("player %s id: %d with score %d \n",
-                    players.get(i).getName(),players.get(i).getId(),players.get(i).getScore()));
+            player = players.get(i);
+            if(!winners.contains(player)){
+                winnerStatistics += (String.format("player %s id: %d with score %d\n",
+                        player.getName(),player.getId(),player.getScore()));
+            }
             i++;
         }
 
@@ -160,7 +187,9 @@ public class AdvancedGame extends GameLogic{
         currentPlayer.setActive(false);
         players.remove(currentPlayer);
         numOfPlayers--;
-        //NEED TO UPDATE UI and delete all player squars
+       if(numOfPlayers==1) {
+           isEndOfGame = true;
+       }
     }
 
 

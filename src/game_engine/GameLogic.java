@@ -24,13 +24,17 @@ public abstract class GameLogic {
     public static final int GOOD_POINT = 1000;
     public static final int NOT_IN_MARKER_ROW_AND_COLUMN = 1001;
     public static final int NOT_PLAYER_COLOR =1002;
+    public static final int TIE = 0;
+    public static final int WINNER = 1;
 
-    public  boolean isEndOfGame = false;
+
+    public static boolean isEndOfGame = false;
     protected IntegerProperty gameMoves = new SimpleIntegerProperty(0);
 
     public static ValidationResult validationResult;
     protected List<Square> explicitSquares = new ArrayList<Square>();
     protected List<Player>  players = new ArrayList<>();
+    protected List<game_objects.Player> winners = new ArrayList<>();
     protected GameDescriptor loadedGame;
     protected  int numOfPlayers;
     protected game_objects.Board gameBoard;
@@ -61,16 +65,13 @@ public abstract class GameLogic {
         this.gameBoard = gameBoard;
     }
     public List<Player>  getPlayers(){return players;}
-    public abstract Player getWinner();
-
     public int getGameMoves() {
         return gameMoves.get();
     }
-
     public IntegerProperty gameMovesProperty() {
         return gameMoves;
     }
-
+    public abstract String getWinner();
     public void setGameMoves(int gameMoves) {
         this.gameMoves.set(gameMoves);
     }

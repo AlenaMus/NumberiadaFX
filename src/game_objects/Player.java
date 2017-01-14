@@ -67,7 +67,6 @@ public class Player implements Comparable<Player> {
         playerColor = new SimpleStringProperty();
         score = new SimpleIntegerProperty(0);
         scoreString = new SimpleStringProperty("0");
-       // scoreString.bind(scoreProperty().asString());
         numOfMoves = 0;
 
 
@@ -82,7 +81,6 @@ public class Player implements Comparable<Player> {
     public void setScore(int score) {
         this.score.setValue(score);
     }
-
 
     public String getPlayerColor() {return playerColor.get();}
     public StringProperty playerColorProperty() {return playerColor;}

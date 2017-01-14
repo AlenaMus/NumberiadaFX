@@ -106,9 +106,10 @@ public class BasicGame extends GameLogic {
     {
 
     }
+
     @Override
-    public game_objects.Player getWinner(){
-        return players.get(0);
+    public String getWinner(){
+        return null;
     }
 
     @Override
