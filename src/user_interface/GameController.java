@@ -46,6 +46,9 @@ public class GameController implements Initializable {
 
 
     @FXML
+    private Button ExitGameButton;
+
+    @FXML
     private Button LeaveGameButton;
 
     @FXML
@@ -141,6 +144,9 @@ public class GameController implements Initializable {
       clearGameWindow();
   }
 
+  private void ExitGameButtonClicked(){
+
+  }
   private void clearGameWindow()
   {
       builder.clearBoard();

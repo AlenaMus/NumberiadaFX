@@ -41,8 +41,11 @@
                         <Button fx:id="StartGameButton" mnemonicParsing="false" onAction="#StartGameButtonClicked" prefHeight="25.0" prefWidth="86.0" text="Start Game" />
                               <Button fx:id="MakeAMoveButton" mnemonicParsing="false" onAction="#MakeAMoveButtonClicked" prefHeight="25.0" prefWidth="106.0" text="Make A Move" />
                               <Button fx:id="LeaveGameButton" mnemonicParsing="false" onAction="#RetireGameButtonClicked" prefHeight="25.0" prefWidth="90.0" text="Leave Game" />
-                        <Button fx:id="ExitGameButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="81.0" text="Exit" />
+                        <Button fx:id="ExitGameButton" mnemonicParsing="false" onAction="#ExitGameButtonClicked" prefHeight="25.0" prefWidth="81.0" text="Exit" />
                      </children>
+                     <padding>
+                        <Insets top="7.0" />
+                     </padding>
                   </HBox>
                </children>
                 </Pane>
