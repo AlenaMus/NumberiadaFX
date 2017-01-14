@@ -29,13 +29,22 @@ public class AdvancedGame extends GameLogic{
 
     @Override
     public game_objects.Player getWinner(){
-
-        int maxScore = players.get(0).getScore();
+        int maxScore = -999;
         game_objects.Player winner = null;
         for (game_objects.Player player:players) {
-            if(player.getScore()> maxScore){
+           if(player!=null){
                 maxScore = player.getScore();
-                winner = player;
+               break;
+           }
+        }
+
+        for (game_objects.Player player:players) {
+            if(player!=null)
+            {
+                if(player.getScore()> maxScore){
+                    maxScore = player.getScore();
+                    winner = player;
+                }
             }
         }
         return winner;
@@ -78,7 +87,7 @@ public class AdvancedGame extends GameLogic{
     @Override
     public boolean switchPlayer()
     {
-       boolean isSwitchSucceed =true;
+       boolean isSwitchSucceed = true;
 
            game_objects.Player nextPlayer;
 
@@ -94,6 +103,7 @@ public class AdvancedGame extends GameLogic{
         if (!(isPlayerHaveMove(gameBoard.getMarker().getMarkerLocation(),nextPlayer)))
         {
              isSwitchSucceed = false;
+
         }else{
             setGameMoves(getGameMoves()+1);
         }

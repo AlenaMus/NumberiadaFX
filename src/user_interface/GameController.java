@@ -123,13 +123,13 @@ public class GameController implements Initializable {
   {
       Player winner = logic.getWinner();
       String statistics = logic.gameOver();
-      clearGameWindow();
       Alert alert = new Alert(Alert.AlertType.INFORMATION);
       alert.setTitle("GAME OVER !!!");
       alert.setHeaderText(String.format("The Winner is: %s with score %d !",winner.getName(),winner.getScore()));
       alert.setContentText(String.join(System.lineSeparator(),statistics));
       alert.showAndWait();
       LoadXmlFileButton.disableProperty().setValue(false);
+      clearGameWindow();
   }
 
   private void clearGameWindow()
@@ -150,7 +150,7 @@ public class GameController implements Initializable {
                 logic.makeHumanMove(userPoint);
                 findPlayerToNextMove();
             }
-            else if (pointStatus ==GameLogic.NOT_IN_MARKER_ROW_AND_COLUMN)
+            else if (pointStatus == GameLogic.NOT_IN_MARKER_ROW_AND_COLUMN)
             {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setHeaderText("You choose illegal square -the square needs to be in the marker raw or column");
@@ -162,7 +162,6 @@ public class GameController implements Initializable {
                 alert.setHeaderText("You choose illegal square - the square is not in your color!");
                 alert.showAndWait();
             }
-
         }
         else
         {
