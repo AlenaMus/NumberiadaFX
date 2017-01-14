@@ -31,6 +31,8 @@ public class GameController implements Initializable {
     private Stage gameWindow;
     private GameLogic logic;
     private GridPane gamePlayers;
+    private String xmlFilePath;
+    private GameManager gameManager = new GameManager();
 
     public void setGameWindow(Stage stage) {
         gameWindow = stage;
@@ -85,17 +87,26 @@ public class GameController implements Initializable {
     @FXML
     void StartGameButtonClicked(ActionEvent event) {
 
-        LoadXmlFileButton.disableProperty().setValue(true);
-        MakeAMoveButton.disableProperty().setValue(false);
-        LeaveGameButton.disableProperty().setValue(false);
-        logic.initGame();
-        setStartGame();
+        if(GameLogic.gameRound > 0){
+            clearGameWindow();
+            try{
+                gameManager.LoadGameFromXmlAndValidate(xmlFilePath);
+                logic = gameManager.getGameLogic();
+                createGameView();
+            }catch (XmlNotValidException ex){
+                 setInvalidXMLAlert(ex);
+            }
+        }
+            MakeAMoveButton.disableProperty().setValue(false);
+            LeaveGameButton.disableProperty().setValue(false);
+            LoadXmlFileButton.disableProperty().setValue(true);
+            logic.initGame();
+            setStartGame();
+            GameLogic.gameRound++;
 
        if(!logic.InitMoveCheck())
        {
-           Alert alert = new Alert(Alert.AlertType.INFORMATION);
-           alert.setHeaderText("You have no available moves! Skipped to next player ! Wait to your next turn:)");
-           alert.showAndWait();
+           noPossibleMovesAlert();
            findPlayerToNextMove();
        }
     }
@@ -106,12 +117,7 @@ public class GameController implements Initializable {
           boolean hasMove = logic.switchPlayer();
           setCurrentPlayer(logic.getCurrentPlayer());
           while (!hasMove) {
-              Alert alert = new Alert(Alert.AlertType.INFORMATION);
-              alert.setTitle("No possible moves ");
-              alert.setHeaderText(String.format("%s, you have no available moves!\n" +
-                      " Skipped to next player !\n" +
-                      " Please wait to your next turn :)", logic.getCurrentPlayer().getName()));
-              alert.showAndWait();
+              noPossibleMovesAlert();
               hasMove = logic.switchPlayer();
               setCurrentPlayer(logic.getCurrentPlayer());
           }
@@ -130,6 +136,8 @@ public class GameController implements Initializable {
       alert.setContentText(String.join(System.lineSeparator(),statistics));
       alert.showAndWait();
       LoadXmlFileButton.disableProperty().setValue(false);
+      MakeAMoveButton.disableProperty().setValue(true);
+      LeaveGameButton.disableProperty().setValue(true);
       clearGameWindow();
   }
 
@@ -218,8 +226,6 @@ public class GameController implements Initializable {
 
     public void LoadXmlFileButtonClicked() throws XmlNotValidException {
         boolean xmLoaded = false;
-
-        GameManager gameManager = new GameManager();
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
         fileChooser.getExtensionFilters().add(extFilter);
@@ -227,33 +233,33 @@ public class GameController implements Initializable {
         File loadedFile = fileChooser.showOpenDialog(gameWindow);
         if (loadedFile != null) {
             try {
-                gameManager.LoadGameFromXmlAndValidate(loadedFile.getAbsolutePath());
+                xmlFilePath = loadedFile.getAbsolutePath();
+                gameManager.LoadGameFromXmlAndValidate(xmlFilePath);
                 xmLoaded = true;
                 logic = gameManager.getGameLogic();
             } catch (XmlNotValidException i_Exception) {
-                //  AlertPopup.display("XML Data Reading Error",GameLogic.validationResult.toString());
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Invalid Game data file");
-                alert.setHeaderText("Error reading xml file, the following errors were found");
-                alert.setContentText(String.join(System.lineSeparator(), i_Exception.getValidationResult()));
-                alert.showAndWait();
+                    setInvalidXMLAlert(i_Exception);
             }
         } else {
-                ValidationResult res = new ValidationResult();
-                res.add("XML File Load Error: Invalid File - cannot be loaded!");
+                 Alert alert = new Alert(Alert.AlertType.ERROR);
+                 alert.setTitle("XML File Load Error");
+                 alert.setHeaderText("Invalid File - cannot be loaded!");
+                 alert.showAndWait();
         }
-
         if (xmLoaded) {
-            StartGameButton.disableProperty().setValue(false);
-            board = builder.createBoard(logic.getGameBoard());
-            borderPane.setCenter(board);
-            builder.createPlayersTable(logic.getPlayers());
-            gamePlayers = builder.getPlayersTable();
-            borderPane.setRight(gamePlayers);
-
+        createGameView();
         }
     }
 
+
+    private void createGameView(){
+        StartGameButton.disableProperty().setValue(false);
+        board = builder.createBoard(logic.getGameBoard());
+        borderPane.setCenter(board);
+        builder.createPlayersTable(logic.getPlayers());
+        gamePlayers = builder.getPlayersTable();
+        borderPane.setRight(gamePlayers);
+    }
     private void setCurrentPlayer(Player currentPlayer)
     {
         PlayerNameLabel.setText(currentPlayer.getName());
@@ -270,5 +276,22 @@ public class GameController implements Initializable {
         CurrentPlayerTypeLabel.setText("");
     }
 
+
+  private void setInvalidXMLAlert(XmlNotValidException ex){
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setTitle("Invalid Game data file");
+      alert.setHeaderText("Error reading xml file, the following errors were found");
+      alert.setContentText(String.join(System.lineSeparator(), ex.getValidationResult()));
+      alert.showAndWait();
+    }
+
+    private void noPossibleMovesAlert(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("No possible moves ");
+        alert.setHeaderText(String.format("%s, you have no available moves!\n" +
+                " Skipped to next player !\n" +
+                " Please wait to your next turn :)", logic.getCurrentPlayer().getName()));
+        alert.showAndWait();
+    }
 
 }

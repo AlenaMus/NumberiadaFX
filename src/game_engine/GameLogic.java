@@ -24,8 +24,7 @@ public abstract class GameLogic {
     public static final int GOOD_POINT = 1000;
     public static final int NOT_IN_MARKER_ROW_AND_COLUMN = 1001;
     public static final int NOT_PLAYER_COLOR =1002;
-    public static final int TIE = 0;
-    public static final int WINNER = 1;
+    public static int gameRound = 0;
 
 
     public static boolean isEndOfGame = false;

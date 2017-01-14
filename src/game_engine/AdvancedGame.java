@@ -92,8 +92,10 @@ public class AdvancedGame extends GameLogic{
         }
 
         players.clear();
+        winners.clear();
         currentPlayer = null;
         setNumOfPlayers(0);
+        gameMoves.set(0);
         return winnerStatistics;
     }
 
@@ -115,8 +117,7 @@ public class AdvancedGame extends GameLogic{
     public boolean switchPlayer()
     {
        boolean isSwitchSucceed = true;
-
-           game_objects.Player nextPlayer;
+       game_objects.Player nextPlayer;
 
             currentPlayerIndex++;
             nextPlayer = players.get(currentPlayerIndex % numOfPlayers);
