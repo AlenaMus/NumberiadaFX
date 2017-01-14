@@ -29,11 +29,11 @@ public class GameController implements Initializable {
     private NumberiadaBuilder builder = new NumberiadaBuilder();
     private Stage gameWindow;
     private GameLogic logic;
+    private GridPane gamePlayers;
 
     public void setGameWindow(Stage stage) {
         gameWindow = stage;
     }
-
 
     @FXML
     private BorderPane borderPane;
@@ -41,8 +41,9 @@ public class GameController implements Initializable {
     @FXML
     private Button MakeAMoveButton;
 
+
     @FXML
-    private Button RetireGameButton;
+    private Button LeaveGameButton;
 
     @FXML
     private Button PrevButton;
@@ -55,7 +56,6 @@ public class GameController implements Initializable {
 
     @FXML
     private Button StartGameButton;
-
 
     @FXML
     private Label CurrentPlayerIDLabel;
@@ -84,7 +84,9 @@ public class GameController implements Initializable {
     @FXML
     void StartGameButtonClicked(ActionEvent event) {
 
+        LoadXmlFileButton.disableProperty().setValue(true);
         MakeAMoveButton.disableProperty().setValue(false);
+        LeaveGameButton.disableProperty().setValue(false);
         logic.initGame();
         setStartGame();
 
@@ -98,32 +100,55 @@ public class GameController implements Initializable {
     }
 
 
-  private void findPlayerToNextMove()
-  {
-      boolean hasMove = logic.switchPlayer();
-      while(!hasMove) {
-          Alert alert = new Alert(Alert.AlertType.INFORMATION);
-          alert.setHeaderText("You have no available moves! Skipped to next player ! Wait to your next turn:)");
-          alert.showAndWait();
-          hasMove = logic.switchPlayer();
+  private void findPlayerToNextMove() {
+      if (!logic.isGameOver()) {
+          boolean hasMove = logic.switchPlayer();
+          setCurrentPlayer(logic.getCurrentPlayer());
+          while (!hasMove) {
+              Alert alert = new Alert(Alert.AlertType.INFORMATION);
+              alert.setTitle("No possible moves ");
+              alert.setHeaderText(String.format("%s, you have no available moves!\n" +
+                      " Skipped to next player !\n" +
+                      " Please wait to your next turn :)", logic.getCurrentPlayer().getName()));
+              alert.showAndWait();
+              hasMove = logic.switchPlayer();
+              setCurrentPlayer(logic.getCurrentPlayer());
+          }
+      } else {
+          setGameOver();
       }
+  }
+
+  private void setGameOver()
+  {
+      Player winner = logic.getWinner();
+      String statistics = logic.gameOver();
+      clearGameWindow();
+      Alert alert = new Alert(Alert.AlertType.INFORMATION);
+      alert.setTitle("GAME OVER !!!");
+      alert.setHeaderText(String.format("The Winner is: %s with score %d !",winner.getName(),winner.getScore()));
+      alert.setContentText(String.join(System.lineSeparator(),statistics));
+      alert.showAndWait();
+      LoadXmlFileButton.disableProperty().setValue(false);
+  }
+
+  private void clearGameWindow()
+  {
+      builder.clearBoard();
+      borderPane.setCenter(null);
+      builder.clearPlayersScoreView(PlayerScoreGridPane);
+      clearCurrentPlayerView();
   }
 
     @FXML
     void MakeAMoveButtonClicked(ActionEvent event) {
-        boolean isValidMove = false ;
-        boolean switchPlayerSuccess;
         int pointStatus;
         Point userPoint = builder.getChosenPoint();
         if (userPoint != null) {
             pointStatus = logic.isValidPoint(userPoint);
             if (pointStatus == GameLogic.GOOD_POINT) {
                 logic.makeHumanMove(userPoint);
-                if (!logic.isGameOver()) {
-                    findPlayerToNextMove();
-                   // setCurrentPlayerView();
-                }
-                else { logic.gameOver();}
+                findPlayerToNextMove();
             }
             else if (pointStatus ==GameLogic.NOT_IN_MARKER_ROW_AND_COLUMN)
             {
@@ -160,28 +185,29 @@ public class GameController implements Initializable {
     @FXML
     void RetireGameButtonClicked(ActionEvent event) {
         logic.playerRetire();
-
+        builder.clearPlayersScoreView(PlayerScoreGridPane);
+        builder.setPlayersScore(PlayerScoreGridPane);
+        findPlayerToNextMove();
     }
 
-
-
-
-   private GridPane gamePlayers;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
           board = new GridPane();
           StartGameButton.disableProperty().setValue(true);
           MakeAMoveButton.disableProperty().setValue(true);
-
+          LeaveGameButton.disableProperty().setValue(true);
     }
 
     private void setStartGame() {
 
+
+        builder.clearPlayersView();
+        borderPane.setRight(null);
         PlayerNameLabel.setMaxWidth(300);
         builder.setPlayersScore(PlayerScoreGridPane); //after Game Starts
         setCurrentPlayer(logic.getCurrentPlayer());
-        builder.setCurrentMove(MoveNumberLabel,logic.getMoves());
+        MoveNumberLabel.textProperty().bind(logic.gameMovesProperty().asString());
 
     }
 
@@ -199,8 +225,6 @@ public class GameController implements Initializable {
                 gameManager.LoadGameFromXmlAndValidate(loadedFile.getAbsolutePath());
                 xmLoaded = true;
                 logic = gameManager.getGameLogic();
-
-                StartGameButton.disableProperty().setValue(false);
             } catch (XmlNotValidException i_Exception) {
                 //  AlertPopup.display("XML Data Reading Error",GameLogic.validationResult.toString());
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -215,7 +239,7 @@ public class GameController implements Initializable {
         }
 
         if (xmLoaded) {
-
+            StartGameButton.disableProperty().setValue(false);
             board = builder.createBoard(logic.getGameBoard());
             borderPane.setCenter(board);
             builder.createPlayersTable(logic.getPlayers());
@@ -227,10 +251,18 @@ public class GameController implements Initializable {
 
     private void setCurrentPlayer(Player currentPlayer)
     {
-        PlayerNameLabel.textProperty().bind(currentPlayer.nameProperty());
-        CurrentPlayerIDLabel.textProperty().bind(currentPlayer.playerIDProperty());
-        CurrentPlayerColorLabel.textProperty().bind(currentPlayer.playerColorProperty());
-        CurrentPlayerTypeLabel.textProperty().bind(currentPlayer.playerTypeProperty());
+        PlayerNameLabel.setText(currentPlayer.getName());
+        CurrentPlayerIDLabel.setText(String.valueOf(currentPlayer.getId()));
+        CurrentPlayerColorLabel.setText(String.valueOf(currentPlayer.getPlayerColor()));
+        CurrentPlayerTypeLabel.setText(currentPlayer.playerTypeProperty().getValue());
+    }
+
+    private void clearCurrentPlayerView()
+    {
+        PlayerNameLabel.setText("");
+        CurrentPlayerIDLabel.setText("");
+        CurrentPlayerColorLabel.setText("");
+        CurrentPlayerTypeLabel.setText("");
     }
 
 

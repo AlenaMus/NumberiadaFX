@@ -69,6 +69,7 @@ public class Board {
 
     }
 
+
    public void shuffleArray(Square[][] matrix) {
         Random random = new Random();
 

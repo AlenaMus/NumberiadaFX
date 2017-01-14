@@ -7,6 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -83,7 +84,7 @@ public class NumberiadaBuilder {
             GridPane.setConstraints(nameP, 0, i);
             Label idP = new Label((String.valueOf(player.getId())));
             GridPane.setConstraints(idP, 1, i);
-            Label typeP = new Label(player.getPlayerType().toString());
+            Label typeP = new Label(player.getPlayerType());
             GridPane.setConstraints(typeP, 2, i);
             Label colorP = new Label(GameColor.getColor(player.getColor()));
             GridPane.setConstraints(colorP, 3, i);
@@ -97,8 +98,6 @@ public class NumberiadaBuilder {
 
         int size = gameBoard.GetBoardSize();
         Square[][]gBoard = gameBoard.getGameBoard();
-      //  ObservableList<ObservableList<Square>> observableBoard = createObservableBoard(gameBoard);
-
         board = new GridPane();
         board.setPadding(new Insets(30, 30, 30, 30));
         board.setVgap(1);
@@ -142,7 +141,7 @@ public class NumberiadaBuilder {
                 }
                 else
                 {
-                    BoardButton butt = new BoardButton(gBoard[j-1][i-1]); //square
+                    BoardButton butt = new BoardButton(gBoard[j-1][i-1]);
                     gBoard[j-1][i-1].colorProperty().addListener((observable, oldValue, newValue) -> butt.setBColor((int) newValue));
                     butt.textProperty().bind(gBoard[j-1][i-1].squareValueProperty());
                     butt.setPrefSize(squareSize,squareSize);
@@ -157,6 +156,15 @@ public class NumberiadaBuilder {
         return board;
     }
 
+    public void clearBoard()
+    {
+        board.getChildren().remove(0,board.getChildren().size()-1);
+
+    }
+    public void clearPlayersView()
+    {
+        m_players.getChildren().remove(0,m_players.getChildren().size()-1);
+    }
 
 //    private ObservableList<ObservableList<Square>> createObservableBoard(Board logicBoard)
 //    {
@@ -201,14 +209,17 @@ public class NumberiadaBuilder {
         }
     }
 
+    public void clearPlayersScoreView(GridPane PlayerScoreGridPane){
+        PlayerScoreGridPane.getChildren().remove(2,PlayerScoreGridPane.getChildren().size());
+    }
 
     public void setCurrentMove(Label MoveNumberLabel,int move)
     {
         MoveNumberLabel.setText(String.valueOf(move));
     }
-
     private void PressedBoardButton(BoardButton butt)
     {
         setChosenPoint(butt.getLocation());
     }
+
 }

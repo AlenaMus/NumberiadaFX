@@ -6,6 +6,7 @@ import game_validation.XmlNotValidException;
 import jaxb.schema.generated.GameDescriptor;
 import jaxb.schema.generated.Range;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -53,9 +54,11 @@ public class BasicGame extends GameLogic {
     }
 
     @Override
-    public void gameOver()
+    public String gameOver()
     {
         Player winner;
+        String winnerPlayer =" ";
+
         if(isEndOfGame) {
             int rowPlayerScore = getRowPlayer().getScore();
             int ColPlayerScore = getColPlayer().getScore();
@@ -77,7 +80,8 @@ public class BasicGame extends GameLogic {
                 winner = rowPlayer;
             }
         }
-        //print to UI winner
+
+        return winnerPlayer;
     }
 
     public void setBasicPlayers()
@@ -101,6 +105,10 @@ public class BasicGame extends GameLogic {
     public void makeMove()
     {
 
+    }
+    @Override
+    public game_objects.Player getWinner(){
+        return players.get(0);
     }
 
     @Override
@@ -257,13 +265,6 @@ public class BasicGame extends GameLogic {
         return squareValue;
     }*/
 
-
-    @Override
-    public void updateUserData(int squareValue) // in Player?
-    {
-        currentPlayer.setNumOfMoves(currentPlayer.getNumOfMoves()+1); //maybe do totalmoves var in gameManager
-        currentPlayer.setScore(squareValue);
-    }
 
 
     @Override

@@ -3,11 +3,14 @@ package game_engine;
 import game_objects.*;
 import game_validation.ValidationResult;
 import game_validation.XmlNotValidException;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import jaxb.schema.generated.GameDescriptor;
 import jaxb.schema.generated.Range;
 import jaxb.schema.generated.Squares;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -23,7 +26,7 @@ public abstract class GameLogic {
     public static final int NOT_PLAYER_COLOR =1002;
 
     public  boolean isEndOfGame = false;
-    private int gameMoves=0;
+    protected IntegerProperty gameMoves = new SimpleIntegerProperty(0);
 
     public static ValidationResult validationResult;
     protected List<Square> explicitSquares = new ArrayList<Square>();
@@ -41,20 +44,9 @@ public abstract class GameLogic {
     }
     public void setCurrentPlayer(game_objects.Player currentPlayer)
     {
-        //this.currentPlayer = currentPlayer;
-        this.currentPlayer.setName(currentPlayer.getName());
-        this.currentPlayer.idProperty().set(currentPlayer.idProperty().get());
-        this.currentPlayer.playerIDProperty().set(currentPlayer.playerIDProperty().get());
-
-        this.currentPlayer.playerColorProperty().set(currentPlayer.playerColorProperty().get());
-        this.currentPlayer.colorProperty().set(currentPlayer.colorProperty().get());
-        this.currentPlayer.setActive(currentPlayer.isActive());
-        this.currentPlayer.setPlayerType(currentPlayer.getPlayerType());
-        this.currentPlayer.playerTypeProperty().set(currentPlayer.playerTypeProperty().get());
-        this.currentPlayer.scoreStringProperty().set(currentPlayer.scoreStringProperty().get());
-        this.currentPlayer.setScore(currentPlayer.getScore());
-
+        this.currentPlayer = currentPlayer;
     }
+
     public GameDescriptor getLoadedGame() {
         return loadedGame;
     }
@@ -68,8 +60,20 @@ public abstract class GameLogic {
     public void setGameBoard(Board gameBoard) {
         this.gameBoard = gameBoard;
     }
-    public int getMoves() {return gameMoves;}
     public List<Player>  getPlayers(){return players;}
+    public abstract Player getWinner();
+
+    public int getGameMoves() {
+        return gameMoves.get();
+    }
+
+    public IntegerProperty gameMovesProperty() {
+        return gameMoves;
+    }
+
+    public void setGameMoves(int gameMoves) {
+        this.gameMoves.set(gameMoves);
+    }
 
     public abstract void makeComputerMove();
     public abstract void playerRetire();
@@ -79,54 +83,21 @@ public abstract class GameLogic {
     public abstract int isValidPoint(Point squareLocation);
     public abstract void makeMove();
     public abstract boolean InitMoveCheck();
-   // public abstract void setBoard(jaxb.schema.generated.Board board);
     public abstract void FillRandomBoard();
     public abstract void checkXMLData(GameDescriptor loadedGame)throws XmlNotValidException;
     public abstract void checkRandomBoardValidity(Range boardRange, int boardSize)throws XmlNotValidException;
-    public abstract void gameOver();
+    public abstract String gameOver();
     public abstract boolean switchPlayer();
     protected void checkAndSetPlayersXML(jaxb.schema.generated.Players players)throws XmlNotValidException{}
     public abstract boolean isGameOver();
 
 
-
-//    public void setPlayers(jaxb.schema.generated.Players gamePlayers)
-//    {
-//        for (jaxb.schema.generated.Player player:gamePlayers.getPlayer()) {
-//            int id = player.getId().intValue();
-//            String name = player.getName();
-//            ePlayerType playerType = ePlayerType.valueOf(player.getType());
-//            int color = player.getColor();
-//            game_objects.Player player1 = new game_objects.Player(playerType,name,id,color);
-//            players.add(player1);
-//        }
-//    }
-
-   /* public int makeHumanMove(Point userPoint) //GET POINT FROM UI
-    {
-        boolean IsValidMove;
-        int squareValue;
-        squareValue = updateBoard(userPoint); //update 2 squares
-        if (squareValue == BAD_SQUARE)
-            IsValidMove = false;
-        else {
-            updateUserData(squareValue);
-            gameBoard.getMarker().setMarkerLocation(userPoint.getRow(), userPoint.getCol());
-            IsValidMove = true;
-        }
-        return IsValidMove;
-    }*/
-
-    /*protected int updateBoard(Point squareLocation) //implement in Board - returns updated value of row/column
-    {
-        int squareValue = gameBoard.updateBoard(squareLocation);
-        return squareValue;
-    }*/
-
     protected void updateUserData(int squareValue) // in Player?
     {
+        int newScore = currentPlayer.getScore()+squareValue;
         currentPlayer.setNumOfMoves(currentPlayer.getNumOfMoves()+1); //maybe do totalmoves var in gameManager
-        currentPlayer.setScore(squareValue);
+        currentPlayer.scoreProperty().set(newScore);
+        currentPlayer.scoreStringProperty().set(String.valueOf(newScore));
     }
 
 
@@ -277,6 +248,7 @@ public abstract class GameLogic {
         }
         return isValid;
     }
+
 
 
 }
