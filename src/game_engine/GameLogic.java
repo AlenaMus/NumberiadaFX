@@ -10,7 +10,6 @@ import jaxb.schema.generated.Range;
 import jaxb.schema.generated.Squares;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -24,6 +23,11 @@ public abstract class GameLogic {
     public static final int GOOD_POINT = 1000;
     public static final int NOT_IN_MARKER_ROW_AND_COLUMN = 1001;
     public static final int NOT_PLAYER_COLOR =1002;
+    public static final int NOT_IN_MARKER_ROW_BASIC =1003;
+    public static final int NOT_IN_MARKER_COL_BASIC =1004;
+    public static final int MARKER_SQUARE_BASIC=1005;
+    public static final int EMPTY_SQUARE_BASIC=1006;
+
     public static int gameRound = 0;
 
 
@@ -57,6 +61,10 @@ public abstract class GameLogic {
         this.loadedGame = loadedGame;
     }
     public void setGameType(eGameType type){gameType = type;}
+    public eGameType getGameType() {
+        return gameType;
+    }
+
     public int getNumOfPlayers () {return numOfPlayers;}
     public void setNumOfPlayers(int num) { numOfPlayers = num; }
     public Board getGameBoard() {return gameBoard;}
@@ -76,7 +84,7 @@ public abstract class GameLogic {
     }
 
     public abstract void makeComputerMove();
-    public abstract void playerRetire();
+    public abstract String playerRetire();
     public abstract void initGame();
     public abstract int updateBoard(Point squareLocation);
     public abstract void makeHumanMove(Point userPoint); //GET POINT FROM UI

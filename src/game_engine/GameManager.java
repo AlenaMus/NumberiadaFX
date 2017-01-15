@@ -7,7 +7,6 @@ import game_validation.ValidationResult;
 import game_validation.XmlNotValidException;
 import jaxb.schema.generated.GameDescriptor;
 import org.xml.sax.SAXException;
-import user_interface.AlertPopup;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -87,7 +86,6 @@ public class GameManager {
         if(loadedGame!= null) {
 
             gameType = loadedGame.getGameType();
-
 
             if(gameType.equals(String.valueOf(eGameType.Basic))) {
                 gameLogic = new BasicGame();

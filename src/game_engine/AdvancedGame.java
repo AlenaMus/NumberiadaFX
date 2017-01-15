@@ -7,7 +7,6 @@ import jaxb.schema.generated.GameDescriptor;
 import jaxb.schema.generated.Player;
 import jaxb.schema.generated.Range;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -132,7 +131,8 @@ public class AdvancedGame extends GameLogic{
         {
              isSwitchSucceed = false;
 
-        }else{
+        }
+        else {
             setGameMoves(getGameMoves()+1);
         }
 
@@ -175,7 +175,7 @@ public class AdvancedGame extends GameLogic{
         return gameOver;
     }
 
-    public void playerRetire () {
+    public String playerRetire () {
         for (int i = 0; i < gameBoard.GetBoardSize(); i++)
             for (int j = 0; j < gameBoard.GetBoardSize(); j++)
                 if (gameBoard.getGameBoard()[i][j].getColor() == currentPlayer.getColor())
@@ -191,6 +191,7 @@ public class AdvancedGame extends GameLogic{
        if(numOfPlayers==1) {
            isEndOfGame = true;
        }
+       return "";
     }
 
 
@@ -259,7 +260,7 @@ public class AdvancedGame extends GameLogic{
         gameBoard.getGameBoard()[oldMarkerPoint.getRow()-1][oldMarkerPoint.getCol()-1].setValue("");    //empty old marker location
         //gameBoard.getGameBoard()[oldMarkerPoint.getRow()-1][oldMarkerPoint.getCol()-1].setColor(GameColor.GRAY);
         gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].setValue(Marker.markerSign); //update marker to square
-        gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].setColor(GameColor.GRAY); //update marker to square
+        gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].setColor(GameColor.GRAY);
 
         return squareValue;
     }
