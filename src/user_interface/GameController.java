@@ -164,39 +164,13 @@ public class GameController implements Initializable {
 
     @FXML
     void MakeAMoveButtonClicked(ActionEvent event) {
-        if (logic.getGameType().toString() =="Advance")
+        if (logic.getGameType().toString() == "Advance")
             AdvanceMove();
         else {
             BasicMove();
         }
-       /* int pointStatus;
-        Point userPoint = builder.getChosenPoint();
-        if (userPoint != null) {
-            pointStatus = logic.isValidPoint(userPoint);
-            if (pointStatus == GameLogic.GOOD_POINT) {
-                logic.makeHumanMove(userPoint);
-                findPlayerToNextMove();
-            }
-            else if (pointStatus == GameLogic.NOT_IN_MARKER_ROW_AND_COLUMN)
-            {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setHeaderText("You choose illegal square -the square needs to be in the marker raw or column");
-                alert.showAndWait();
-            }
-            else if (pointStatus == GameLogic.NOT_PLAYER_COLOR)
-            {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setHeaderText("You choose illegal square - the square is not in your color!");
-                alert.showAndWait();
-            }
-        }
-        else
-        {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("YOU DIDNT CHOOSE A SQUARE!");
-            alert.showAndWait();
-        }*/
     }
+
 
     public void AdvanceMove()
     {
@@ -242,8 +216,8 @@ public class GameController implements Initializable {
                 doSwitch = logic.switchPlayer();
                 if (!doSwitch)
                 {
-                    logic.gameOver();
-                    //printWinner();
+                    String winner = logic.gameOver();
+                    printWinnerBasic(winner);
                 }
             }
             else if (pointStatus == GameLogic.NOT_IN_MARKER_ROW_BASIC)
@@ -279,10 +253,38 @@ public class GameController implements Initializable {
         }
     }
 
+    public void printWinnerBasic(String winner)
+    {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("GAME OVER !!!");
+        alert.setHeaderText("The winner is "+winner);
+        alert.showAndWait();
+    }
+
     @FXML
-    void RetireGameBasic(ActionEvent event) {
+    void RetireGameButtonClicked(ActionEvent event) {
+        if (logic.getGameType().toString() =="Advance")
+            AdvanceRetire();
+        else {
+            BasicRetire();
+        }
+    }
+    void AdvanceRetire()
+    {
         logic.playerRetire();
-        //printWinner();
+        if(!GameLogic.isEndOfGame){
+            builder.clearPlayersScoreView(PlayerScoreGridPane);
+            builder.setPlayersScore(PlayerScoreGridPane);
+            findPlayerToNextMove();
+        }else{
+            setGameOver();
+        }
+    }
+
+    public void BasicRetire()
+    {
+        String winner =logic.playerRetire();
+        printWinnerBasic(winner);
     }
     @FXML
     void NextButtonClicked(ActionEvent event) {
@@ -294,17 +296,6 @@ public class GameController implements Initializable {
 
     }
 
-    @FXML
-    void RetireGameButtonClicked(ActionEvent event) {
-        logic.playerRetire();
-        if(!GameLogic.isEndOfGame){
-            builder.clearPlayersScoreView(PlayerScoreGridPane);
-            builder.setPlayersScore(PlayerScoreGridPane);
-            findPlayerToNextMove();
-        }else{
-            setGameOver();
-        }
-    }
 
 
 

@@ -61,12 +61,12 @@ public class BasicGame extends GameLogic {
             int rowPlayerScore = getRowPlayer().getScore();
             int ColPlayerScore = getColPlayer().getScore();
             if (rowPlayerScore > ColPlayerScore)
-                winnerPlayer = rowPlayer.getName();
+                winnerPlayer = "Row Player";
             else if (ColPlayerScore > rowPlayerScore)
-                winnerPlayer = colPlayer.getName();
+                winnerPlayer ="Column Player";
             else //tie
             {
-                winnerPlayer =" ";
+                winnerPlayer ="Tie ";
             }
         }
        /* else {
@@ -87,10 +87,10 @@ public class BasicGame extends GameLogic {
         String winnerPlayer =" ";
         if (currentPlayer.checkPlayerTurn(rowPlayer)) {
             //row player left
-            winnerPlayer = colPlayer.getName();
+            winnerPlayer = "Column Player";
         } else {
             //col player left
-            winnerPlayer = rowPlayer.getName();
+            winnerPlayer = "Row Player";
         }
         return winnerPlayer;
     }
@@ -100,6 +100,17 @@ public class BasicGame extends GameLogic {
     {
         rowPlayer = new Player(eTurn.ROW, ePlayerType.Human);
         colPlayer = new Player(eTurn.COL, ePlayerType.Human);
+        //players.add(0,rowPlayer);
+        //players.add(1,colPlayer);
+    }
+
+    @Override
+    protected void updateUserData(int squareValue) // in Player?
+    {
+        int newScore = currentPlayer.getScore()+squareValue;
+        currentPlayer.setNumOfMoves(currentPlayer.getNumOfMoves()+1); //maybe do totalmoves var in gameManager
+        currentPlayer.scoreProperty().set(newScore);
+        //currentPlayer.scoreStringProperty().set(String.valueOf(newScore));
     }
 
 //    public static int ComputerMove(int boardSize) {
