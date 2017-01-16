@@ -2,7 +2,6 @@ package game_objects;
 
 import game_engine.eTurn;
 import javafx.beans.property.*;
-import javafx.scene.paint.Color;
 
 public class Player implements Comparable<Player> {
 
@@ -49,9 +48,11 @@ public class Player implements Comparable<Player> {
         IsActive = new SimpleBooleanProperty(true);
         this.turn = turn;
         score = new SimpleIntegerProperty(0);
+        score.setValue(0);
         numOfMoves = 0;
-        name = new SimpleStringProperty("");
+        name = new SimpleStringProperty(String.valueOf(turn));
         playerType = new SimpleStringProperty(String.valueOf(playerType1));
+        scoreString = new SimpleStringProperty("0");
 
 
     }

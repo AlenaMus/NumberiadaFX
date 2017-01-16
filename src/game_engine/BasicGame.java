@@ -100,8 +100,8 @@ public class BasicGame extends GameLogic {
     {
         rowPlayer = new Player(eTurn.ROW, ePlayerType.Human);
         colPlayer = new Player(eTurn.COL, ePlayerType.Human);
-        //players.add(0,rowPlayer);
-        //players.add(1,colPlayer);
+        players.add(0,rowPlayer);
+        players.add(1,colPlayer);
     }
 
     @Override

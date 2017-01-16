@@ -103,7 +103,6 @@ public class GameController implements Initializable {
         logic.initGame();
         setStartGame();
         GameLogic.gameRound++;
-
         if(!logic.InitMoveCheck())
         {
             noPossibleMovesAlert();
@@ -214,6 +213,7 @@ public class GameController implements Initializable {
             if (pointStatus == GameLogic.GOOD_POINT) {
                 logic.makeHumanMove(userPoint);
                 doSwitch = logic.switchPlayer();
+                setCurrentPlayerBasic(logic.getCurrentPlayer());
                 if (!doSwitch)
                 {
                     String winner = logic.gameOver();
@@ -315,7 +315,11 @@ public class GameController implements Initializable {
         borderPane.setRight(null);
         PlayerNameLabel.setMaxWidth(300);
         builder.setPlayersScore(PlayerScoreGridPane); //after Game Starts
-        setCurrentPlayer(logic.getCurrentPlayer());
+        if (logic.getGameType().toString() == "Advance")
+            setCurrentPlayer(logic.getCurrentPlayer());
+        else {
+            setCurrentPlayerBasic(logic.getCurrentPlayer());
+        }
         MoveNumberLabel.textProperty().bind(logic.gameMovesProperty().asString());
 
     }
@@ -361,6 +365,12 @@ public class GameController implements Initializable {
         PlayerNameLabel.setText(currentPlayer.getName());
         CurrentPlayerIDLabel.setText(String.valueOf(currentPlayer.getId()));
         CurrentPlayerColorLabel.setText(String.valueOf(currentPlayer.getPlayerColor()));
+        CurrentPlayerTypeLabel.setText(currentPlayer.playerTypeProperty().getValue());
+    }
+
+    private void setCurrentPlayerBasic(Player currentPlayer)
+    {
+        PlayerNameLabel.setText(String.valueOf(currentPlayer.getTurn()));
         CurrentPlayerTypeLabel.setText(currentPlayer.playerTypeProperty().getValue());
     }
 
