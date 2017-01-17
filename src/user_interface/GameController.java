@@ -154,7 +154,6 @@ public class GameController implements Initializable {
                 updateMessage("Computer thinking...");
                 super.updateProgress(workTodo,max);
             }
-
         };
 
         moveTask.setOnSucceeded(t -> {
@@ -186,8 +185,6 @@ public class GameController implements Initializable {
 
         moveTask.valueProperty().addListener((observable, oldValue, newValue) ->  {
             System.out.println(String.format("Value reutrned is %d %d",newValue.getRow(),newValue.getCol()));});
-
-
         Thread move = new Thread(moveTask);
         move.start();
 
