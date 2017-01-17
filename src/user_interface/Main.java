@@ -18,7 +18,7 @@ public class Main extends Application {
       //   FXMLLoader fxmlLoader = new FXMLLoader();
          Parent root = FXMLLoader.load(getClass().getResource("Numberiada.fxml"));
          primaryStage.setTitle("Numberiada");
-         Scene scene = new Scene(root, 1000,600);
+         Scene scene = new Scene(root, 1000,1000);
          scene.getStylesheets().add("user_interface/boardStyle.css");
          primaryStage.setScene(scene);
          primaryStage.show();

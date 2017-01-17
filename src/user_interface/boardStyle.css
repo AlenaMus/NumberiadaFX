@@ -57,6 +57,12 @@
     -fx-font-weight: bold;
 }
 
+#button-move{
+    -fx-background-color:#51fb33;
+    -fx-font-weight: bold;
+
+}
+
 .button-pup{
     -fx-background-color: #8A2BE2;
     -fx-text-fill: #FFFFFF;

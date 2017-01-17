@@ -10,6 +10,7 @@ public class GameColor {
     public static final int YELLOW = 4;
     public static final int PURPLE = 5;
     public static final int PINK = 6;
+    public static final int MarkerMove = 7;
     public static final int GRAY = 0;
 
     public static String setColor(int color)
@@ -32,6 +33,8 @@ public class GameColor {
                 break;
             case GRAY:colorToSet = "button-gray";
                 break;
+            case MarkerMove: colorToSet = "button-move";
+
         }
         return colorToSet;
 
@@ -53,7 +56,7 @@ public class GameColor {
                 break;
             case PURPLE :color = "PURPLE";
                 break;
-            case PINK: color ="PINK";
+            case PINK: color = "PINK";
                 break;
         }
         return color;

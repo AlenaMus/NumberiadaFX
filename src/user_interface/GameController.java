@@ -2,16 +2,20 @@ package user_interface;
 
 import game_engine.GameLogic;
 import game_engine.GameManager;
-import game_objects.Player;
-import game_objects.Point;
-import game_objects.ePlayerType;
+import game_engine.eGameType;
+import game_objects.*;
 import game_validation.XmlNotValidException;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
@@ -29,11 +33,18 @@ public class GameController implements Initializable {
     private GameLogic logic;
     private GridPane gamePlayers;
     private String xmlFilePath;
+    private int historyIndex = -1;
     private GameManager gameManager = new GameManager();
 
     public void setGameWindow(Stage stage) {
         gameWindow = stage;
     }
+
+    @FXML
+    private Label ComputerThinkingLabel;
+
+    @FXML
+    private ProgressBar ComputerProgressBar;
 
     @FXML
     private BorderPane borderPane;
@@ -97,6 +108,8 @@ public class GameController implements Initializable {
                 setInvalidXMLAlert(ex);
             }
         }
+        PrevButton.disableProperty().setValue(true);
+        NextButton.disableProperty().setValue(true);
         MakeAMoveButton.disableProperty().setValue(false);
         LeaveGameButton.disableProperty().setValue(false);
         LoadXmlFileButton.disableProperty().setValue(true);
@@ -104,19 +117,80 @@ public class GameController implements Initializable {
         setStartGame();
         GameLogic.gameRound++;
 
-        if(!logic.InitMoveCheck())
+        if(!logic.InitMoveCheck()) //first player check
         {
             noPossibleMovesAlert();
             findPlayerToNextMove();
-        }else if(logic.getCurrentPlayer().getPlayerType().equals(String.valueOf(ePlayerType.Computer))){
-            makeComputerMove();
-        }
 
+        }else{
+            if(logic.getCurrentPlayer().getPlayerType().equals(String.valueOf(ePlayerType.Computer))){
+                makeComputerMove();
+            }
+        }
     }
 
-    private void makeComputerMove(){
-        logic.makeComputerMove();
-        findPlayerToNextMove();
+    private void makeComputerMove() {
+
+        ComputerProgressBar.visibleProperty().set(true);
+        ComputerThinkingLabel.visibleProperty().set(true);
+        Task<Point> moveTask = new Task<Point>() {
+            Point squareLocation = null;
+
+
+            @Override
+            protected Point call() throws Exception {
+                int i;
+
+                squareLocation = logic.makeComputerMove();
+                for(i=1;i < 10; i++){
+                    updateProgress(i,10);
+                    Thread.sleep(80);
+                }
+                    Thread.sleep(500);
+                return squareLocation;
+            }
+            @Override
+            protected void updateProgress(double workTodo,double max){
+                updateMessage("Computer thinking...");
+                super.updateProgress(workTodo,max);
+            }
+
+        };
+
+        moveTask.setOnSucceeded(t -> {
+            System.out.println("Updating Board!");
+            logic.updateDataMove(moveTask.getValue());
+                 ComputerThinkingLabel.textProperty().unbind();
+                 ComputerProgressBar.visibleProperty().set(false);
+                 ComputerThinkingLabel.visibleProperty().set(false);
+            try{
+                Thread.sleep(200);
+            }catch (InterruptedException ex){
+                ex.printStackTrace();
+            }
+                System.out.println("Finding next player after computer");
+                findPlayerToNextMove();
+        });
+
+        moveTask.setOnFailed(t -> {
+            System.out.println("Failed to perform task !!");
+            ComputerThinkingLabel.textProperty().unbind();
+            ComputerProgressBar.visibleProperty().set(false);
+            ComputerThinkingLabel.visibleProperty().set(false);
+            System.out.println("Finding next player after computer");
+            findPlayerToNextMove();
+        });
+
+        ComputerProgressBar.progressProperty().bind(moveTask.progressProperty());
+        ComputerThinkingLabel.textProperty().bind(moveTask.messageProperty());
+
+        moveTask.valueProperty().addListener((observable, oldValue, newValue) ->  {
+            System.out.println(String.format("Value reutrned is %d %d",newValue.getRow(),newValue.getCol()));});
+
+
+        Thread move = new Thread(moveTask);
+        move.start();
+
     }
 
     private void findPlayerToNextMove() {
@@ -136,6 +210,7 @@ public class GameController implements Initializable {
         }
     }
 
+
     private void setGameOver()
     {
         String winnerMessage = logic.getWinner();
@@ -145,10 +220,47 @@ public class GameController implements Initializable {
         alert.setHeaderText(winnerMessage);
         alert.setContentText(String.join(System.lineSeparator(),statistics));
         alert.showAndWait();
+
+        MoveNumberLabel.textProperty().unbind();
         LoadXmlFileButton.disableProperty().setValue(false);
         MakeAMoveButton.disableProperty().setValue(true);
         LeaveGameButton.disableProperty().setValue(true);
+        PrevButton.disableProperty().setValue(false);
+        PrevButton.visibleProperty().setValue(true);
+        NextButton.visibleProperty().setValue(true);
         clearGameWindow();
+
+    }
+
+    @FXML
+    private void PrevHistoryButtonClicked(){
+        if(historyIndex == -1){
+            historyIndex = logic.getHistoryMoves().size()-1;
+            NextButton.disableProperty().setValue(false);
+        }
+
+    if(historyIndex > 1){
+        createHistoryMoveView();
+        historyIndex--;
+    }
+
+    if(historyIndex == 0){
+        createHistoryMoveView();
+        PrevButton.disableProperty().setValue(true);
+    }
+    }
+
+    @FXML
+    private void NextHistoryButtonClicked(){
+        if(historyIndex < logic.getHistoryMoves().size()-1){
+            historyIndex++;
+            createHistoryMoveView();
+        }
+
+        if(historyIndex == logic.getHistoryMoves().size()-1){
+            createHistoryMoveView();
+            NextButton.disableProperty().setValue(true);
+        }
     }
 
     @FXML
@@ -164,23 +276,22 @@ public class GameController implements Initializable {
 
     @FXML
     void MakeAMoveButtonClicked(ActionEvent event) {
-        if (logic.getGameType().toString() == "Advance")
+        if (logic.getGameType().equals(eGameType.Advance))
             AdvanceMove();
         else {
             BasicMove();
         }
     }
 
-
-    public void AdvanceMove()
+    private void AdvanceMove()
     {
         int pointStatus;
         Point userPoint = builder.getChosenPoint();
         if (userPoint != null) {
             pointStatus = logic.isValidPoint(userPoint);
             if (pointStatus == GameLogic.GOOD_POINT) {
-                logic.makeHumanMove(userPoint);
-                findPlayerToNextMove();
+                    logic.updateDataMove(userPoint);
+                    findPlayerToNextMove();
             }
             else if (pointStatus == GameLogic.NOT_IN_MARKER_ROW_AND_COLUMN)
             {
@@ -204,7 +315,7 @@ public class GameController implements Initializable {
     }
 
 
-    public void BasicMove()
+    private void BasicMove()
     {
         int pointStatus;
         boolean doSwitch = true;
@@ -212,7 +323,7 @@ public class GameController implements Initializable {
         if (userPoint != null) {
             pointStatus = logic.isValidPoint(userPoint);
             if (pointStatus == GameLogic.GOOD_POINT) {
-                logic.makeHumanMove(userPoint);
+                logic.updateDataMove(userPoint);
                 doSwitch = logic.switchPlayer();
                 if (!doSwitch)
                 {
@@ -253,28 +364,28 @@ public class GameController implements Initializable {
         }
     }
 
-    public void printWinnerBasic(String winner)
+    private void printWinnerBasic(String winner)
     {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("GAME OVER !!!");
-        alert.setHeaderText("The winner is "+winner);
+        alert.setHeaderText("The winner is "+ winner);
         alert.showAndWait();
     }
 
     @FXML
     void RetireGameButtonClicked(ActionEvent event) {
-        if (logic.getGameType().toString() =="Advance")
+        if (logic.getGameType().toString().equals("Advance"))
             AdvanceRetire();
         else {
             BasicRetire();
         }
     }
-    void AdvanceRetire()
+    private void AdvanceRetire()
     {
         logic.playerRetire();
         if(!GameLogic.isEndOfGame){
             builder.clearPlayersScoreView(PlayerScoreGridPane);
-            builder.setPlayersScore(PlayerScoreGridPane);
+            builder.setPlayersScore(PlayerScoreGridPane,logic.getPlayers());
             findPlayerToNextMove();
         }else{
             setGameOver();
@@ -286,19 +397,6 @@ public class GameController implements Initializable {
         String winner =logic.playerRetire();
         printWinnerBasic(winner);
     }
-    @FXML
-    void NextButtonClicked(ActionEvent event) {
-
-    }
-
-    @FXML
-    void PrevButtonClicked(ActionEvent event) {
-
-    }
-
-
-
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -309,15 +407,12 @@ public class GameController implements Initializable {
     }
 
     private void setStartGame() {
-
-
         builder.clearPlayersView();
         borderPane.setRight(null);
         PlayerNameLabel.setMaxWidth(300);
-        builder.setPlayersScore(PlayerScoreGridPane); //after Game Starts
+        builder.setPlayersScore(PlayerScoreGridPane,logic.getPlayers()); //after Game Starts
         setCurrentPlayer(logic.getCurrentPlayer());
         MoveNumberLabel.textProperty().bind(logic.gameMovesProperty().asString());
-
     }
 
     public void LoadXmlFileButtonClicked() throws XmlNotValidException {
@@ -356,6 +451,19 @@ public class GameController implements Initializable {
         gamePlayers = builder.getPlayersTable();
         borderPane.setRight(gamePlayers);
     }
+
+
+    private void createHistoryMoveView(){
+        GameMove move = logic.getHistoryMoves().get(historyIndex);
+        move.getChosenMove().setColor(7);
+        board = builder.createBoard(move.getGameBoard());
+        borderPane.setCenter(board);
+        setCurrentPlayer(move.getCurrentPlayer());
+        MoveNumberLabel.setText(String.valueOf(move.getMoveNum()));
+        builder.setPlayersScore(PlayerScoreGridPane,move.getPlayers());
+
+    }
+
     private void setCurrentPlayer(Player currentPlayer)
     {
         PlayerNameLabel.setText(currentPlayer.getName());
@@ -371,7 +479,6 @@ public class GameController implements Initializable {
         CurrentPlayerColorLabel.setText("");
         CurrentPlayerTypeLabel.setText("");
     }
-
 
     private void setInvalidXMLAlert(XmlNotValidException ex){
         Alert alert = new Alert(Alert.AlertType.ERROR);

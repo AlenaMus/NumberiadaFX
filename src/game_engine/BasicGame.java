@@ -30,9 +30,12 @@ public class BasicGame extends GameLogic {
         return colPlayer;
     }
 
+    @Override
+    public void updateDataMove(Point squareLocation){
+    }
 
-    public void makeComputerMove()
-    {}
+    public Point makeComputerMove()
+    {return new Point(0,0);}
 
 
     public void initGame()
@@ -272,30 +275,11 @@ public class BasicGame extends GameLogic {
         if (!(gameBoard.isRowPlayerHaveMoves(gameBoard.getMarker().getMarkerLocation())))
         {
             isEndOfGame = true;
-            //UserInterface.PrintUserMessage("Row player have no moves ! GAME OVER");
             gameOver();
             canMove = false;
         }
         return canMove;
     }
-
-
-
-    public int updateBoard(Point squareLocation)
-    {
-        int squareValue;
-
-        Point oldMarkerPoint = gameBoard.getMarker().getMarkerLocation();
-        String squareStringValue = gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].getValue();//get number
-        squareValue = game_objects.Square.ConvertFromStringToIntValue(squareStringValue); //return number value
-
-        gameBoard.getGameBoard()[oldMarkerPoint.getRow()-1][oldMarkerPoint.getCol()-1].setValue("");    //empty old marker location
-        gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].setValue(Marker.markerSign); //update marker to square
-        gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].setColor(GameColor.GRAY);
-
-        return squareValue;
-    }
-
 
     @Override
     public void checkXMLData(GameDescriptor loadedGame)throws XmlNotValidException

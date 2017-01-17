@@ -159,31 +159,13 @@ public class NumberiadaBuilder {
     public void clearBoard()
     {
         board.getChildren().remove(0,board.getChildren().size()-1);
-
     }
     public void clearPlayersView()
     {
         m_players.getChildren().remove(0,m_players.getChildren().size()-1);
     }
 
-//    private ObservableList<ObservableList<Square>> createObservableBoard(Board logicBoard)
-//    {
-//         Square[][] gameBoard = logicBoard.getGameBoard();
-//         int size = logicBoard.GetBoardSize();
-//
-//        ObservableList<ObservableList<Square>> board = FXCollections.<ObservableList<Square>>observableArrayList();
-//        for (int i = 0; i < size; i++) {
-//            final ObservableList<Square> row = FXCollections.<Square>observableArrayList();
-//            board.add(i, row);
-//            for (int j = 0; j < size; j++) {
-//                row.add(gameBoard[i][j]);
-//            }
-//        }
-//        return board;
-//    }
-
-
-    public void setPlayersScore(GridPane PlayerScoreGridPane)
+    public void setPlayersScore(GridPane PlayerScoreGridPane,List<Player> players)
     {
         int i=1;
         PlayerScoreGridPane.setPadding(new Insets(5, 5, 5, 5));

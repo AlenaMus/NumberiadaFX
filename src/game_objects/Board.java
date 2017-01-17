@@ -15,11 +15,20 @@ public class Board {
     private Square[][] gameBoard;
     private BoardRange boardRange;
     private Marker marker;
-    private int maxDigitsNum=0;
+    private int maxDigitsNum = 0;
 
 
 
-    public Board(Board gameBoard){}
+    public Board(Board gameBoard){
+        this.boardSize = gameBoard.GetBoardSize();
+        this.boardType = gameBoard.GetBoardType();
+        if(boardType.equals(eBoardType.Random)){
+            this.boardRange = new BoardRange(gameBoard.getBoardRange().getFrom(),gameBoard.getBoardRange().getTo());
+        }
+        this.gameBoard = new Square[boardSize][boardSize];
+        copyBoard(gameBoard.getGameBoard());
+
+    }
 
     public Board(int size, eBoardType type)
     {
@@ -70,6 +79,16 @@ public class Board {
     }
 
 
+    private void copyBoard(Square[][] board){
+        for (int i=0;i<boardSize;i++)
+        {
+            for(int j=0;j<boardSize;j++)
+            {
+                gameBoard[i][j] = new Square(board[i][j]);
+            }
+        }
+
+    }
    public void shuffleArray(Square[][] matrix) {
         Random random = new Random();
 

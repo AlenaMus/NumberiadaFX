@@ -15,10 +15,6 @@ import java.util.List;
 
 public abstract class GameLogic {
 
-    /*public static final int HUMAN_PLAYER = 1;
-    public static final int COMPUTER_PLAYER =2;
-    public static final int COMPUTERS_GAME =3;*/
-    //public static final int BAD_SQUARE = 100;
 
     public static final int GOOD_POINT = 1000;
     public static final int NOT_IN_MARKER_ROW_AND_COLUMN = 1001;
@@ -32,10 +28,12 @@ public abstract class GameLogic {
 
 
     public static boolean isEndOfGame = false;
+    public static int historyMove = 0;
     protected IntegerProperty gameMoves = new SimpleIntegerProperty(0);
 
     public static ValidationResult validationResult;
     protected List<Square> explicitSquares = new ArrayList<Square>();
+    protected List<GameMove> historyMoves= new ArrayList<>();
     protected List<Player>  players = new ArrayList<>();
     protected List<game_objects.Player> winners = new ArrayList<>();
     protected GameDescriptor loadedGame;
@@ -53,7 +51,7 @@ public abstract class GameLogic {
     {
         this.currentPlayer = currentPlayer;
     }
-
+    public List<GameMove> getHistoryMoves(){return historyMoves;}
     public GameDescriptor getLoadedGame() {
         return loadedGame;
     }
@@ -82,12 +80,11 @@ public abstract class GameLogic {
     public void setGameMoves(int gameMoves) {
         this.gameMoves.set(gameMoves);
     }
-
-    public abstract void makeComputerMove();
+    public abstract void updateDataMove(Point squareLocation);
+    public abstract Point makeComputerMove();
     public abstract String playerRetire();
     public abstract void initGame();
-    public abstract int updateBoard(Point squareLocation);
-    public abstract void makeHumanMove(Point userPoint); //GET POINT FROM UI
+   // public abstract void makeHumanMove(Point userPoint); //GET POINT FROM UI
     public abstract int isValidPoint(Point squareLocation);
     public abstract void makeMove();
     public abstract boolean InitMoveCheck();
@@ -145,6 +142,21 @@ public abstract class GameLogic {
         }
     }
 
+    public int updateBoard(Point squareLocation)
+    {
+        int squareValue;
+
+        Point oldMarkerPoint = gameBoard.getMarker().getMarkerLocation();
+        String squareStringValue = gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].getValue();//get number
+        squareValue = game_objects.Square.ConvertFromStringToIntValue(squareStringValue); //return number value
+
+        gameBoard.getGameBoard()[oldMarkerPoint.getRow()-1][oldMarkerPoint.getCol()-1].setValue("");    //empty old marker location
+        //gameBoard.getGameBoard()[oldMarkerPoint.getRow()-1][oldMarkerPoint.getCol()-1].setColor(GameColor.GRAY);
+        gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].setValue(Marker.markerSign); //update marker to square
+        gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].setColor(GameColor.GRAY);
+
+        return squareValue;
+    }
 
     protected void checkExplicitBoard(List<jaxb.schema.generated.Square> squares, jaxb.schema.generated.Marker marker, int boardSize) throws XmlNotValidException
     {

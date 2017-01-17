@@ -15,9 +15,6 @@ public class Square {
     private IntegerProperty color;
     private BooleanProperty isEmpty;
 
-
-
-
     public Square(Point location) {
         this.location = location;
         initSquare();
@@ -30,6 +27,15 @@ public class Square {
     public Square(){
         initSquare();
         isEmpty.setValue(true);
+    }
+
+    public Square (Square copySquare){
+        initSquare();
+        this.location = new Point(copySquare.getLocation().getRow(),copySquare.getLocation().getCol());
+        this.colorProperty().set(copySquare.colorProperty().get());
+        this.squareValueProperty().set(copySquare.getSquareValue());
+        this.isDisabled.set(copySquare.isDisabled());
+        this.setIsEmpty(copySquare.isEmpty());
     }
 
     public void initSquare()

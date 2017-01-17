@@ -58,8 +58,8 @@ public class BoardButton extends Button {
     }
     else if(boardButton.getValue().equals(Marker.markerSign)) {
         this.setText(boardButton.getValue());
-        this.setId(Marker.markerStyle);
-        this.getStyleClass().add(Marker.markerStyle);
+        this.setId("button-marker");
+        this.getStyleClass().add("button-marker");
     }else{
          this.setText(boardButton.getValue());
          setButtonColor(buttonSquare.getColor());
