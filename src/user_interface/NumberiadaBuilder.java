@@ -43,7 +43,7 @@ public class NumberiadaBuilder {
     {
         players = gamePlayers;
         m_players = new GridPane();
-        m_players.setPadding(new Insets(10, 10, 10, 40));
+        m_players.setPadding(new Insets(80,100,40,40));
         m_players.setVgap(8);
         m_players.setHgap(10);
 
@@ -94,7 +94,7 @@ public class NumberiadaBuilder {
         int size = gameBoard.GetBoardSize();
         Square[][]gBoard = gameBoard.getGameBoard();
         board = new GridPane();
-        board.setPadding(new Insets(30, 30, 30, 30));
+        board.setPadding(new Insets(100, 30, 30, 30));
         board.setVgap(1);
         board.setHgap(1);
 
@@ -157,13 +157,13 @@ public class NumberiadaBuilder {
     }
     public void clearPlayersView()
     {
-        m_players.getChildren().remove(0,m_players.getChildren().size()-1);
+        m_players.getChildren().remove(0,m_players.getChildren().size());
     }
 
     public void setPlayersScore(GridPane PlayerScoreGridPane,List<Player> players)
     {
         int i=1;
-        PlayerScoreGridPane.setPadding(new Insets(5, 5, 5, 5));
+        PlayerScoreGridPane.setPadding(new Insets(20, 5, 5, 5));
         PlayerScoreGridPane.setVgap(8);
         PlayerScoreGridPane.setHgap(8);
         PlayerScoreGridPane.getChildren().get(0).setStyle("-fx-background-color:#efff11;"+"-fx-border-color: #cc0e1a");

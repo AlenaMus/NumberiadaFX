@@ -24,7 +24,10 @@ public class Board {
         this.boardType = gameBoard.GetBoardType();
         if(boardType.equals(eBoardType.Random)){
             this.boardRange = new BoardRange(gameBoard.getBoardRange().getFrom(),gameBoard.getBoardRange().getTo());
+        }else{
+            boardRange = null;
         }
+        this.marker = new Marker(gameBoard.getMarker().getMarkerLocation().getRow(),gameBoard.getMarker().getMarkerLocation().getCol());
         this.gameBoard = new Square[boardSize][boardSize];
         copyBoard(gameBoard.getGameBoard());
 
@@ -40,6 +43,17 @@ public class Board {
         InitBoard();
     }
 
+    public void clearBoard(){
+
+        for (int i=0;i<boardSize;i++)
+        {
+            for(int j=0;j<boardSize;j++)
+            {
+                gameBoard[i][j] = null;
+            }
+        }
+        gameBoard=null;
+    }
     public int GetBoardSize()
     {
         return boardSize;
@@ -89,6 +103,8 @@ public class Board {
         }
 
     }
+
+
    public void shuffleArray(Square[][] matrix) {
         Random random = new Random();
 

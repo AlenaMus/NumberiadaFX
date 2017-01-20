@@ -24,26 +24,22 @@ public abstract class GameLogic {
     public static final int MARKER_SQUARE_BASIC=1005;
     public static final int EMPTY_SQUARE_BASIC=1006;
 
-    public static int gameRound = 0;
-
-
     public static boolean isEndOfGame = false;
-    public static int historyMove = 0;
     protected IntegerProperty gameMoves = new SimpleIntegerProperty(0);
-
     public static ValidationResult validationResult;
-    protected List<Square> explicitSquares = new ArrayList<Square>();
-    protected List<GameMove> historyMoves= new ArrayList<>();
-    protected List<Player>  players = new ArrayList<>();
-    protected List<game_objects.Player> winners = new ArrayList<>();
+    protected List<Square> explicitSquares;
+    protected List<GameMove> historyMoves;
+    protected List<Player>  players;
+    protected List<game_objects.Player> winners;
     protected GameDescriptor loadedGame;
     protected  int numOfPlayers;
     protected game_objects.Board gameBoard;
     protected game_objects.Player currentPlayer = new Player();
     private eGameType gameType;
+    protected int currentPlayerIndex;
 
 
-
+    public void updateHistory(Point chosenSquare){}
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
@@ -52,6 +48,9 @@ public abstract class GameLogic {
         this.currentPlayer = currentPlayer;
     }
     public List<GameMove> getHistoryMoves(){return historyMoves;}
+    public void setHistoryMoves(){
+        historyMoves = new ArrayList<>();
+    }
     public GameDescriptor getLoadedGame() {
         return loadedGame;
     }
@@ -95,7 +94,7 @@ public abstract class GameLogic {
     public abstract boolean switchPlayer();
     protected void checkAndSetPlayersXML(jaxb.schema.generated.Players players)throws XmlNotValidException{}
     public abstract boolean isGameOver();
-
+    public void clearHistory(){}
 
     protected void updateUserData(int squareValue) // in Player?
     {
@@ -105,6 +104,11 @@ public abstract class GameLogic {
         currentPlayer.scoreStringProperty().set(String.valueOf(newScore));
     }
 
+    public void setFirstPlayer()
+    {
+        setCurrentPlayer(players.get(0));
+        currentPlayerIndex = 0;
+    }
 
     protected void checkBoardXML(jaxb.schema.generated.Board board)throws XmlNotValidException
     {
@@ -151,9 +155,10 @@ public abstract class GameLogic {
         squareValue = game_objects.Square.ConvertFromStringToIntValue(squareStringValue); //return number value
 
         gameBoard.getGameBoard()[oldMarkerPoint.getRow()-1][oldMarkerPoint.getCol()-1].setValue("");    //empty old marker location
-        //gameBoard.getGameBoard()[oldMarkerPoint.getRow()-1][oldMarkerPoint.getCol()-1].setColor(GameColor.GRAY);
+        gameBoard.getGameBoard()[oldMarkerPoint.getRow()-1][oldMarkerPoint.getCol()-1].setColor(GameColor.GRAY);
+
         gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].setValue(Marker.markerSign); //update marker to square
-        gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].setColor(GameColor.GRAY);
+        gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()].setColor(GameColor.MARKER);
 
         return squareValue;
     }
@@ -216,7 +221,7 @@ public abstract class GameLogic {
     public void loadDataFromJaxbToGame(GameDescriptor loadedGame,String gameType) {
         setGameType(eGameType.valueOf(gameType));
         jaxb.schema.generated.Board loadedBoard = loadedGame.getBoard();
-        setBoard(loadedBoard);
+         setBoard(loadedBoard);
     }
 
     public void setBoard(jaxb.schema.generated.Board board)
@@ -227,11 +232,18 @@ public abstract class GameLogic {
         switch (boardType) {
             case Explicit: Point markerLocation = new Point(board.getStructure().getSquares().getMarker().getRow().intValue(),board.getStructure().getSquares().getMarker().getColumn().intValue());
                 FillExplicitBoard(explicitSquares,markerLocation);
+                if(gameType.equals(eGameType.Advance)){
+                    gameBoard.getGameBoard()[markerLocation.getRow()-1][markerLocation.getCol()-1].setColor(GameColor.MARKER);
+                }
                 break;
             case Random:
                 BoardRange range = new BoardRange(board.getStructure().getRange().getFrom(),board.getStructure().getRange().getTo());
                 gameBoard.setBoardRange(range);
-                FillRandomBoard();
+                if(GameManager.gameRound > 0){
+                    gameBoard = new Board(historyMoves.get(0).getGameBoard());
+                }else{
+                    FillRandomBoard();
+                }
                 break;
         }
     }

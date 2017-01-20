@@ -12,10 +12,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
@@ -23,6 +21,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
@@ -39,6 +38,9 @@ public class GameController implements Initializable {
     public void setGameWindow(Stage stage) {
         gameWindow = stage;
     }
+
+    @FXML
+    private Label ReplayMovesLabel;
 
     @FXML
     private Label ComputerThinkingLabel;
@@ -95,27 +97,24 @@ public class GameController implements Initializable {
     @FXML
     private Label scoreGridLabel;
 
+
+
     @FXML
     void StartGameButtonClicked(ActionEvent event) {
 
-        if(GameLogic.gameRound > 0){
-            clearGameWindow();
-            try{
-                gameManager.LoadGameFromXmlAndValidate(xmlFilePath);
-                logic = gameManager.getGameLogic();
-                createGameView();
-            }catch (XmlNotValidException ex){
-                setInvalidXMLAlert(ex);
-            }
+        if(GameManager.gameRound > 0){
+           restartGame();
+        }else{
+            logic.setHistoryMoves();
         }
-        PrevButton.disableProperty().setValue(true);
-        NextButton.disableProperty().setValue(true);
-        MakeAMoveButton.disableProperty().setValue(false);
+
+        MakeAMoveButton.getStyleClass().clear();
         LeaveGameButton.disableProperty().setValue(false);
         LoadXmlFileButton.disableProperty().setValue(true);
-        logic.initGame();
+        MakeAMoveButton.disableProperty().setValue(false);
+        StartGameButton.disableProperty().setValue(true);
         setStartGame();
-        GameLogic.gameRound++;
+        GameManager.gameRound++;
 
         if(!logic.InitMoveCheck()) //first player check
         {
@@ -127,6 +126,25 @@ public class GameController implements Initializable {
                 makeComputerMove();
             }
         }
+    }
+
+
+
+    private void restartGame(){
+        historyIndex = -1;
+        clearGameWindow();
+        try{
+            gameManager.LoadGameFromXmlAndValidate(xmlFilePath);
+            createGameView();
+        }catch (XmlNotValidException ex){
+            setInvalidXMLAlert(ex);
+        }
+        logic.getHistoryMoves().clear();
+        logic.setHistoryMoves();
+
+        NextButton.visibleProperty().setValue(false);
+        PrevButton.visibleProperty().setValue(false);
+        ReplayMovesLabel.visibleProperty().setValue(false);
     }
 
     private void makeComputerMove() {
@@ -142,11 +160,12 @@ public class GameController implements Initializable {
                 int i;
 
                 squareLocation = logic.makeComputerMove();
+
                 for(i=1;i < 10; i++){
                     updateProgress(i,10);
-                    Thread.sleep(80);
+                    Thread.sleep(100);
                 }
-                    Thread.sleep(500);
+                    Thread.sleep(300);
                 return squareLocation;
             }
             @Override
@@ -157,18 +176,14 @@ public class GameController implements Initializable {
         };
 
         moveTask.setOnSucceeded(t -> {
-            System.out.println("Updating Board!");
-            logic.updateDataMove(moveTask.getValue());
+
                  ComputerThinkingLabel.textProperty().unbind();
                  ComputerProgressBar.visibleProperty().set(false);
                  ComputerThinkingLabel.visibleProperty().set(false);
-            try{
-                Thread.sleep(200);
-            }catch (InterruptedException ex){
-                ex.printStackTrace();
-            }
-                System.out.println("Finding next player after computer");
-                findPlayerToNextMove();
+                 System.out.println("Updating Board!");
+                 logic.updateDataMove(moveTask.getValue());
+                 System.out.println("Finding next player after computer");
+                 findPlayerToNextMove();
         });
 
         moveTask.setOnFailed(t -> {
@@ -184,10 +199,14 @@ public class GameController implements Initializable {
         ComputerThinkingLabel.textProperty().bind(moveTask.messageProperty());
 
         moveTask.valueProperty().addListener((observable, oldValue, newValue) ->  {
-            System.out.println(String.format("Value reutrned is %d %d",newValue.getRow(),newValue.getCol()));});
+            System.out.println(String.format("Value returned is %d %d",newValue.getRow(),newValue.getCol()));});
         Thread move = new Thread(moveTask);
         move.start();
 
+//        Point squareLocation;
+//        squareLocation = logic.makeComputerMove();
+//        logic.updateDataMove(squareLocation);
+//        findPlayerToNextMove();
     }
 
     private void findPlayerToNextMove() {
@@ -205,6 +224,7 @@ public class GameController implements Initializable {
         } else {
             setGameOver();
         }
+
     }
 
 
@@ -218,13 +238,16 @@ public class GameController implements Initializable {
         alert.setContentText(String.join(System.lineSeparator(),statistics));
         alert.showAndWait();
 
+
+        StartGameButton.disableProperty().setValue(false);
         MoveNumberLabel.textProperty().unbind();
         LoadXmlFileButton.disableProperty().setValue(false);
         MakeAMoveButton.disableProperty().setValue(true);
         LeaveGameButton.disableProperty().setValue(true);
-        PrevButton.disableProperty().setValue(false);
+        ReplayMovesLabel.visibleProperty().setValue(true);
         PrevButton.visibleProperty().setValue(true);
         NextButton.visibleProperty().setValue(true);
+        historyIndex = -1;
         clearGameWindow();
 
     }
@@ -232,20 +255,18 @@ public class GameController implements Initializable {
     @FXML
     private void PrevHistoryButtonClicked(){
         if(historyIndex == -1){
+            PrevButton.disableProperty().setValue(false);
             historyIndex = logic.getHistoryMoves().size()-1;
             NextButton.disableProperty().setValue(false);
+            createHistoryMoveView();
+        }else if(historyIndex >= 1){
+                historyIndex--;
+                createHistoryMoveView();
+            }
+
         }
 
-    if(historyIndex > 1){
-        createHistoryMoveView();
-        historyIndex--;
-    }
 
-    if(historyIndex == 0){
-        createHistoryMoveView();
-        PrevButton.disableProperty().setValue(true);
-    }
-    }
 
     @FXML
     private void NextHistoryButtonClicked(){
@@ -253,26 +274,41 @@ public class GameController implements Initializable {
             historyIndex++;
             createHistoryMoveView();
         }
-
-        if(historyIndex == logic.getHistoryMoves().size()-1){
-            createHistoryMoveView();
-            NextButton.disableProperty().setValue(true);
-        }
     }
 
     @FXML
     private void ExitGameButtonClicked(ActionEvent event){
+        Alert exitWindow = new Alert(Alert.AlertType.CONFIRMATION);
+        exitWindow.setTitle("Exit Game");
+        exitWindow.setHeaderText("Do you want to exit Numberiada Game?");
+
+        Optional<ButtonType> result = exitWindow.showAndWait();
+        if( result.get() == ButtonType.OK){
+            logic.clearHistory();
+            Platform.exit();
+        }else{
+            exitWindow.hide();
+        }
     }
+
     private void clearGameWindow()
     {
         builder.clearBoard();
         borderPane.setCenter(null);
         builder.clearPlayersScoreView(PlayerScoreGridPane);
         clearCurrentPlayerView();
+        NextButton.visibleProperty().setValue(true);
+        NextButton.disableProperty().setValue(false);
+
+        PrevButton.disableProperty().setValue(false);
+        PrevButton.visibleProperty().setValue(true);
+        ReplayMovesLabel.visibleProperty().setValue(true);
+
     }
 
     @FXML
     void MakeAMoveButtonClicked(ActionEvent event) {
+        System.out.print("Move clicked\n");
         if (logic.getGameType().equals(eGameType.Advance))
             AdvanceMove();
         else {
@@ -306,7 +342,7 @@ public class GameController implements Initializable {
         else
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("YOU DIDNT CHOOSE A SQUARE!");
+            alert.setHeaderText("YOU DIDN'T CHOOSE A SQUARE!");
             alert.showAndWait();
         }
     }
@@ -398,14 +434,20 @@ public class GameController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         board = new GridPane();
-        StartGameButton.disableProperty().setValue(true);
         MakeAMoveButton.disableProperty().setValue(true);
+        StartGameButton.disableProperty().setValue(true);
         LeaveGameButton.disableProperty().setValue(true);
+        ComputerProgressBar.visibleProperty().setValue(false);
+        ReplayMovesLabel.visibleProperty().setValue(false);
+        PrevButton.visibleProperty().setValue(false);
+        NextButton.visibleProperty().setValue(false);
+        PrevButton.disableProperty().setValue(true);
+        NextButton.disableProperty().setValue(true);
     }
 
     private void setStartGame() {
+        logic.setFirstPlayer();
         builder.clearPlayersView();
-        borderPane.setRight(null);
         PlayerNameLabel.setMaxWidth(300);
         builder.setPlayersScore(PlayerScoreGridPane,logic.getPlayers()); //after Game Starts
         setCurrentPlayer(logic.getCurrentPlayer());
@@ -413,6 +455,9 @@ public class GameController implements Initializable {
     }
 
     public void LoadXmlFileButtonClicked() throws XmlNotValidException {
+        if (GameManager.gameRound > 0) {
+            logic.clearHistory();
+        }
         boolean xmLoaded = false;
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
@@ -447,16 +492,20 @@ public class GameController implements Initializable {
         builder.createPlayersTable(logic.getPlayers());
         gamePlayers = builder.getPlayersTable();
         borderPane.setRight(gamePlayers);
+
     }
 
 
     private void createHistoryMoveView(){
         GameMove move = logic.getHistoryMoves().get(historyIndex);
-        move.getChosenMove().setColor(7);
         board = builder.createBoard(move.getGameBoard());
         borderPane.setCenter(board);
+        if(move.getChosenMove()!=null){
+            move.getChosenMove().colorProperty().set(GameColor.PURPLE);
+        }
         setCurrentPlayer(move.getCurrentPlayer());
         MoveNumberLabel.setText(String.valueOf(move.getMoveNum()));
+        builder.clearPlayersScoreView(PlayerScoreGridPane);
         builder.setPlayersScore(PlayerScoreGridPane,move.getPlayers());
 
     }
@@ -467,6 +516,7 @@ public class GameController implements Initializable {
         CurrentPlayerIDLabel.setText(String.valueOf(currentPlayer.getId()));
         CurrentPlayerColorLabel.setText(String.valueOf(currentPlayer.getPlayerColor()));
         CurrentPlayerTypeLabel.setText(currentPlayer.playerTypeProperty().getValue());
+
     }
 
     private void clearCurrentPlayerView()

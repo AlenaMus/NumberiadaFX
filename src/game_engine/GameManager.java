@@ -30,8 +30,7 @@ public class GameManager {
     private static final int SHOW_STATISTICS = 3;
     private static final int LEAVE_GAME = 4;
 
-
-    private static int gameRound = 0;
+    public static int gameRound = 0;
     private boolean isLoadedGame = false;
     protected eGameType gameType;
     private GameLogic gameLogic = null;
@@ -87,20 +86,21 @@ public class GameManager {
 
             gameType = loadedGame.getGameType();
 
-            if(gameType.equals(String.valueOf(eGameType.Basic))) {
-                gameLogic = new BasicGame();
-            }
-            else if(gameType.equals(String.valueOf(eGameType.Advance))) {
-                gameLogic = new AdvancedGame();
-            }
-            else if(gameType.equals(String.valueOf(eGameType.AdvanceDynamic))) {
-                //gameLogic = new DynamicAdvancedGame();
-            }else{
-                ValidationResult valid = new ValidationResult();
-                valid.add("Invalid Game Type");
-                throw new XmlNotValidException(valid);
-            }
+            if(gameRound == 0) {
 
+                if (gameType.equals(String.valueOf(eGameType.Basic))) {
+                    gameLogic = new BasicGame();
+                } else if (gameType.equals(String.valueOf(eGameType.Advance))) {
+                    gameLogic = new AdvancedGame();
+                } else if (gameType.equals(String.valueOf(eGameType.AdvanceDynamic))) {
+                    //gameLogic = new DynamicAdvancedGame();
+                } else {
+                    ValidationResult valid = new ValidationResult();
+                    valid.add("Invalid Game Type");
+                    throw new XmlNotValidException(valid);
+                }
+            }
+            gameLogic.initGame();
             gameLogic.setGameType(eGameType.valueOf(gameType));
             gameLogic.checkXMLData(loadedGame);
         }

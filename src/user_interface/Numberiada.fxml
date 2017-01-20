@@ -18,53 +18,65 @@
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane fx:id="scrollPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="user_interface.GameController">
+<ScrollPane fx:id="scrollPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="483.0" prefWidth="677.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="user_interface.GameController">
     <content>
-        <BorderPane id="borderPane" fx:id="borderPane" prefHeight="391.0" prefWidth="602.0">
+        <BorderPane id="borderPane" fx:id="borderPane" prefHeight="391.0" prefWidth="681.0">
             <right>
-                <Pane prefHeight="367.0" prefWidth="202.0" BorderPane.alignment="CENTER">
-                    <children>
-                        <Button fx:id="PrevButton" disable="true" layoutX="19.0" layoutY="313.0" mnemonicParsing="false" onAction="#PrevHistoryButtonClicked" text="PREV" />
-                        <Button fx:id="NextButton" disable="true" layoutX="82.0" layoutY="313.0" mnemonicParsing="false" onAction="#NextHistoryButtonClicked" text="NEXT" />
-                        <Label layoutX="19.0" layoutY="284.0" text="Replay Moves" textFill="#e80a0a">
-                            <font>
-                                <Font name="System Bold" size="13.0" />
-                            </font>
-                        </Label>
-                    </children>
-                </Pane>
+                <Pane prefHeight="297.0" prefWidth="127.0" BorderPane.alignment="CENTER" />
             </right>
             <top>
-                <Pane prefHeight="29.0" prefWidth="602.0" BorderPane.alignment="CENTER">
+                <Pane prefHeight="29.0" prefWidth="387.0" BorderPane.alignment="CENTER">
                     <children>
                         <HBox layoutX="14.0" layoutY="-4.0" prefHeight="39.0" prefWidth="559.0">
                             <children>
-                                <Button fx:id="LoadXmlFileButton" mnemonicParsing="false" onAction="#LoadXmlFileButtonClicked" text="Load Game XML" />
-                                <Button fx:id="StartGameButton" mnemonicParsing="false" onAction="#StartGameButtonClicked" prefHeight="25.0" prefWidth="86.0" text="Start Game" />
-                                <Button fx:id="MakeAMoveButton" mnemonicParsing="false" onAction="#MakeAMoveButtonClicked" prefHeight="25.0" prefWidth="106.0" text="Make A Move" />
-                                <Button fx:id="LeaveGameButton" mnemonicParsing="false" onAction="#RetireGameButtonClicked" prefHeight="25.0" prefWidth="90.0" text="Leave Game" />
-                                <Button fx:id="ExitGameButton" mnemonicParsing="false" onAction="#ExitGameButtonClicked" prefHeight="25.0" prefWidth="81.0" text="Exit" />
+                                <Button fx:id="LoadXmlFileButton" mnemonicParsing="false" onAction="#LoadXmlFileButtonClicked" prefHeight="25.0" prefWidth="157.0" text="Load Game XML" />
+                                <Button fx:id="StartGameButton" mnemonicParsing="false" onAction="#StartGameButtonClicked" prefHeight="25.0" prefWidth="139.0" text="Start Game" />
+                                <Button fx:id="LeaveGameButton" mnemonicParsing="false" onAction="#RetireGameButtonClicked" prefHeight="25.0" prefWidth="154.0" text="Leave Game" />
+                                <Button fx:id="ExitGameButton" mnemonicParsing="false" onAction="#ExitGameButtonClicked" prefHeight="25.0" prefWidth="98.0" text="Exit" />
+                                <Button id="button-move" fx:id="MakeAMoveButton" alignment="CENTER" contentDisplay="TOP" minWidth="77.0" mnemonicParsing="false" onAction="#MakeAMoveButtonClicked" prefHeight="35.0" prefWidth="143.0" stylesheets="@boardStyle.css" text="Make A Move" textAlignment="CENTER">
+                                    <font>
+                                        <Font size="13.0" />
+                                    </font>
+                                </Button>
                             </children>
                             <padding>
                                 <Insets top="7.0" />
                             </padding>
                         </HBox>
-                  <VBox layoutX="229.0" layoutY="33.0" prefHeight="38.0" prefWidth="134.0">
-                     <children>
-                        <Label fx:id="ComputerThinkingLabel" prefHeight="17.0" prefWidth="156.0" />
-                        <ProgressBar fx:id="ComputerProgressBar" prefHeight="18.0" prefWidth="126.0" progress="0.0" />
-                     </children>
-                  </VBox>
+                        <VBox layoutX="229.0" layoutY="33.0" prefHeight="38.0" prefWidth="134.0">
+                            <children>
+                                <Label fx:id="ComputerThinkingLabel" prefHeight="17.0" prefWidth="156.0" />
+                                <ProgressBar fx:id="ComputerProgressBar" prefHeight="18.0" prefWidth="126.0" progress="0.0" />
+                            </children>
+                        </VBox>
                     </children>
                 </Pane>
             </top>
+            <bottom>
+                <VBox alignment="BOTTOM_CENTER" prefHeight="65.0" prefWidth="527.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <Label fx:id="ReplayMovesLabel" text="Replay Moves" textAlignment="CENTER" textFill="#e80a0a">
+                            <font>
+                                <Font name="System Bold" size="13.0" />
+                            </font>
+                        </Label>
+                        <HBox alignment="BOTTOM_CENTER" prefHeight="32.0" prefWidth="559.0">
+                            <children>
+                                <Button fx:id="PrevButton" disable="true" mnemonicParsing="false" onAction="#PrevHistoryButtonClicked" text="PREV" />
+                                <Button fx:id="NextButton" disable="true" mnemonicParsing="false" onAction="#NextHistoryButtonClicked" text="NEXT" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </bottom>
             <left>
-                <Pane prefHeight="389.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                <Pane prefHeight="297.0" prefWidth="173.0" BorderPane.alignment="CENTER">
                     <children>
                         <Label layoutX="18.0" layoutY="48.0" text="ID" textFill="#cc0e1af0">
                             <padding>
                                 <Insets top="5.0" />
-                            </padding></Label>
+                            </padding>
+                        </Label>
                         <Label layoutX="10.0" layoutY="191.0" prefHeight="18.0" prefWidth="41.0" text="Move #" textFill="#c60303" />
                         <Label layoutX="8.0" layoutY="227.0" text="Players Scores" textFill="#f51010">
                             <font>
@@ -82,7 +94,8 @@
                             </textFill>
                             <padding>
                                 <Insets top="5.0" />
-                            </padding></Label>
+                            </padding>
+                        </Label>
                         <Label layoutX="11.0" layoutY="93.0" text="Type">
                             <textFill>
                                 <LinearGradient endX="1.0" endY="1.0">
@@ -94,7 +107,8 @@
                             </textFill>
                             <padding>
                                 <Insets top="5.0" />
-                            </padding></Label>
+                            </padding>
+                        </Label>
                         <Label layoutX="10.0" layoutY="118.0" text="Color">
                             <textFill>
                                 <LinearGradient endX="1.0" endY="1.0">
@@ -109,7 +123,8 @@
                             </cursor>
                             <padding>
                                 <Insets top="5.0" />
-                            </padding></Label>
+                            </padding>
+                        </Label>
                         <Label layoutX="10.0" layoutY="14.0" text="Current Player" textFill="#e80a0a">
                             <font>
                                 <Font name="System Bold" size="13.0" />
@@ -121,9 +136,9 @@
                             </font>
                         </Label>
                         <Label fx:id="PlayerNameLabel" layoutX="60.0" layoutY="75.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="100.0" underline="true" />
-                        <Label fx:id="CurrentPlayerTypeLabel" layoutX="62.0" layoutY="96.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="100.0" underline="true" />
-                        <Label fx:id="CurrentPlayerIDLabel" layoutX="58.0" layoutY="51.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="65.0" underline="true" />
+                        <Label fx:id="CurrentPlayerIDLabel" layoutX="62.0" layoutY="49.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="65.0" underline="true" />
                         <Label fx:id="CurrentPlayerColorLabel" layoutX="65.0" layoutY="121.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="100.0" underline="true" />
+                        <Label fx:id="CurrentPlayerTypeLabel" layoutX="66.0" layoutY="96.0" prefHeight="23.0" prefWidth="83.0" underline="true" />
                         <Label fx:id="MoveNumberLabel" layoutX="65.0" layoutY="192.0" prefHeight="17.0" prefWidth="52.0" />
                         <GridPane id="playerScoreGridPane" fx:id="PlayerScoreGridPane" hgap="5.0" layoutY="244.0" prefHeight="124.0" prefWidth="139.0" vgap="5.0">
                             <columnConstraints>
@@ -146,7 +161,8 @@
                                 <Label fx:id="nameScoreGridLabel" prefHeight="17.0" prefWidth="78.0" text="Player Name" textAlignment="CENTER" textFill="#0d0dcd" textOverrun="CENTER_ELLIPSIS">
                                     <effect>
                                         <ColorAdjust />
-                                    </effect></Label>
+                                    </effect>
+                                </Label>
                                 <Label fx:id="scoreGridLabel" text="Score" textFill="#0d0dcd" GridPane.columnIndex="1" />
                             </children>
                         </GridPane>

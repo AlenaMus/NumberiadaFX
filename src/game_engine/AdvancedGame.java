@@ -9,6 +9,7 @@ import jaxb.schema.generated.GameDescriptor;
 import jaxb.schema.generated.Player;
 import jaxb.schema.generated.Range;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -18,15 +19,19 @@ public class AdvancedGame extends GameLogic{
 
     public static final int MIN_PLAYERS = 3;
     public static final int MAX_PLAYERS = 6;
-    private int currentPlayerIndex;
+
 
 
     @Override
     public void initGame()
     {
-        super.setCurrentPlayer(players.get(0));
-        currentPlayerIndex = 0;
+        explicitSquares = new ArrayList<Square>();
+        players = new ArrayList<>();
+        winners = new ArrayList<>();
     }
+
+
+
 
 
     public void setWinners(){
@@ -78,6 +83,7 @@ public class AdvancedGame extends GameLogic{
     public String gameOver()
     {
         int i=0;
+        updateHistory(null);
         game_objects.Player player;
         String winnerStatistics="";
         Collections.sort(players);
@@ -92,12 +98,13 @@ public class AdvancedGame extends GameLogic{
             i++;
         }
 
-        Collections.reverse(historyMoves);
         players.clear();
         winners.clear();
+        explicitSquares.clear();
+        gameBoard.clearBoard();
         currentPlayer = null;
         setNumOfPlayers(0);
-        gameMoves.set(0);
+        setGameMoves(0);
         return winnerStatistics;
     }
 
@@ -210,25 +217,41 @@ public class AdvancedGame extends GameLogic{
                         foundSquare = true;
                     }
                 }
-                updateHistory(squareLocation);
+
                 return squareLocation;
     }
 
     @Override
     public void updateDataMove(Point squareLocation){
         int squareValue;
+        updateHistory(squareLocation);
         squareValue = updateBoard(squareLocation);
         updateUserData(squareValue);
         gameBoard.getMarker().setMarkerLocation(squareLocation.getRow() + 1, squareLocation.getCol() + 1);
-        updateHistory(squareLocation);
+
     }
 
 
-    private void updateHistory(Point chosenSquare){
-        Square chosenSq = new Square(gameBoard.getGameBoard()[chosenSquare.getRow()][chosenSquare.getCol()]);
-        GameMove move = new GameMove(gameBoard,currentPlayer,players,gameMoves.get(),chosenSq);
+    @Override
+    public void updateHistory(Point chosenSquare){
+        GameMove move = new GameMove(gameBoard,currentPlayer,players,gameMoves.get());
+        if(chosenSquare!= null){
+            Square chosenSq = new Square(gameBoard.getGameBoard()[chosenSquare.getRow()][chosenSquare.getCol()]);
+            move.setChosenMove(chosenSq);
+        }
         historyMoves.add(move);
     }
+
+    @Override
+    public void clearHistory(){
+        if(historyMoves != null){
+            for (GameMove move:historyMoves) {
+                move.clear();
+            }
+            historyMoves.clear();
+        }
+    }
+
 
 
 
@@ -335,9 +358,6 @@ public class AdvancedGame extends GameLogic{
 
     @Override
     public void FillRandomBoard() {
-
-       // List<game_objects.Square> randomList = new ArrayList<>();
-
         int i ;
         int j ;
         int row =0;
@@ -346,30 +366,32 @@ public class AdvancedGame extends GameLogic{
         int boardSize = gameBoard.GetBoardSize();
         BoardRange boardRange = gameBoard.getBoardRange();
         game_objects.Square[][] board = gameBoard.getGameBoard();
-       // Random rand = new Random();
-
         // filling our numbers in given range
         int rangeSize = boardRange.RangeSize();
-     //   int printNumCount = (boardSize * boardSize -1) / (rangeSize*numOfPlayers); //49/9=5
+        int printNumCount = (boardSize * boardSize -1) / (rangeSize*numOfPlayers);
         int rangeNumToPrint = boardRange.getFrom();
 
+            for (int k = 0; k <numOfPlayers ; k++) {
+                for(int m = 0;m < rangeSize ;m++) {
+                    for(int n=0;n < printNumCount;n++){
+                        board[row][col].setValue(game_objects.Square.ConvertFromIntToStringValue(rangeNumToPrint));
+                        board[row][col].setColor(color);
 
-        for(int m = 0;m < rangeSize ;m++) {              ///&& i< boardSize
-            for (int k = 0; k < numOfPlayers; k++) {    // && i< boardSize;
+                        if(col == boardSize-1)
+                        {
+                            col = -1;
+                            row++;
+                        }
+                        col++;
+                    }
 
-                board[row][col].setValue(game_objects.Square.ConvertFromIntToStringValue(rangeNumToPrint));
-                board[row][col].setColor(color);
-                color++;
-                if(col == boardSize-1)
-                {
-                    col = -1;
-                    row++;
-                }
-                col++;
+                    rangeNumToPrint++;
+                    if(rangeNumToPrint>boardRange.getTo()){
+                        rangeNumToPrint = boardRange.getFrom();
+                    }
 
             }
-            rangeNumToPrint++;
-            color=1;
+                color++;
         }
 
         if (col == boardSize) {
@@ -385,6 +407,7 @@ public class AdvancedGame extends GameLogic{
         }
 
         board[boardSize - 1][boardSize - 1].setValue(game_objects.Marker.markerSign);
+        board[boardSize - 1][boardSize - 1].setColor(GameColor.MARKER);
         gameBoard.shuffleArray(board);
 
         String MarkerSign = gameBoard.getMarker().getMarkerSign();

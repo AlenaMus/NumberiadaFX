@@ -43,6 +43,18 @@ public class Player implements Comparable<Player> {
 
     }
 
+
+    public Player(Player player){
+        this();
+        name.setValue(player.getName());
+        id.setValue(player.getId());
+        playerType.setValue(String.valueOf(player.getPlayerType()));
+        color.setValue(player.getColor());
+        playerColor.setValue(GameColor.getColor(player.getColor()));
+        scoreString.set(player.scoreStringProperty().get());
+        this.scoreProperty().set(player.scoreProperty().get());
+        numOfMoves = player.getNumOfMoves();
+    }
     public Player(eTurn turn,ePlayerType playerType1)
     {
         IsActive = new SimpleBooleanProperty(true);

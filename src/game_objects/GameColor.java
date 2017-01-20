@@ -12,6 +12,7 @@ public class GameColor {
     public static final int PINK = 6;
     public static final int MarkerMove = 7;
     public static final int GRAY = 0;
+    public static final int MARKER = 100;
 
     public static String setColor(int color)
     {
@@ -34,6 +35,9 @@ public class GameColor {
             case GRAY:colorToSet = "button-gray";
                 break;
             case MarkerMove: colorToSet = "button-move";
+                break;
+            case MARKER:colorToSet = "button-marker";
+                break;
 
         }
         return colorToSet;

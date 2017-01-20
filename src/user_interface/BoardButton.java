@@ -50,17 +50,16 @@ public class BoardButton extends Button {
 
          buttonColor = new SimpleIntegerProperty();
          this.boardButton = buttonSquare;
-        // buttonColor.bind(buttonSquare.colorProperty());
+
     if(boardButton.getValue().isEmpty())
     {
         this.setButtonColor(GameColor.GRAY);
-        //this.disableProperty().setValue(true);
     }
     else if(boardButton.getValue().equals(Marker.markerSign)) {
-        this.setText(boardButton.getValue());
-        this.setId("button-marker");
-        this.getStyleClass().add("button-marker");
-    }else{
+          this.setText(boardButton.getValue());
+          setButtonColor(buttonSquare.getColor());
+    }
+    else{
          this.setText(boardButton.getValue());
          setButtonColor(buttonSquare.getColor());
     }
