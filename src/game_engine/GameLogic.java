@@ -61,7 +61,6 @@ public abstract class GameLogic {
     public eGameType getGameType() {
         return gameType;
     }
-
     public int getNumOfPlayers () {return numOfPlayers;}
     public void setNumOfPlayers(int num) { numOfPlayers = num; }
     public Board getGameBoard() {return gameBoard;}
@@ -75,17 +74,12 @@ public abstract class GameLogic {
     public IntegerProperty gameMovesProperty() {
         return gameMoves;
     }
-    public abstract String getWinner();
     public void setGameMoves(int gameMoves) {
         this.gameMoves.set(gameMoves);
     }
-    public abstract void updateDataMove(Point squareLocation);
     public abstract Point makeComputerMove();
     public abstract String playerRetire();
-    public abstract void initGame();
-   // public abstract void makeHumanMove(Point userPoint); //GET POINT FROM UI
     public abstract int isValidPoint(Point squareLocation);
-    public abstract void makeMove();
     public abstract boolean InitMoveCheck();
     public abstract void FillRandomBoard();
     public abstract void checkXMLData(GameDescriptor loadedGame)throws XmlNotValidException;
@@ -109,6 +103,69 @@ public abstract class GameLogic {
         setCurrentPlayer(players.get(0));
         currentPlayerIndex = 0;
     }
+
+    public String getWinner(){
+        String winnerMessage = "";
+        setWinners();
+        if(winners.size()> 1){
+            winnerMessage = "It's a TIE!\nThe Winners are :\n";
+            for (game_objects.Player player:winners) {
+                winnerMessage+=String.format("%s id:%d -> score :%d\n",player.getName(),player.getId(),player.getScore());
+            }
+        }else{
+            for (game_objects.Player player:winners) {
+                if(player!=null){
+                    winnerMessage = "The Winner is:\n" +
+                            String.format("%s id : %d -> score : %d", player.getName(), player.getId(), player.getScore());
+                    break;
+                }
+            }
+        }
+        return winnerMessage;
+    }
+
+
+    public void initGame()
+    {
+        explicitSquares = new ArrayList<Square>();
+        players = new ArrayList<>();
+        winners = new ArrayList<>();
+    }
+
+    public void setWinners(){
+        int maxScore=-10000;
+        for (game_objects.Player player:players) {
+            maxScore = player.getScore();
+            break;
+        }
+        for (game_objects.Player player:players) {
+            if(player!=null)
+            {
+                if(player.getScore()> maxScore){
+                    maxScore = player.getScore();
+                }
+            }
+        }
+        for (game_objects.Player player:players) {
+            if(player!=null)
+            {
+                if(player.getScore()== maxScore){
+                    winners.add(player);
+                }
+            }
+        }
+    }
+
+
+    public void updateDataMove(Point squareLocation){
+        int squareValue;
+        updateHistory(squareLocation);
+        squareValue = updateBoard(squareLocation);
+        updateUserData(squareValue);
+        gameBoard.getMarker().setMarkerLocation(squareLocation.getRow() + 1, squareLocation.getCol() + 1);
+
+    }
+
 
     protected void checkBoardXML(jaxb.schema.generated.Board board)throws XmlNotValidException
     {
@@ -239,7 +296,7 @@ public abstract class GameLogic {
             case Random:
                 BoardRange range = new BoardRange(board.getStructure().getRange().getFrom(),board.getStructure().getRange().getTo());
                 gameBoard.setBoardRange(range);
-                if(GameManager.gameRound > 0){
+                if(GameManager.gameRound > 0 && gameType.equals(eGameType.Advance) ){
                     gameBoard = new Board(historyMoves.get(0).getGameBoard());
                 }else{
                     FillRandomBoard();

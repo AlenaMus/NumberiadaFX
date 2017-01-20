@@ -70,6 +70,9 @@ public class Player implements Comparable<Player> {
     }
 
 
+
+
+
     public Player()
     {
         IsActive = new SimpleBooleanProperty(true);

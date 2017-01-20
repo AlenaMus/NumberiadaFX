@@ -103,27 +103,35 @@ public class GameController implements Initializable {
     void StartGameButtonClicked(ActionEvent event) {
 
         if(GameManager.gameRound > 0){
-           restartGame();
-        }else{
-            logic.setHistoryMoves();
-        }
+                restartGame();
+            }else if(logic.getGameType().equals(eGameType.Advance)){
+                logic.setHistoryMoves();
+            }
+
+
 
         MakeAMoveButton.getStyleClass().clear();
         LeaveGameButton.disableProperty().setValue(false);
         LoadXmlFileButton.disableProperty().setValue(true);
         MakeAMoveButton.disableProperty().setValue(false);
-        StartGameButton.disableProperty().setValue(true);
+
         setStartGame();
         GameManager.gameRound++;
+        if (logic.getGameType().toString() == "Advance") {
+            if (!logic.InitMoveCheck()) //first player check
+            {
+                noPossibleMovesAlert();
+                findPlayerToNextMove();
 
-        if(!logic.InitMoveCheck()) //first player check
-        {
-            noPossibleMovesAlert();
-            findPlayerToNextMove();
-
+            } else {
+                if (logic.getCurrentPlayer().getPlayerType().equals(String.valueOf(ePlayerType.Computer))) {
+                    makeComputerMove();
+                }
+            }
         }else{
-            if(logic.getCurrentPlayer().getPlayerType().equals(String.valueOf(ePlayerType.Computer))){
-                makeComputerMove();
+            if (!logic.InitMoveCheck())
+            {
+                setGameOver();
             }
         }
     }
@@ -131,7 +139,7 @@ public class GameController implements Initializable {
 
 
     private void restartGame(){
-        historyIndex = -1;
+
         clearGameWindow();
         try{
             gameManager.LoadGameFromXmlAndValidate(xmlFilePath);
@@ -139,12 +147,16 @@ public class GameController implements Initializable {
         }catch (XmlNotValidException ex){
             setInvalidXMLAlert(ex);
         }
-        logic.getHistoryMoves().clear();
-        logic.setHistoryMoves();
 
-        NextButton.visibleProperty().setValue(false);
-        PrevButton.visibleProperty().setValue(false);
-        ReplayMovesLabel.visibleProperty().setValue(false);
+        if(logic.getGameType().equals(eGameType.Advance)) {
+            historyIndex = -1;
+            logic.getHistoryMoves().clear();
+            logic.setHistoryMoves();
+            NextButton.visibleProperty().setValue(false);
+            PrevButton.visibleProperty().setValue(false);
+            ReplayMovesLabel.visibleProperty().setValue(false);
+
+        }
     }
 
     private void makeComputerMove() {
@@ -238,8 +250,6 @@ public class GameController implements Initializable {
         alert.setContentText(String.join(System.lineSeparator(),statistics));
         alert.showAndWait();
 
-
-        StartGameButton.disableProperty().setValue(false);
         MoveNumberLabel.textProperty().unbind();
         LoadXmlFileButton.disableProperty().setValue(false);
         MakeAMoveButton.disableProperty().setValue(true);
@@ -297,9 +307,10 @@ public class GameController implements Initializable {
         borderPane.setCenter(null);
         builder.clearPlayersScoreView(PlayerScoreGridPane);
         clearCurrentPlayerView();
+
         NextButton.visibleProperty().setValue(true);
         NextButton.disableProperty().setValue(false);
-
+        StartGameButton.disableProperty().setValue(false);
         PrevButton.disableProperty().setValue(false);
         PrevButton.visibleProperty().setValue(true);
         ReplayMovesLabel.visibleProperty().setValue(true);
@@ -348,54 +359,7 @@ public class GameController implements Initializable {
     }
 
 
-    private void BasicMove()
-    {
-        int pointStatus;
-        boolean doSwitch = true;
-        Point userPoint = builder.getChosenPoint();
-        if (userPoint != null) {
-            pointStatus = logic.isValidPoint(userPoint);
-            if (pointStatus == GameLogic.GOOD_POINT) {
-                logic.updateDataMove(userPoint);
-                doSwitch = logic.switchPlayer();
-                if (!doSwitch)
-                {
-                    String winner = logic.gameOver();
-                    printWinnerBasic(winner);
-                }
-            }
-            else if (pointStatus == GameLogic.NOT_IN_MARKER_ROW_BASIC)
-            {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setHeaderText("You choose illegal square -the square needs to be in the marker raw ");
-                alert.showAndWait();
-            }
-            else if (pointStatus == GameLogic.NOT_IN_MARKER_COL_BASIC)
-            {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setHeaderText("You choose illegal square -the square needs to be in the marker column");
-                alert.showAndWait();
-            }
-            else if (pointStatus == GameLogic.MARKER_SQUARE_BASIC)
-            {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setHeaderText("You choose illegal square -cannot choose marker square");
-                alert.showAndWait();
-            }
-            else if (pointStatus == GameLogic.EMPTY_SQUARE_BASIC)
-            {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setHeaderText("You choose illegal square -cannot choose empty square");
-                alert.showAndWait();
-            }
-        }
-        else
-        {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setHeaderText("YOU DIDNT CHOOSE A SQUARE!");
-            alert.showAndWait();
-        }
-    }
+
 
     private void printWinnerBasic(String winner)
     {
@@ -428,8 +392,13 @@ public class GameController implements Initializable {
     public void BasicRetire()
     {
         String winner =logic.playerRetire();
-        printWinnerBasic(winner);
+        printWinnerBasicRetire(winner);
+        LoadXmlFileButton.disableProperty().setValue(false);
+        MakeAMoveButton.disableProperty().setValue(true);
+        LeaveGameButton.disableProperty().setValue(true);
+        clearGameWindow();
     }
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -446,12 +415,25 @@ public class GameController implements Initializable {
     }
 
     private void setStartGame() {
+
         logic.setFirstPlayer();
-        builder.clearPlayersView();
         PlayerNameLabel.setMaxWidth(300);
         builder.setPlayersScore(PlayerScoreGridPane,logic.getPlayers()); //after Game Starts
-        setCurrentPlayer(logic.getCurrentPlayer());
+
+        if (logic.getGameType().equals(eGameType.Advance)){
+            builder.clearPlayersView();
+            setCurrentPlayer(logic.getCurrentPlayer());
+        }
+        else {
+            setCurrentPlayerBasic(logic.getCurrentPlayer());
+        }
         MoveNumberLabel.textProperty().bind(logic.gameMovesProperty().asString());
+    }
+
+    private void setCurrentPlayerBasic(Player currentPlayer)
+    {
+        PlayerNameLabel.setText(String.valueOf(currentPlayer.getTurn()));
+        CurrentPlayerTypeLabel.setText(currentPlayer.playerTypeProperty().getValue());
     }
 
     public void LoadXmlFileButtonClicked() throws XmlNotValidException {
@@ -489,10 +471,11 @@ public class GameController implements Initializable {
         StartGameButton.disableProperty().setValue(false);
         board = builder.createBoard(logic.getGameBoard());
         borderPane.setCenter(board);
-        builder.createPlayersTable(logic.getPlayers());
-        gamePlayers = builder.getPlayersTable();
-        borderPane.setRight(gamePlayers);
-
+        if(logic.getGameType().equals(eGameType.Advance)){
+            builder.createPlayersTable(logic.getPlayers());
+            gamePlayers = builder.getPlayersTable();
+            borderPane.setRight(gamePlayers);
+        }
     }
 
 
@@ -543,5 +526,65 @@ public class GameController implements Initializable {
                 " Please wait to your next turn :)", logic.getCurrentPlayer().getName()));
         alert.showAndWait();
     }
+
+    public void printWinnerBasicRetire(String winner)
+    {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("you left the game");
+        alert.setHeaderText("You left..so you lost...The winner is "+winner);
+        alert.showAndWait();
+    }
+
+    public void BasicMove()
+    {
+        int pointStatus;
+        boolean doSwitch = true;
+        Point userPoint = builder.getChosenPoint();
+        if (userPoint != null) {
+            pointStatus = logic.isValidPoint(userPoint);
+            if (pointStatus == GameLogic.GOOD_POINT) {
+                logic.updateDataMove(userPoint);
+                doSwitch = logic.switchPlayer();
+                setCurrentPlayerBasic(logic.getCurrentPlayer());
+                if (!doSwitch)
+                {
+                    // String winner = logic.gameOver();
+                    // printWinnerBasic(winner);
+                    setGameOver();
+                }
+            }
+            else if (pointStatus == GameLogic.NOT_IN_MARKER_ROW_BASIC)
+            {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("You choose illegal square -the square needs to be in the marker raw ");
+                alert.showAndWait();
+            }
+            else if (pointStatus == GameLogic.NOT_IN_MARKER_COL_BASIC)
+            {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("You choose illegal square -the square needs to be in the marker column");
+                alert.showAndWait();
+            }
+            else if (pointStatus == GameLogic.MARKER_SQUARE_BASIC)
+            {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("You choose illegal square -cannot choose marker square");
+                alert.showAndWait();
+            }
+            else if (pointStatus == GameLogic.EMPTY_SQUARE_BASIC)
+            {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("You choose illegal square -cannot choose empty square");
+                alert.showAndWait();
+            }
+        }
+        else
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("YOU DIDNT CHOOSE A SQUARE!");
+            alert.showAndWait();
+        }
+    }
+
 
 }

@@ -22,62 +22,14 @@ public class AdvancedGame extends GameLogic{
 
 
 
-    @Override
-    public void initGame()
-    {
-        explicitSquares = new ArrayList<Square>();
-        players = new ArrayList<>();
-        winners = new ArrayList<>();
-    }
+  //  @Override
+//    public void initGame()
+//    {
+//        explicitSquares = new ArrayList<Square>();
+//        players = new ArrayList<>();
+//        winners = new ArrayList<>();
+//    }
 
-
-
-
-
-    public void setWinners(){
-        int maxScore=-10000;
-        for (game_objects.Player player:players) {
-                maxScore = player.getScore();
-                break;
-        }
-        for (game_objects.Player player:players) {
-            if(player!=null)
-            {
-                if(player.getScore()> maxScore){
-                    maxScore = player.getScore();
-                }
-            }
-        }
-        for (game_objects.Player player:players) {
-            if(player!=null)
-            {
-                if(player.getScore()== maxScore){
-                    winners.add(player);
-                }
-            }
-        }
-    }
-
-    @Override
-    public String getWinner(){
-        String winnerMessage = "";
-        setWinners();
-       if(winners.size()> 1){
-           winnerMessage = "It's a TIE!\nThe Winners are :\n";
-           for (game_objects.Player player:winners) {
-               winnerMessage+=String.format("%s id:%d -> score :%d\n",player.getName(),player.getId(),player.getScore());
-           }
-       }else{
-           for (game_objects.Player player:winners) {
-               if(player!=null){
-                   winnerMessage = "The Winner is:\n" +
-                           String.format("%s id : %d -> score : %d", player.getName(), player.getId(), player.getScore());
-                   break;
-               }
-           }
-       }
-        return winnerMessage;
-    }
 
     @Override
     public String gameOver()
@@ -112,13 +64,6 @@ public class AdvancedGame extends GameLogic{
     public boolean InitMoveCheck()
     {
         return isPlayerHaveMove(gameBoard.getMarker().getMarkerLocation(),currentPlayer);
-    }
-
-
-    @Override
-    public void makeMove()
-    {
-
     }
 
 
@@ -221,15 +166,6 @@ public class AdvancedGame extends GameLogic{
                 return squareLocation;
     }
 
-    @Override
-    public void updateDataMove(Point squareLocation){
-        int squareValue;
-        updateHistory(squareLocation);
-        squareValue = updateBoard(squareLocation);
-        updateUserData(squareValue);
-        gameBoard.getMarker().setMarkerLocation(squareLocation.getRow() + 1, squareLocation.getCol() + 1);
-
-    }
 
 
     @Override

@@ -6,6 +6,8 @@ import game_validation.XmlNotValidException;
 import jaxb.schema.generated.GameDescriptor;
 import jaxb.schema.generated.Range;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -30,16 +32,16 @@ public class BasicGame extends GameLogic {
         return colPlayer;
     }
 
+
     @Override
-    public void updateDataMove(Point squareLocation){
+    public Point makeComputerMove(){
+        return new Point(0,0);
     }
 
-    public Point makeComputerMove()
-    {return new Point(0,0);}
-
-
+    @Override
     public void initGame()
     {
+        super.initGame();
         setBasicPlayers();
         setCurrentPlayer(rowPlayer);
     }
@@ -54,36 +56,7 @@ public class BasicGame extends GameLogic {
 
     }
 
-    @Override
-    public String gameOver()
-    {
-        Player winner;
-        String winnerPlayer =" ";
 
-        if(isEndOfGame) {
-            int rowPlayerScore = getRowPlayer().getScore();
-            int ColPlayerScore = getColPlayer().getScore();
-            if (rowPlayerScore > ColPlayerScore)
-                winnerPlayer = "Row Player";
-            else if (ColPlayerScore > rowPlayerScore)
-                winnerPlayer ="Column Player";
-            else //tie
-            {
-                winnerPlayer ="Tie ";
-            }
-        }
-       /* else {
-            if (currentPlayer.checkPlayerTurn(rowPlayer)) {
-                //row player left
-                winnerPlayer = colPlayer.getName();
-            } else {
-                //col player left
-                winnerPlayer = rowPlayer.getName();
-            }
-        }*/
-
-        return winnerPlayer;
-    }
 
     public String playerRetire()
     {
@@ -95,16 +68,62 @@ public class BasicGame extends GameLogic {
             //col player left
             winnerPlayer = "Row Player";
         }
+        players.clear();
+        winners.clear();
+        currentPlayer = null;
+        setNumOfPlayers(0);
+        gameMoves.set(0);
         return winnerPlayer;
     }
 
 
     public void setBasicPlayers()
     {
+        players = new ArrayList<>();
         rowPlayer = new Player(eTurn.ROW, ePlayerType.Human);
         colPlayer = new Player(eTurn.COL, ePlayerType.Human);
         players.add(0,rowPlayer);
         players.add(1,colPlayer);
+    }
+
+    @Override
+    public boolean isGameOver(){return true;}
+
+    @Override
+    public String gameOver()
+    {
+        int i=0;
+        game_objects.Player player;
+        String winnerStatistics="";
+        Collections.sort(players);
+        Collections.reverse(players);
+        String winner1=" ";
+        String winner2=" ";
+        if (winners.size() == 1)
+        {
+            winner1 = winners.get(0).getName();
+        }
+        if (winners.size() == 2)
+        {
+            winner2 = winners.get(1).getName();
+        }
+        if (winner1 != rowPlayer.getName() && winner2 !=rowPlayer.getName() )
+        {
+            winnerStatistics += (String.format("player %s  with score %d\n",
+                    rowPlayer.getName(),rowPlayer.getScore()));
+        }
+        if (winner1 != colPlayer.getName() && winner2 != colPlayer.getName() )
+        {
+            winnerStatistics += (String.format("player %s with score %d\n",
+                    colPlayer.getName(),colPlayer.getScore()));
+        }
+
+        players.clear();
+        winners.clear();
+        currentPlayer = null;
+        setNumOfPlayers(0);
+        gameMoves.set(0);
+        return winnerStatistics;
     }
 
     @Override
@@ -113,12 +132,9 @@ public class BasicGame extends GameLogic {
         int newScore = currentPlayer.getScore()+squareValue;
         currentPlayer.setNumOfMoves(currentPlayer.getNumOfMoves()+1); //maybe do totalmoves var in gameManager
         currentPlayer.scoreProperty().set(newScore);
-        //currentPlayer.scoreStringProperty().set(String.valueOf(newScore));
+        currentPlayer.scoreStringProperty().set(String.valueOf(newScore));
     }
 
-//    public static int ComputerMove(int boardSize) {
-//        return (ThreadLocalRandom.current().nextInt(1, boardSize + 1));
-//    }
 
     @Override
     public List<Player> getPlayers()
@@ -128,77 +144,13 @@ public class BasicGame extends GameLogic {
 
 
     @Override
-    public void makeMove()
-    {
-
-    }
-
-    @Override
     public String getWinner(){
         return null;
     }
 
+
     @Override
-    public boolean isGameOver(){return true;}
-    //public int makeComputerMove()
-//    {
-//        return ComputerMove(gameBoard.GetBoardSize());
-//    }
-
-//    @Override
-//    public void makeMove()
-//    {
-//        int chosenSquare;
-//        int squareValue = BAD_SQUARE ;
-//        Point squareLocation = null;
-//        boolean badInput = true;
-//
-//        while (badInput) {
-//            switch (super.currentPlayer.getTurn()) {
-//                case ROW:
-//                    if (rowPlayer.getPlayerType() == ePlayerType.Human) {
-//                       // chosenSquare = UserInterface.GetUserMove(gameBoard.getMarker().getMarkerLocation(), eTurn.ROW, gameBoard.GetBoardSize(), gameBoard.toString());
-//                       // squareLocation = new Point(gameBoard.getMarker().getMarkerLocation().getRow(), chosenSquare);
-//                        break;
-//                    }
-//                    else // Computer
-//                    {
-//                        chosenSquare = makeComputerMove();
-//                        squareLocation = new Point(gameBoard.getMarker().getMarkerLocation().getRow(), chosenSquare);
-//                        break;
-//                    }
-//                case COL:
-//                    if (colPlayer.getPlayerType() == ePlayerType.Human) {
-//                       // chosenSquare = UserInterface.GetUserMove(gameBoard.getMarker().getMarkerLocation(), eTurn.COL, gameBoard.GetBoardSize(), gameBoard.toString());
-//                       // squareLocation = new Point(chosenSquare, gameBoard.getMarker().getMarkerLocation().getCol());
-//                        break;
-//                    }
-//                    else // Computer
-//                    {
-//                        chosenSquare = makeComputerMove();
-//                        squareLocation = new Point(chosenSquare, gameBoard.getMarker().getMarkerLocation().getCol());
-//                        break;
-//                    }
-//            }
-//
-//            squareValue = super.updateBoard(squareLocation); //update 2 squares
-//            if (squareValue != BAD_SQUARE)
-//                badInput = false;
-//        //    else
-//         //   if (currentPlayer.getPlayerType() == ePlayerType.Human)
-//               // UserInterface.PrintUserMessage("You choose invalid square! you can't select empty squares/marker square.choose another one..!");
-//
-//        }
-//        if (currentPlayer.getPlayerType() == ePlayerType.Computer)
-//        {
-//            //UserInterface.PrintUserMessage("computer " + currentPlayer.getTurn()+ " play his turn...he chose square ("+ squareLocation.getRow() + "," +squareLocation.getCol()+ ")");
-//        }
-//        updateUserData(squareValue); //update score and moves
-//        gameBoard.getMarker().setMarkerLocation(squareLocation.getRow(),squareLocation.getCol());
-//        //UserInterface.PrintBoard(gameBoard.toString());
-
-
-    public void makeHumanMove(Point userPoint)
+    public void updateDataMove(Point userPoint)
     {
         int squareValue;
         squareValue = updateBoard(userPoint); //update 2 squares
@@ -219,7 +171,7 @@ public class BasicGame extends GameLogic {
         else if (turn.equals(eTurn.COL))
         {
             if (squareLocation.getCol() != (markerPoint.getCol()-1))
-            returnPointStatus = NOT_IN_MARKER_COL_BASIC;
+                returnPointStatus = NOT_IN_MARKER_COL_BASIC;
         }
         if  (gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getCol()]
                 .getValue().equals((gameBoard.getMarker().getMarkerSign()) ))
@@ -236,10 +188,13 @@ public class BasicGame extends GameLogic {
     }
 
 
+
+
     @Override
     public boolean switchPlayer()
     {
         boolean doSwitch = true;
+        setGameMoves(getGameMoves()+1);
         if (currentPlayer.checkPlayerTurn(rowPlayer)) {
             if (gameBoard.isColPlayerHaveMoves(gameBoard.getMarker().getMarkerLocation()))
             {
@@ -247,24 +202,26 @@ public class BasicGame extends GameLogic {
             }
             else {
                 isEndOfGame = true;
-               // UserInterface.PrintUserMessage("Col player have no moves ! GAME OVER");
+                // UserInterface.PrintUserMessage("Col player have no moves ! GAME OVER");
                 //gameOver();*/
                 doSwitch = false;
             }
         }
         else //(currentPlayer.equals(colPlayer))
         {
-            if (gameBoard.isRowPlayerHaveMoves(gameBoard.getMarker().getMarkerLocation()))
+            if (gameBoard.isRowPlayerHaveMoves(gameBoard.getMarker().getMarkerLocation())) {
                 currentPlayer = rowPlayer;
+            }
             else {
                 isEndOfGame = true;
-               // UserInterface.PrintUserMessage("Row player have no moves ! GAME OVER");
+                // UserInterface.PrintUserMessage("Row player have no moves ! GAME OVER");
                 //gameOver();*/
                 doSwitch = false;
             }
         }
         return doSwitch;
     }
+
 
 
     @Override
@@ -275,7 +232,7 @@ public class BasicGame extends GameLogic {
         if (!(gameBoard.isRowPlayerHaveMoves(gameBoard.getMarker().getMarkerLocation())))
         {
             isEndOfGame = true;
-            gameOver();
+            //gameOver();
             canMove = false;
         }
         return canMove;
