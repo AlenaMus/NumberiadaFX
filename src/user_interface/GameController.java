@@ -352,15 +352,14 @@ private void disableHistoryView(){
 
     private void AdvanceMove()
     {
+
         int pointStatus;
         String value="";
-        BoardButton butt;
+        BoardButton butt= builder.getChosenButton();
         Point userPoint = builder.getChosenPoint();
         if (userPoint != null) {
             pointStatus = logic.isValidPoint(userPoint);
             if (pointStatus == GameLogic.GOOD_POINT) {
-                    butt = builder.getChosenButton();
-                    butt.setChosenButtonEffect();
                     logic.updateDataMove(userPoint);
                     findPlayerToNextMove();
             }
@@ -387,8 +386,9 @@ private void disableHistoryView(){
             alert.setHeaderText("YOU DIDN'T CHOOSE A SQUARE!");
             alert.showAndWait();
         }
-       // butt.removeChosenButtonEffect();
+
     }
+
 
 
     private void printWinnerBasic(String winner)
@@ -595,7 +595,6 @@ private void disableHistoryView(){
         if (userPoint != null) {
             pointStatus = logic.isValidPoint(userPoint);
             if (pointStatus == GameLogic.GOOD_POINT) {
-                butt.setChosenButtonEffect();
                 logic.updateDataMove(userPoint);
                 doSwitch = logic.switchPlayer();
                 setCurrentPlayerBasic(logic.getCurrentPlayer());

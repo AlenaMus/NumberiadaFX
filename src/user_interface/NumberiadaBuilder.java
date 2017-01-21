@@ -25,6 +25,7 @@ public class NumberiadaBuilder {
     private Stage gameWindow;
     private Point chosenPoint;
     private BoardButton chosenButton;
+    public static int press = 0;
 
     public Point getChosenPoint() {
         return chosenPoint;
@@ -146,6 +147,14 @@ public class NumberiadaBuilder {
                 {
                     BoardButton butt = new BoardButton(gBoard[j-1][i-1]);
                     gBoard[j-1][i-1].colorProperty().addListener((observable, oldValue, newValue) -> butt.setBColor((int) newValue));
+//                    gBoard[j-1][i-1].setEffectProperty().addListener((observable, oldValue, newValue) ->{
+//                        if(newValue){
+//                            butt.setChosenButtonEffect();
+//                        }else{
+//                              //  butt.removeChosenButtonEffect();
+//                        }
+//                    });
+
                     butt.textProperty().addListener((observable, oldValue, newValue) -> {
                         if(newValue.equals("@")){
                             butt.removeChosenButtonEffect();
@@ -209,10 +218,12 @@ public class NumberiadaBuilder {
     }
     private void PressedBoardButton(BoardButton butt)
     {
+
+        //butt.setChosenButtonEffect();
         this.chosenButton = butt;
         setChosenPoint(butt.getLocation());
-       // butt.setChosenButtonEffect();
     }
+
 
     public Node getNodeByRowColumnIndex (final int row, final int column, GridPane gridPane) {
         Node result = null;
