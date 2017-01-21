@@ -280,9 +280,10 @@ public class AdvancedGame extends GameLogic{
     public void FillRandomBoard() {
         int i ;
         int j ;
+        int indexColor = 0;
         int row =0;
         int col=0;
-        int color=1;
+        int color = players.get(0).getColor();
         int boardSize = gameBoard.GetBoardSize();
         BoardRange boardRange = gameBoard.getBoardRange();
         game_objects.Square[][] board = gameBoard.getGameBoard();
@@ -309,9 +310,10 @@ public class AdvancedGame extends GameLogic{
                     if(rangeNumToPrint>boardRange.getTo()){
                         rangeNumToPrint = boardRange.getFrom();
                     }
-
             }
-                color++;
+                indexColor++;
+                color=players.get(indexColor).getColor();
+
         }
 
         if (col == boardSize) {
