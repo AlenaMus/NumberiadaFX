@@ -310,7 +310,6 @@ public class AdvancedGame extends GameLogic{
                         rangeNumToPrint = boardRange.getFrom();
                     }
             }
-
                 color=players.get((k+1)%numOfPlayers).getColor();
 
         }
@@ -318,7 +317,6 @@ public class AdvancedGame extends GameLogic{
         if (col == boardSize) {
             col = 0;
         }
-
 
         for (int m = row; m < boardSize; m++) {
             for (int n = col; n < boardSize; n++) {
