@@ -7,6 +7,8 @@
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.effect.ColorAdjust?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.effect.Glow?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -72,16 +74,28 @@
             <left>
                 <Pane prefHeight="297.0" prefWidth="173.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Label fx:id="IdLabel" layoutX="18.0" layoutY="48.0" text="ID" textFill="#cc0e1af0">
+                        <Label fx:id="IdLabel" layoutX="18.0" layoutY="48.0" text="ID" textAlignment="CENTER" textFill="#cc0e1bf0">
                             <padding>
                                 <Insets top="5.0" />
                             </padding>
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets top="5.0" />
+                     </opaqueInsets>
                         </Label>
-                        <Label layoutX="10.0" layoutY="191.0" prefHeight="18.0" prefWidth="41.0" text="Move #" textFill="#c60303" />
+                        <Label layoutX="10.0" layoutY="191.0" prefHeight="19.0" prefWidth="51.0" text="Move #" textFill="#c60303">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font></Label>
                         <Label layoutX="8.0" layoutY="227.0" text="Players Scores" textFill="#f51010">
                             <font>
                                 <Font name="System Bold" size="13.0" />
                             </font>
+                     <effect>
+                        <DropShadow color="#97220d" />
+                     </effect>
                         </Label>
                         <Label layoutX="8.0" layoutY="72.0" text="Name">
                             <textFill>
@@ -95,8 +109,14 @@
                             <padding>
                                 <Insets top="5.0" />
                             </padding>
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets top="5.0" />
+                     </opaqueInsets>
                         </Label>
-                        <Label fx:id="TypeLabel" layoutX="11.0" layoutY="93.0" text="Type">
+                        <Label fx:id="TypeLabel" contentDisplay="CENTER" layoutX="13.0" layoutY="96.0" prefHeight="24.0" prefWidth="37.0" text="Type" textAlignment="CENTER">
                             <textFill>
                                 <LinearGradient endX="1.0" endY="1.0">
                                     <stops>
@@ -108,8 +128,14 @@
                             <padding>
                                 <Insets top="5.0" />
                             </padding>
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets top="5.0" />
+                     </opaqueInsets>
                         </Label>
-                        <Label fx:id="ColorLabel" layoutX="10.0" layoutY="118.0" text="Color">
+                        <Label fx:id="ColorLabel" layoutX="10.0" layoutY="124.0" prefHeight="29.0" prefWidth="33.0" text="Color">
                             <textFill>
                                 <LinearGradient endX="1.0" endY="1.0">
                                     <stops>
@@ -124,11 +150,20 @@
                             <padding>
                                 <Insets top="5.0" />
                             </padding>
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets top="5.0" />
+                     </opaqueInsets>
                         </Label>
-                        <Label layoutX="10.0" layoutY="14.0" text="Current Player" textFill="#e80a0a">
+                        <Label layoutX="7.0" layoutY="29.0" text="Current Player" textAlignment="CENTER" textFill="#e80a0a">
                             <font>
                                 <Font name="System Bold" size="13.0" />
                             </font>
+                     <effect>
+                        <Glow level="0.72" />
+                     </effect>
                         </Label>
                         <Label layoutX="8.0" layoutY="165.0" text="Game Info" textFill="#e80a0a">
                             <font>
@@ -136,9 +171,9 @@
                             </font>
                         </Label>
                         <Label fx:id="PlayerNameLabel" layoutX="60.0" layoutY="75.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="100.0" underline="true" />
-                        <Label fx:id="CurrentPlayerIDLabel" layoutX="62.0" layoutY="49.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="65.0" underline="true" />
-                        <Label fx:id="CurrentPlayerColorLabel" layoutX="65.0" layoutY="121.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="100.0" underline="true" />
-                        <Label fx:id="CurrentPlayerTypeLabel" layoutX="66.0" layoutY="96.0" prefHeight="23.0" prefWidth="83.0" underline="true" />
+                        <Label fx:id="CurrentPlayerIDLabel" layoutX="69.0" layoutY="50.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="78.0" underline="true" />
+                        <Label fx:id="CurrentPlayerColorLabel" layoutX="67.0" layoutY="129.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="100.0" underline="true" />
+                        <Label fx:id="CurrentPlayerTypeLabel" layoutX="64.0" layoutY="97.0" prefHeight="23.0" prefWidth="88.0" underline="true" />
                         <Label fx:id="MoveNumberLabel" layoutX="65.0" layoutY="192.0" prefHeight="17.0" prefWidth="52.0" />
                         <GridPane id="playerScoreGridPane" fx:id="PlayerScoreGridPane" hgap="5.0" layoutY="244.0" prefHeight="124.0" prefWidth="139.0" vgap="5.0">
                             <columnConstraints>
@@ -158,12 +193,18 @@
                                 <Insets bottom="5.0" left="5.0" right="2.0" top="5.0" />
                             </padding>
                             <children>
-                                <Label fx:id="nameScoreGridLabel" prefHeight="17.0" prefWidth="78.0" text="Player Name" textAlignment="CENTER" textFill="#0d0dcd" textOverrun="CENTER_ELLIPSIS">
+                                <Label fx:id="nameScoreGridLabel" prefHeight="17.0" prefWidth="78.0" text="Player Name" textAlignment="CENTER" textFill="#0d0dcd" textOverrun="CENTER_ELLIPSIS" underline="true">
                                     <effect>
                                         <ColorAdjust />
                                     </effect>
+                           <font>
+                              <Font name="System Bold Italic" size="12.0" />
+                           </font>
                                 </Label>
-                                <Label fx:id="scoreGridLabel" text="Score" textFill="#0d0dcd" GridPane.columnIndex="1" />
+                                <Label fx:id="scoreGridLabel" text="Score" textFill="#0d0dcd" underline="true" GridPane.columnIndex="1">
+                           <font>
+                              <Font name="System Bold Italic" size="12.0" />
+                           </font></Label>
                             </children>
                         </GridPane>
                     </children>
