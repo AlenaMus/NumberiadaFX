@@ -154,6 +154,7 @@ public abstract class GameLogic {
     {
         explicitSquares = new ArrayList<Square>();
         players = new ArrayList<>();
+        setNumOfPlayers(0);
         winners = new ArrayList<>();
     }
 

@@ -156,7 +156,7 @@ public class Player implements Comparable<Player> {
         if(player instanceof Player)
         {
             newPlayer = (Player)player;
-            if(newPlayer.getId() == id.get() || newPlayer.color == this.color)
+            if(newPlayer.getId() == id.get() || newPlayer.color.get() == this.color.get())
             {
                 isEqual = true;
             }

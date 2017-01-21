@@ -20,16 +20,7 @@ import java.io.File;
 import java.io.InputStream;
 
 public class GameManager {
-
-    private static final int LOAD_GAME = 1;
-    private static final int START_GAME = 2;
-    private static final int EXIT_GAME = 3;
-
-    private static final int SHOW_BOARD_AND_CURRENT_PLAYER = 1;
-    private static final int MAKE_A_MOVE = 2;
-    private static final int SHOW_STATISTICS = 3;
-    private static final int LEAVE_GAME = 4;
-
+    
     public static int gameRound = 0;
     private boolean isLoadedGame = false;
     protected eGameType gameType;

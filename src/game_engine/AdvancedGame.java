@@ -35,7 +35,6 @@ public class AdvancedGame extends GameLogic{
     public String gameOver()
     {
         int i=0;
-        isEndOfGame = true;
         updateHistory(null);
         game_objects.Player player;
         String winnerStatistics="";
@@ -204,7 +203,7 @@ public class AdvancedGame extends GameLogic{
     {
 
         validationResult = new ValidationResult();
-        int numOfPlayers= loadedGame.getPlayers().getPlayer().size();
+        int numOfPlayers = loadedGame.getPlayers().getPlayer().size();
 
         if(numOfPlayers< MIN_PLAYERS || numOfPlayers> MAX_PLAYERS)
         {

@@ -87,18 +87,12 @@ public void setChosenButtonEffect(){
     this.setEffect(shadow);
     this.fontProperty().set(Font.font("System",FontWeight.BOLD,12));
 
-    //styleId = this.getId();
-    //this.setId("record-sales");
-    //this.getStyleClass().add("record-sales");
 }
 
 public void removeChosenButtonEffect(){
     this.setEffect(null);
     this.fontProperty().set(Font.font("System",FontWeight.THIN,12));
 
-   // this.setId(styleId);
-    //this.getStyleClass().remove("record-sales");
-   // this.getStyleClass().add(styleId);
 }
 
 

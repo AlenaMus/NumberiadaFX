@@ -124,7 +124,7 @@ public class GameController implements Initializable {
         LeaveGameButton.disableProperty().setValue(false);
         LoadXmlFileButton.disableProperty().setValue(true);
         MakeAMoveButton.disableProperty().setValue(false);
-        //StartGameButton.disableProperty().setValue(true);
+        StartGameButton.disableProperty().setValue(true);
 
         setStartGame();
         GameManager.gameRound++;
@@ -166,8 +166,7 @@ public class GameController implements Initializable {
     }
 
     private BoardButton getChosenButton(Point loc){
-        BoardButton butt = (BoardButton)builder.getNodeByRowColumnIndex (loc.getRow()+1,loc.getCol()+1,board);
-        return butt;
+        return (BoardButton)builder.getNodeByRowColumnIndex(loc.getRow()+1,loc.getCol()+1,board);
     }
 
     private void makeComputerMove() {
@@ -189,6 +188,11 @@ public class GameController implements Initializable {
                     Thread.sleep(100);
                 }
                     Thread.sleep(300);
+
+                Platform.runLater(() -> {
+                    BoardButton butt = getChosenButton(squareLocation);
+                    butt.setChosenButtonEffect();
+                });
                 return squareLocation;
             }
             @Override
@@ -204,10 +208,6 @@ public class GameController implements Initializable {
                  ComputerThinkingLabel.textProperty().unbind();
                  ComputerProgressBar.visibleProperty().set(false);
                  ComputerThinkingLabel.visibleProperty().set(false);
-
-                  BoardButton butt = getChosenButton(chosenPoint);
-                  butt.setChosenButtonEffect();
-
                  System.out.println("Updating Board!");
                  logic.updateDataMove(chosenPoint);
                  System.out.println("Finding next player after computer");
@@ -354,11 +354,13 @@ private void disableHistoryView(){
     {
         int pointStatus;
         String value="";
-        BoardButton butt = builder.getChosenButton();
+        BoardButton butt;
         Point userPoint = builder.getChosenPoint();
         if (userPoint != null) {
             pointStatus = logic.isValidPoint(userPoint);
             if (pointStatus == GameLogic.GOOD_POINT) {
+                    butt = builder.getChosenButton();
+                    butt.setChosenButtonEffect();
                     logic.updateDataMove(userPoint);
                     findPlayerToNextMove();
             }
@@ -385,7 +387,7 @@ private void disableHistoryView(){
             alert.setHeaderText("YOU DIDN'T CHOOSE A SQUARE!");
             alert.showAndWait();
         }
-        butt.removeChosenButtonEffect();
+       // butt.removeChosenButtonEffect();
     }
 
 
@@ -593,6 +595,7 @@ private void disableHistoryView(){
         if (userPoint != null) {
             pointStatus = logic.isValidPoint(userPoint);
             if (pointStatus == GameLogic.GOOD_POINT) {
+                butt.setChosenButtonEffect();
                 logic.updateDataMove(userPoint);
                 doSwitch = logic.switchPlayer();
                 setCurrentPlayerBasic(logic.getCurrentPlayer());

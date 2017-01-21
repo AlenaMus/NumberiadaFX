@@ -211,7 +211,7 @@ public class NumberiadaBuilder {
     {
         this.chosenButton = butt;
         setChosenPoint(butt.getLocation());
-        butt.setChosenButtonEffect();
+       // butt.setChosenButtonEffect();
     }
 
     public Node getNodeByRowColumnIndex (final int row, final int column, GridPane gridPane) {
