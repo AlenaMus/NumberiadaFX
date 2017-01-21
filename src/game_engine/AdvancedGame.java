@@ -280,7 +280,6 @@ public class AdvancedGame extends GameLogic{
     public void FillRandomBoard() {
         int i ;
         int j ;
-        int indexColor = 0;
         int row =0;
         int col=0;
         int color = players.get(0).getColor();
@@ -311,8 +310,8 @@ public class AdvancedGame extends GameLogic{
                         rangeNumToPrint = boardRange.getFrom();
                     }
             }
-                indexColor++;
-                color=players.get(indexColor).getColor();
+
+                color=players.get((k+1)%numOfPlayers).getColor();
 
         }
 
