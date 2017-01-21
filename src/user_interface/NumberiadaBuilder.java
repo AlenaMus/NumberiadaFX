@@ -1,9 +1,12 @@
 package user_interface;
 
 import game_objects.*;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.effect.Shadow;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -20,10 +23,15 @@ public class NumberiadaBuilder {
     private GridPane m_players;
     private List <Player> players;
     private Stage gameWindow;
-    public Point chosenPoint;
+    private Point chosenPoint;
+    private BoardButton chosenButton;
 
     public Point getChosenPoint() {
         return chosenPoint;
+    }
+
+    public BoardButton getChosenButton(){
+        return chosenButton;
     }
 
     public void setChosenPoint(Point chosenPoint) {
@@ -138,6 +146,11 @@ public class NumberiadaBuilder {
                 {
                     BoardButton butt = new BoardButton(gBoard[j-1][i-1]);
                     gBoard[j-1][i-1].colorProperty().addListener((observable, oldValue, newValue) -> butt.setBColor((int) newValue));
+                    butt.textProperty().addListener((observable, oldValue, newValue) -> {
+                        if(newValue.equals("@")){
+                            butt.removeChosenButtonEffect();
+                        }
+                    });
                     butt.textProperty().bind(gBoard[j-1][i-1].squareValueProperty());
                     butt.setPrefSize(squareSize,squareSize);
                     butt.setAlignment(Pos.CENTER);
@@ -196,7 +209,22 @@ public class NumberiadaBuilder {
     }
     private void PressedBoardButton(BoardButton butt)
     {
+        this.chosenButton = butt;
         setChosenPoint(butt.getLocation());
+        butt.setChosenButtonEffect();
     }
 
+    public Node getNodeByRowColumnIndex (final int row, final int column, GridPane gridPane) {
+        Node result = null;
+        ObservableList<Node> childrens = gridPane.getChildren();
+
+        for (Node node : childrens) {
+            if(gridPane.getRowIndex(node) == row && gridPane.getColumnIndex(node) == column) {
+                result = node;
+                break;
+            }
+        }
+
+        return result;
+    }
 }

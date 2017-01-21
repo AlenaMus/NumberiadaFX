@@ -5,6 +5,18 @@
     /*-fx-text-fill: #e8e8e8;*/
 /*}*/
 
+
+#border-pane{
+    -fx-background-image: url("design_resources/numbers.jpg");
+    -fx-background-repeat: stretch;
+    -fx-background-position: center center;
+    -fx-background-size: stretch;
+}
+
+#scroll{
+    -fx-background-color:#E9967A;
+}
+
 .button{
     -fx-background-color: #AB4642;
     -fx-text-fill: #FFFFFF;
@@ -14,9 +26,8 @@
 #screen{
     -fx-background-image: url("design_resources/numbers.jpg");
     -fx-background-repeat: stretch;
-    -fx-background-size: 800 600;
     -fx-background-position: center center;
-    -fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0);
+    -fx-background-size: stretch;
 }
 
 /*.button{*/
@@ -150,5 +161,19 @@
     /*-fx-padding: 10;*/
     /*-fx-hgap: 10;*/
     /*-fx-vgap: 10;*/
+}
+
+#record-sales {
+    -fx-padding: 8 15 15 15;
+    -fx-background-insets: 0,0 0 5 0, 0 0 6 0, 0 0 7 0;
+    -fx-background-radius: 8;
+    -fx-background-color:
+            linear-gradient(from 0% 93% to 0% 100%, #a34313 0%, #903b12 100%),
+            #9d4024,
+            #d86e3a,
+            radial-gradient(center 50% 50%, radius 100%, #d86e3a, #c54e2c);
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.75) , 4,0,0,1 );
+    -fx-font-weight: bold;
+    -fx-font-size: 0.7em;
 }
 

@@ -1,6 +1,7 @@
 package game_objects;
 
 import game_engine.GameManager;
+import game_engine.eGameType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,12 +15,12 @@ public class GameMove {
     private Board gameBoard;
 
 
-    public GameMove(Board gameBoard, Player player, List<Player> gamePlayers, int moveNum){
+    public GameMove(eGameType type,Board gameBoard, Player player, List<Player> gamePlayers, int moveNum){
         this.gameBoard = new Board(gameBoard);
         this.players = new ArrayList<>();
 
-        setCurrentGamePlayers(gamePlayers);
-        setCurrentPlayer(player);
+        setCurrentGamePlayers(gamePlayers,type);
+        setCurrentPlayer(player,type);
         this.moveNum = moveNum;
     }
 
@@ -35,14 +36,26 @@ public class GameMove {
         this.gameBoard = gameBoard;
     }
 
-    private void setCurrentPlayer(Player player){
+    private void setCurrentPlayer(Player player,eGameType type){
+        if(type.equals(eGameType.Advance))
         currentPlayer = new Player(ePlayerType.valueOf(player.getPlayerType()),player.getName(),player.getId(),player.getColor());
+        else if(type.equals(eGameType.Basic)){
+            currentPlayer = new Player(player.getTurn(),ePlayerType.valueOf(player.getPlayerType()),player.getScore());
+        }
     }
-    private void setCurrentGamePlayers(List<Player> players){
-        for (Player player: players) {
-            this.players.add(new Player(player));
+    private void setCurrentGamePlayers(List<Player> players,eGameType type){
+
+        if(type.equals(eGameType.Advance)){
+            for (Player player: players) {
+                this.players.add(new Player(player));
+            }
+        }else if(type.equals(eGameType.Basic)){
+            for (Player player: players) {
+                this.players.add(new Player(player.getTurn(),ePlayerType.valueOf(player.getPlayerType()),player.getScore()));
+            }
 
         }
+
 
     }
 

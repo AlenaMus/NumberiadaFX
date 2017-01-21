@@ -40,7 +40,6 @@ public class Player implements Comparable<Player> {
         score.setValue(0);
         numOfMoves = 0;
 
-
     }
 
 
@@ -55,18 +54,17 @@ public class Player implements Comparable<Player> {
         this.scoreProperty().set(player.scoreProperty().get());
         numOfMoves = player.getNumOfMoves();
     }
-    public Player(eTurn turn,ePlayerType playerType1)
+
+
+    public Player(eTurn turn,ePlayerType playerType1,int score)
     {
         IsActive = new SimpleBooleanProperty(true);
         this.turn = turn;
-        score = new SimpleIntegerProperty(0);
-        score.setValue(0);
+        this.score = new SimpleIntegerProperty(score);
         numOfMoves = 0;
         name = new SimpleStringProperty(String.valueOf(turn));
         playerType = new SimpleStringProperty(String.valueOf(playerType1));
-        scoreString = new SimpleStringProperty("0");
-
-
+        scoreString = new SimpleStringProperty(String.valueOf(score));
     }
 
 

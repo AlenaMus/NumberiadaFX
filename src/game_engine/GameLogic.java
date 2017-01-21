@@ -38,8 +38,6 @@ public abstract class GameLogic {
     private eGameType gameType;
     protected int currentPlayerIndex;
 
-
-    public void updateHistory(Point chosenSquare){}
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
@@ -88,7 +86,17 @@ public abstract class GameLogic {
     public abstract boolean switchPlayer();
     protected void checkAndSetPlayersXML(jaxb.schema.generated.Players players)throws XmlNotValidException{}
     public abstract boolean isGameOver();
-    public void clearHistory(){}
+
+
+    public void gameLogicClear(){
+        players.clear();
+        winners.clear();
+        explicitSquares.clear();
+        gameBoard.clearBoard();
+        currentPlayer = null;
+        setNumOfPlayers(0);
+        setGameMoves(0);
+    }
 
     protected void updateUserData(int squareValue) // in Player?
     {
@@ -98,6 +106,23 @@ public abstract class GameLogic {
         currentPlayer.scoreStringProperty().set(String.valueOf(newScore));
     }
 
+    public void updateHistory(Point chosenSquare){
+        GameMove move = new GameMove(gameType,gameBoard,currentPlayer,players,gameMoves.get());
+        if(chosenSquare!= null){
+            Square chosenSq = new Square(gameBoard.getGameBoard()[chosenSquare.getRow()][chosenSquare.getCol()]);
+            move.setChosenMove(chosenSq);
+        }
+        historyMoves.add(move);
+    }
+
+    public void clearHistory(){
+        if(historyMoves != null){
+            for (GameMove move:historyMoves) {
+                move.clear();
+            }
+            historyMoves.clear();
+        }
+    }
     public void setFirstPlayer()
     {
         setCurrentPlayer(players.get(0));
@@ -160,6 +185,7 @@ public abstract class GameLogic {
     public void updateDataMove(Point squareLocation){
         int squareValue;
         updateHistory(squareLocation);
+        //gameBoard.getGameBoard()[squareLocation.getRow()][squareLocation.getRow()].setSetEffect(false);
         squareValue = updateBoard(squareLocation);
         updateUserData(squareValue);
         gameBoard.getMarker().setMarkerLocation(squareLocation.getRow() + 1, squareLocation.getCol() + 1);
@@ -289,14 +315,12 @@ public abstract class GameLogic {
         switch (boardType) {
             case Explicit: Point markerLocation = new Point(board.getStructure().getSquares().getMarker().getRow().intValue(),board.getStructure().getSquares().getMarker().getColumn().intValue());
                 FillExplicitBoard(explicitSquares,markerLocation);
-                if(gameType.equals(eGameType.Advance)){
                     gameBoard.getGameBoard()[markerLocation.getRow()-1][markerLocation.getCol()-1].setColor(GameColor.MARKER);
-                }
                 break;
             case Random:
                 BoardRange range = new BoardRange(board.getStructure().getRange().getFrom(),board.getStructure().getRange().getTo());
                 gameBoard.setBoardRange(range);
-                if(GameManager.gameRound > 0 && gameType.equals(eGameType.Advance) ){
+                if(GameManager.gameRound > 0){
                     gameBoard = new Board(historyMoves.get(0).getGameBoard());
                 }else{
                     FillRandomBoard();

@@ -14,6 +14,7 @@ public class Square {
     private BooleanProperty isDisabled;
     private IntegerProperty color;
     private BooleanProperty isEmpty;
+    private BooleanProperty setEffect;
 
     public Square(Point location) {
         this.location = location;
@@ -44,6 +45,19 @@ public class Square {
         isDisabled = new SimpleBooleanProperty();
         isEmpty = new SimpleBooleanProperty();
         color = new SimpleIntegerProperty();
+        setEffect = new SimpleBooleanProperty(false);
+    }
+
+    public boolean isSetEffect() {
+        return setEffect.get();
+    }
+
+    public BooleanProperty setEffectProperty() {
+        return setEffect;
+    }
+
+    public void setSetEffect(boolean setEffect) {
+        this.setEffect.set(setEffect);
     }
 
     public int getColor() {

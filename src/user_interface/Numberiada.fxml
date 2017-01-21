@@ -18,9 +18,9 @@
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane fx:id="scrollPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="483.0" prefWidth="677.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="user_interface.GameController">
+<ScrollPane id="screen" fx:id="scrollPane" fitToHeight="true" fitToWidth="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="449.0" prefWidth="674.0" stylesheets="@boardStyle.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="user_interface.GameController">
     <content>
-        <BorderPane id="borderPane" fx:id="borderPane" prefHeight="391.0" prefWidth="681.0">
+        <BorderPane id="screen" fx:id="borderPane" prefHeight="391.0" prefWidth="681.0" stylesheets="@boardStyle.css">
             <right>
                 <Pane prefHeight="297.0" prefWidth="127.0" BorderPane.alignment="CENTER" />
             </right>
@@ -53,7 +53,7 @@
                 </Pane>
             </top>
             <bottom>
-                <VBox alignment="BOTTOM_CENTER" prefHeight="65.0" prefWidth="527.0" BorderPane.alignment="CENTER">
+                <VBox alignment="BOTTOM_CENTER" prefHeight="64.0" prefWidth="675.0" BorderPane.alignment="CENTER">
                     <children>
                         <Label fx:id="ReplayMovesLabel" text="Replay Moves" textAlignment="CENTER" textFill="#e80a0a">
                             <font>
@@ -72,7 +72,7 @@
             <left>
                 <Pane prefHeight="297.0" prefWidth="173.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Label layoutX="18.0" layoutY="48.0" text="ID" textFill="#cc0e1af0">
+                        <Label fx:id="IdLabel" layoutX="18.0" layoutY="48.0" text="ID" textFill="#cc0e1af0">
                             <padding>
                                 <Insets top="5.0" />
                             </padding>
@@ -96,7 +96,7 @@
                                 <Insets top="5.0" />
                             </padding>
                         </Label>
-                        <Label layoutX="11.0" layoutY="93.0" text="Type">
+                        <Label fx:id="TypeLabel" layoutX="11.0" layoutY="93.0" text="Type">
                             <textFill>
                                 <LinearGradient endX="1.0" endY="1.0">
                                     <stops>
@@ -109,7 +109,7 @@
                                 <Insets top="5.0" />
                             </padding>
                         </Label>
-                        <Label layoutX="10.0" layoutY="118.0" text="Color">
+                        <Label fx:id="ColorLabel" layoutX="10.0" layoutY="118.0" text="Color">
                             <textFill>
                                 <LinearGradient endX="1.0" endY="1.0">
                                     <stops>

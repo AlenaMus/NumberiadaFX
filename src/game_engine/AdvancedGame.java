@@ -35,6 +35,7 @@ public class AdvancedGame extends GameLogic{
     public String gameOver()
     {
         int i=0;
+        isEndOfGame = true;
         updateHistory(null);
         game_objects.Player player;
         String winnerStatistics="";
@@ -50,15 +51,11 @@ public class AdvancedGame extends GameLogic{
             i++;
         }
 
-        players.clear();
-        winners.clear();
-        explicitSquares.clear();
-        gameBoard.clearBoard();
-        currentPlayer = null;
-        setNumOfPlayers(0);
-        setGameMoves(0);
+        gameLogicClear();
         return winnerStatistics;
     }
+
+
 
     @Override
     public boolean InitMoveCheck()
@@ -91,12 +88,12 @@ public class AdvancedGame extends GameLogic{
         int MarkerCol = markerLocation.getCol()-1;
         for (int i=0; i < gameBoard.GetBoardSize();i++)
             if ((!gameBoard.getGameBoard()[MarkerRow][i].isDisabled()) &&(!gameBoard.getGameBoard()[MarkerRow][i].isEmpty())
-                    && (!gameBoard.getGameBoard()[MarkerRow][i].getValue().equals(gameBoard.getMarker().getMarkerSign()))
+                    && (!gameBoard.getGameBoard()[MarkerRow][i].getValue().equals(Marker.markerSign))
                     && ((gameBoard.getGameBoard()[MarkerRow][i].getColor()  == (player.getColor()))))
                 return true;
         for (int i=0; i < gameBoard.GetBoardSize(); i++)
             if ((!gameBoard.getGameBoard()[i][MarkerCol].isDisabled() )&& (!gameBoard.getGameBoard()[i][MarkerCol].isEmpty() )
-                    && (!gameBoard.getGameBoard()[i][MarkerCol].getValue().equals(gameBoard.getMarker().getMarkerSign()))
+                    && (!gameBoard.getGameBoard()[i][MarkerCol].getValue().equals(Marker.markerSign))
                     && ((gameBoard.getGameBoard()[i][MarkerCol].getColor()  == (player.getColor()))))
                 return true;
         return false;
@@ -141,7 +138,7 @@ public class AdvancedGame extends GameLogic{
     }
 
     private static int ComputerMove(int boardSize) {
-        return (ThreadLocalRandom.current().nextInt(0, boardSize-1));
+        return (ThreadLocalRandom.current().nextInt(0, boardSize));
     }
 
     public Point makeComputerMove()
@@ -151,6 +148,8 @@ public class AdvancedGame extends GameLogic{
 
                 int MarkerRow = gameBoard.getMarker().getMarkerLocation().getRow()-1;
                 int MarkerCol = gameBoard.getMarker().getMarkerLocation().getCol()-1;
+
+
                 while (!foundSquare) {
                     int random = ComputerMove(gameBoard.GetBoardSize());
                     if (gameBoard.getGameBoard()[MarkerRow][random].getColor() == (currentPlayer.getColor())) {
@@ -168,25 +167,11 @@ public class AdvancedGame extends GameLogic{
 
 
 
-    @Override
-    public void updateHistory(Point chosenSquare){
-        GameMove move = new GameMove(gameBoard,currentPlayer,players,gameMoves.get());
-        if(chosenSquare!= null){
-            Square chosenSq = new Square(gameBoard.getGameBoard()[chosenSquare.getRow()][chosenSquare.getCol()]);
-            move.setChosenMove(chosenSq);
-        }
-        historyMoves.add(move);
-    }
 
-    @Override
-    public void clearHistory(){
-        if(historyMoves != null){
-            for (GameMove move:historyMoves) {
-                move.clear();
-            }
-            historyMoves.clear();
-        }
-    }
+
+
+
+
 
 
 

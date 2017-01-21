@@ -10,15 +10,20 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
 public class BoardButton extends Button {
 
     private Square boardButton;
     private IntegerProperty buttonColor;
+    private String  styleId ="";
+    DropShadow shadow = new DropShadow();
 
     public int getButtonColor() {
         return buttonColor.get();
@@ -76,7 +81,25 @@ public int getValue()
     return Integer.valueOf(boardButton.getValue());
 }
 
+public void setChosenButtonEffect(){
 
+
+    this.setEffect(shadow);
+    this.fontProperty().set(Font.font("System",FontWeight.BOLD,12));
+
+    //styleId = this.getId();
+    //this.setId("record-sales");
+    //this.getStyleClass().add("record-sales");
+}
+
+public void removeChosenButtonEffect(){
+    this.setEffect(null);
+    this.fontProperty().set(Font.font("System",FontWeight.THIN,12));
+
+   // this.setId(styleId);
+    //this.getStyleClass().remove("record-sales");
+   // this.getStyleClass().add(styleId);
+}
 
 
 

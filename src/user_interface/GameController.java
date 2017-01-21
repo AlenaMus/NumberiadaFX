@@ -14,8 +14,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -38,6 +40,16 @@ public class GameController implements Initializable {
     public void setGameWindow(Stage stage) {
         gameWindow = stage;
     }
+
+    @FXML
+    private Label IdLabel;
+
+    @FXML
+    private Label TypeLabel;
+
+    @FXML
+    private Label ColorLabel;
+
 
     @FXML
     private Label ReplayMovesLabel;
@@ -104,20 +116,19 @@ public class GameController implements Initializable {
 
         if(GameManager.gameRound > 0){
                 restartGame();
-            }else if(logic.getGameType().equals(eGameType.Advance)){
+            }else {
                 logic.setHistoryMoves();
             }
-
-
 
         MakeAMoveButton.getStyleClass().clear();
         LeaveGameButton.disableProperty().setValue(false);
         LoadXmlFileButton.disableProperty().setValue(true);
         MakeAMoveButton.disableProperty().setValue(false);
+        //StartGameButton.disableProperty().setValue(true);
 
         setStartGame();
         GameManager.gameRound++;
-        if (logic.getGameType().toString() == "Advance") {
+        if (logic.getGameType().equals(eGameType.Advance)) {
             if (!logic.InitMoveCheck()) //first player check
             {
                 noPossibleMovesAlert();
@@ -141,22 +152,22 @@ public class GameController implements Initializable {
     private void restartGame(){
 
         clearGameWindow();
+        disableHistoryView();
+
         try{
             gameManager.LoadGameFromXmlAndValidate(xmlFilePath);
             createGameView();
         }catch (XmlNotValidException ex){
             setInvalidXMLAlert(ex);
         }
-
-        if(logic.getGameType().equals(eGameType.Advance)) {
             historyIndex = -1;
             logic.getHistoryMoves().clear();
             logic.setHistoryMoves();
-            NextButton.visibleProperty().setValue(false);
-            PrevButton.visibleProperty().setValue(false);
-            ReplayMovesLabel.visibleProperty().setValue(false);
+    }
 
-        }
+    private BoardButton getChosenButton(Point loc){
+        BoardButton butt = (BoardButton)builder.getNodeByRowColumnIndex (loc.getRow()+1,loc.getCol()+1,board);
+        return butt;
     }
 
     private void makeComputerMove() {
@@ -189,11 +200,16 @@ public class GameController implements Initializable {
 
         moveTask.setOnSucceeded(t -> {
 
+            Point chosenPoint = moveTask.getValue();
                  ComputerThinkingLabel.textProperty().unbind();
                  ComputerProgressBar.visibleProperty().set(false);
                  ComputerThinkingLabel.visibleProperty().set(false);
+
+                  BoardButton butt = getChosenButton(chosenPoint);
+                  butt.setChosenButtonEffect();
+
                  System.out.println("Updating Board!");
-                 logic.updateDataMove(moveTask.getValue());
+                 logic.updateDataMove(chosenPoint);
                  System.out.println("Finding next player after computer");
                  findPlayerToNextMove();
         });
@@ -215,10 +231,6 @@ public class GameController implements Initializable {
         Thread move = new Thread(moveTask);
         move.start();
 
-//        Point squareLocation;
-//        squareLocation = logic.makeComputerMove();
-//        logic.updateDataMove(squareLocation);
-//        findPlayerToNextMove();
     }
 
     private void findPlayerToNextMove() {
@@ -239,6 +251,23 @@ public class GameController implements Initializable {
 
     }
 
+private void enableHistoryView(){
+
+    ReplayMovesLabel.visibleProperty().setValue(true);
+    PrevButton.visibleProperty().setValue(true);
+    PrevButton.disableProperty().setValue(false);
+    NextButton.visibleProperty().setValue(true);
+    historyIndex = -1;
+
+}
+
+private void disableHistoryView(){
+    NextButton.visibleProperty().setValue(false);
+    NextButton.disableProperty().setValue(true);
+    PrevButton.visibleProperty().setValue(false);
+    ReplayMovesLabel.visibleProperty().setValue(false);
+
+}
 
     private void setGameOver()
     {
@@ -250,17 +279,15 @@ public class GameController implements Initializable {
         alert.setContentText(String.join(System.lineSeparator(),statistics));
         alert.showAndWait();
 
-        MoveNumberLabel.textProperty().unbind();
         LoadXmlFileButton.disableProperty().setValue(false);
         MakeAMoveButton.disableProperty().setValue(true);
         LeaveGameButton.disableProperty().setValue(true);
-        ReplayMovesLabel.visibleProperty().setValue(true);
-        PrevButton.visibleProperty().setValue(true);
-        NextButton.visibleProperty().setValue(true);
-        historyIndex = -1;
-        clearGameWindow();
+        StartGameButton.disableProperty().setValue(false);
 
+        clearGameWindow();
+        enableHistoryView();
     }
+
 
     @FXML
     private void PrevHistoryButtonClicked(){
@@ -275,7 +302,6 @@ public class GameController implements Initializable {
             }
 
         }
-
 
 
     @FXML
@@ -294,7 +320,9 @@ public class GameController implements Initializable {
 
         Optional<ButtonType> result = exitWindow.showAndWait();
         if( result.get() == ButtonType.OK){
-            logic.clearHistory();
+//            if(logic.getHistoryMoves()!=null){
+//                logic.clearHistory();
+//            }
             Platform.exit();
         }else{
             exitWindow.hide();
@@ -307,19 +335,14 @@ public class GameController implements Initializable {
         borderPane.setCenter(null);
         builder.clearPlayersScoreView(PlayerScoreGridPane);
         clearCurrentPlayerView();
-
-        NextButton.visibleProperty().setValue(true);
-        NextButton.disableProperty().setValue(false);
+        MoveNumberLabel.textProperty().unbind();
+        MoveNumberLabel.setText("");
         StartGameButton.disableProperty().setValue(false);
         PrevButton.disableProperty().setValue(false);
-        PrevButton.visibleProperty().setValue(true);
-        ReplayMovesLabel.visibleProperty().setValue(true);
-
     }
 
     @FXML
     void MakeAMoveButtonClicked(ActionEvent event) {
-        System.out.print("Move clicked\n");
         if (logic.getGameType().equals(eGameType.Advance))
             AdvanceMove();
         else {
@@ -330,6 +353,8 @@ public class GameController implements Initializable {
     private void AdvanceMove()
     {
         int pointStatus;
+        String value="";
+        BoardButton butt = builder.getChosenButton();
         Point userPoint = builder.getChosenPoint();
         if (userPoint != null) {
             pointStatus = logic.isValidPoint(userPoint);
@@ -339,12 +364,16 @@ public class GameController implements Initializable {
             }
             else if (pointStatus == GameLogic.NOT_IN_MARKER_ROW_AND_COLUMN)
             {
+                value = logic.getGameBoard().getGameBoard()[userPoint.getRow()][userPoint.getCol()].getValue();
+                logic.getGameBoard().getGameBoard()[userPoint.getRow()][userPoint.getCol()].setValue(value);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setHeaderText("You choose illegal square -the square needs to be in the marker raw or column");
                 alert.showAndWait();
             }
             else if (pointStatus == GameLogic.NOT_PLAYER_COLOR)
             {
+                value = logic.getGameBoard().getGameBoard()[userPoint.getRow()][userPoint.getCol()].getValue();
+                logic.getGameBoard().getGameBoard()[userPoint.getRow()][userPoint.getCol()].setValue(value);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setHeaderText("You choose illegal square - the square is not in your color!");
                 alert.showAndWait();
@@ -356,9 +385,8 @@ public class GameController implements Initializable {
             alert.setHeaderText("YOU DIDN'T CHOOSE A SQUARE!");
             alert.showAndWait();
         }
+        butt.removeChosenButtonEffect();
     }
-
-
 
 
     private void printWinnerBasic(String winner)
@@ -396,7 +424,9 @@ public class GameController implements Initializable {
         LoadXmlFileButton.disableProperty().setValue(false);
         MakeAMoveButton.disableProperty().setValue(true);
         LeaveGameButton.disableProperty().setValue(true);
+       // StartGameButton.disableProperty().setValue(false);
         clearGameWindow();
+        enableHistoryView();
     }
 
 
@@ -412,6 +442,7 @@ public class GameController implements Initializable {
         NextButton.visibleProperty().setValue(false);
         PrevButton.disableProperty().setValue(true);
         NextButton.disableProperty().setValue(true);
+
     }
 
     private void setStartGame() {
@@ -427,7 +458,7 @@ public class GameController implements Initializable {
         else {
             setCurrentPlayerBasic(logic.getCurrentPlayer());
         }
-        MoveNumberLabel.textProperty().bind(logic.gameMovesProperty().asString());
+      //  MoveNumberLabel.textProperty().bind(logic.gameMovesProperty().asString());
     }
 
     private void setCurrentPlayerBasic(Player currentPlayer)
@@ -438,7 +469,11 @@ public class GameController implements Initializable {
 
     public void LoadXmlFileButtonClicked() throws XmlNotValidException {
         if (GameManager.gameRound > 0) {
+            //logic.gameLogicClear();
+            disableHistoryView();
+            clearGameWindow();
             logic.clearHistory();
+            GameManager.gameRound = 0;
         }
         boolean xmLoaded = false;
         FileChooser fileChooser = new FileChooser();
@@ -463,19 +498,33 @@ public class GameController implements Initializable {
         }
         if (xmLoaded) {
             createGameView();
+            disableHistoryView();
         }
     }
 
 
     private void createGameView(){
+
         StartGameButton.disableProperty().setValue(false);
+        MoveNumberLabel.textProperty().bind(logic.gameMovesProperty().asString());
         board = builder.createBoard(logic.getGameBoard());
         borderPane.setCenter(board);
         if(logic.getGameType().equals(eGameType.Advance)){
             builder.createPlayersTable(logic.getPlayers());
             gamePlayers = builder.getPlayersTable();
             borderPane.setRight(gamePlayers);
+            TypeLabel.visibleProperty().setValue(true);
+            IdLabel.visibleProperty().setValue(true);
+            ColorLabel.visibleProperty().setValue(true);
+            CurrentPlayerTypeLabel.visibleProperty().setValue(true);
+
+        }else if(logic.getGameType().equals(eGameType.Basic)){
+            TypeLabel.visibleProperty().setValue(false);
+            IdLabel.visibleProperty().setValue(false);
+            ColorLabel.visibleProperty().setValue(false);
+            CurrentPlayerTypeLabel.visibleProperty().setValue(false);
         }
+
     }
 
 
@@ -483,9 +532,6 @@ public class GameController implements Initializable {
         GameMove move = logic.getHistoryMoves().get(historyIndex);
         board = builder.createBoard(move.getGameBoard());
         borderPane.setCenter(board);
-        if(move.getChosenMove()!=null){
-            move.getChosenMove().colorProperty().set(GameColor.PURPLE);
-        }
         setCurrentPlayer(move.getCurrentPlayer());
         MoveNumberLabel.setText(String.valueOf(move.getMoveNum()));
         builder.clearPlayersScoreView(PlayerScoreGridPane);
@@ -495,11 +541,14 @@ public class GameController implements Initializable {
 
     private void setCurrentPlayer(Player currentPlayer)
     {
-        PlayerNameLabel.setText(currentPlayer.getName());
-        CurrentPlayerIDLabel.setText(String.valueOf(currentPlayer.getId()));
-        CurrentPlayerColorLabel.setText(String.valueOf(currentPlayer.getPlayerColor()));
-        CurrentPlayerTypeLabel.setText(currentPlayer.playerTypeProperty().getValue());
-
+        if(logic.getGameType().equals(eGameType.Advance)){
+            CurrentPlayerIDLabel.setText(String.valueOf(currentPlayer.getId()));
+            CurrentPlayerColorLabel.setText(String.valueOf(currentPlayer.getPlayerColor()));
+            CurrentPlayerTypeLabel.setText(currentPlayer.playerTypeProperty().getValue());
+            PlayerNameLabel.setText(currentPlayer.getName());
+        }else if(logic.getGameType().equals(eGameType.Basic)){
+            PlayerNameLabel.setText(String.valueOf(currentPlayer.getTurn()));
+        }
     }
 
     private void clearCurrentPlayerView()
@@ -539,6 +588,7 @@ public class GameController implements Initializable {
     {
         int pointStatus;
         boolean doSwitch = true;
+        BoardButton butt = builder.getChosenButton();
         Point userPoint = builder.getChosenPoint();
         if (userPoint != null) {
             pointStatus = logic.isValidPoint(userPoint);
@@ -548,8 +598,6 @@ public class GameController implements Initializable {
                 setCurrentPlayerBasic(logic.getCurrentPlayer());
                 if (!doSwitch)
                 {
-                    // String winner = logic.gameOver();
-                    // printWinnerBasic(winner);
                     setGameOver();
                 }
             }
@@ -584,6 +632,8 @@ public class GameController implements Initializable {
             alert.setHeaderText("YOU DIDNT CHOOSE A SQUARE!");
             alert.showAndWait();
         }
+
+        butt.removeChosenButtonEffect();
     }
 
 
