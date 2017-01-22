@@ -23,6 +23,8 @@ public class BoardButton extends Button {
     private Square boardButton;
     private IntegerProperty buttonColor;
     private String  styleId ="";
+    private String filterStyle = "filter-button";
+
     DropShadow shadow = new DropShadow();
 
     public int getButtonColor() {
@@ -90,6 +92,7 @@ public void setChosenButtonEffect(){
 }
 
 public void removeChosenButtonEffect(){
+
     this.setEffect(null);
     this.fontProperty().set(Font.font("System",FontWeight.THIN,12));
 

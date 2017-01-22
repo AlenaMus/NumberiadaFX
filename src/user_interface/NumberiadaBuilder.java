@@ -6,12 +6,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Shadow;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NumberiadaBuilder {
@@ -26,6 +28,7 @@ public class NumberiadaBuilder {
     private Point chosenPoint;
     private BoardButton chosenButton;
     public static int press = 0;
+    private List<BoardButton> clickedWithNoMove = new ArrayList<>();
 
     public Point getChosenPoint() {
         return chosenPoint;
@@ -160,6 +163,7 @@ public class NumberiadaBuilder {
                             butt.removeChosenButtonEffect();
                         }
                     });
+
                     butt.textProperty().bind(gBoard[j-1][i-1].squareValueProperty());
                     butt.setPrefSize(squareSize,squareSize);
                     butt.setAlignment(Pos.CENTER);
@@ -216,12 +220,26 @@ public class NumberiadaBuilder {
     {
         MoveNumberLabel.setText(String.valueOf(move));
     }
+
+
     private void PressedBoardButton(BoardButton butt)
     {
-
-        //butt.setChosenButtonEffect();
+        butt.setChosenButtonEffect();
         this.chosenButton = butt;
         setChosenPoint(butt.getLocation());
+        clickedWithNoMove.add(butt);
+    }
+
+    public void removeButtonsEffect(){
+
+        if(clickedWithNoMove!=null){
+            for (BoardButton butt:clickedWithNoMove) {
+                butt.removeChosenButtonEffect();
+            }
+            clickedWithNoMove.clear();
+            clickedWithNoMove = new ArrayList<>();
+        }
+
     }
 
 

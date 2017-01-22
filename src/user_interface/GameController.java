@@ -13,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
@@ -36,6 +37,7 @@ public class GameController implements Initializable {
     private String xmlFilePath;
     private int historyIndex = -1;
     private GameManager gameManager = new GameManager();
+    public static boolean xmLoaded =false;
 
     public void setGameWindow(Stage stage) {
         gameWindow = stage;
@@ -114,6 +116,7 @@ public class GameController implements Initializable {
     @FXML
     void StartGameButtonClicked(ActionEvent event) {
 
+        builder.removeButtonsEffect();
         if(GameManager.gameRound > 0){
                 restartGame();
             }else {
@@ -343,6 +346,7 @@ private void disableHistoryView(){
 
     @FXML
     void MakeAMoveButtonClicked(ActionEvent event) {
+          builder.removeButtonsEffect();
         if (logic.getGameType().equals(eGameType.Advance))
             AdvanceMove();
         else {
@@ -352,10 +356,9 @@ private void disableHistoryView(){
 
     private void AdvanceMove()
     {
-
         int pointStatus;
         String value="";
-        BoardButton butt= builder.getChosenButton();
+       BoardButton butt = builder.getChosenButton();
         Point userPoint = builder.getChosenPoint();
         if (userPoint != null) {
             pointStatus = logic.isValidPoint(userPoint);
@@ -387,6 +390,7 @@ private void disableHistoryView(){
             alert.showAndWait();
         }
 
+        butt.removeChosenButtonEffect();
     }
 
 
@@ -471,13 +475,15 @@ private void disableHistoryView(){
 
     public void LoadXmlFileButtonClicked() throws XmlNotValidException {
         if (GameManager.gameRound > 0) {
-            //logic.gameLogicClear();
+            if(!xmLoaded){
+                logic.gameLogicClear();
+            }
             disableHistoryView();
             clearGameWindow();
             logic.clearHistory();
             GameManager.gameRound = 0;
         }
-        boolean xmLoaded = false;
+        //boolean xmLoaded =false
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
         fileChooser.getExtensionFilters().add(extFilter);
@@ -488,20 +494,22 @@ private void disableHistoryView(){
                 xmlFilePath = loadedFile.getAbsolutePath();
                 gameManager.LoadGameFromXmlAndValidate(xmlFilePath);
                 xmLoaded = true;
-                logic = gameManager.getGameLogic();
             } catch (XmlNotValidException i_Exception) {
                 setInvalidXMLAlert(i_Exception);
+                xmLoaded = false;
             }
+              if (xmLoaded) {
+                 logic = gameManager.getGameLogic();
+                 createGameView();
+                 disableHistoryView();
+              }
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("XML File Load Error");
             alert.setHeaderText("Invalid File - cannot be loaded!");
             alert.showAndWait();
         }
-        if (xmLoaded) {
-            createGameView();
-            disableHistoryView();
-        }
+
     }
 
 
