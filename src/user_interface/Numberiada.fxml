@@ -62,11 +62,14 @@
                                 <Font name="System Bold" size="13.0" />
                             </font>
                         </Label>
-                        <HBox alignment="BOTTOM_CENTER" prefHeight="32.0" prefWidth="559.0">
+                        <HBox alignment="BOTTOM_CENTER" prefHeight="32.0" prefWidth="521.0">
                             <children>
                                 <Button fx:id="PrevButton" disable="true" mnemonicParsing="false" onAction="#PrevHistoryButtonClicked" text="PREV" />
                                 <Button fx:id="NextButton" disable="true" mnemonicParsing="false" onAction="#NextHistoryButtonClicked" text="NEXT" />
                             </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
                         </HBox>
                     </children>
                 </VBox>

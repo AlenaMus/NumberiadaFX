@@ -6,12 +6,15 @@ import game_engine.eGameType;
 import game_objects.*;
 import game_validation.XmlNotValidException;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
@@ -42,6 +45,9 @@ public class GameController implements Initializable {
     public void setGameWindow(Stage stage) {
         gameWindow = stage;
     }
+
+    @FXML
+    private ChoiceBox<String> ChangeStyleBox;
 
     @FXML
     private Label IdLabel;
@@ -111,6 +117,7 @@ public class GameController implements Initializable {
     @FXML
     private Label scoreGridLabel;
 
+    private Scene gameScene;
 
 
     @FXML
@@ -168,10 +175,6 @@ public class GameController implements Initializable {
             logic.setHistoryMoves();
     }
 
-    private BoardButton getChosenButton(Point loc){
-        return (BoardButton)builder.getNodeByRowColumnIndex(loc.getRow()+1,loc.getCol()+1,board);
-    }
-
     private void makeComputerMove() {
 
         ComputerProgressBar.visibleProperty().set(true);
@@ -192,10 +195,6 @@ public class GameController implements Initializable {
                 }
                     Thread.sleep(300);
 
-                Platform.runLater(() -> {
-                    BoardButton butt = getChosenButton(squareLocation);
-                    butt.setChosenButtonEffect();
-                });
                 return squareLocation;
             }
             @Override
@@ -435,7 +434,6 @@ private void disableHistoryView(){
         enableHistoryView();
     }
 
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         board = new GridPane();
@@ -450,6 +448,30 @@ private void disableHistoryView(){
         NextButton.disableProperty().setValue(true);
 
     }
+
+
+//    private  void changeStyle(){
+//
+//
+//        if(ChangeStyleBox.getValue().equals("Home skin")){
+//            //gameScene.getStylesheets().clear();
+//            gameScene.getStylesheets().add(getClass()
+//                    .getResource("user_interface/boardStyle.css")
+//                    .toExternalForm());
+//        }else if(ChangeStyleBox.getValue().equals("skin 2")){
+//            //gameScene.getStylesheets().clear();
+//            gameScene.getStylesheets().add(getClass()
+//                    .getResource("user_interface/gameStyle2")
+//                    .toExternalForm());
+//        }else if(ChangeStyleBox.getValue().equals("skin 3")){
+//            //gameScene.getStylesheets().clear();
+//            gameScene.getStylesheets().add(getClass()
+//                    .getResource("user_interface/gameStyle3")
+//                    .toExternalForm());
+//        }
+//
+//    }
+
 
     private void setStartGame() {
 
@@ -483,7 +505,6 @@ private void disableHistoryView(){
             logic.clearHistory();
             GameManager.gameRound = 0;
         }
-        //boolean xmLoaded =false
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
         fileChooser.getExtensionFilters().add(extFilter);
